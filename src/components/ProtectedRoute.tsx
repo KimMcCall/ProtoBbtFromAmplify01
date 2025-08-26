@@ -1,14 +1,21 @@
+import React from 'react';
+import { getCurrentUser } from '@aws-amplify/auth'
 import { Navigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 
 const ProtectedRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
+  const [isAuthenticated, setIsAuthenticated] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
+  React.useEffect(() => {
+    getCurrentUser()
+      .then(() => setIsAuthenticated(true))
+      .catch(() => setIsAuthenticated(false))
+      .finally(() => setLoading(false));
+  }, []);
 
-  return children;
+  if (loading) return <div>Loading...</div>; // Or a more sophisticated loader
+
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 export default ProtectedRoute;

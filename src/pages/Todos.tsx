@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import { signOut } from '@aws-amplify/auth'
 
 const client = generateClient<Schema>();
 
@@ -58,8 +59,11 @@ function Todos() {
       <div>
         <button onClick={() => {handleButtonClick("/protected02")}}>Go to 2nd protected page</button>
       </div>
+      <div>
+        <button onClick={() => signOut}>Sign out</button>
+      </div>
     </main>
-  );
+  ); 
 }
 
 export default Todos;

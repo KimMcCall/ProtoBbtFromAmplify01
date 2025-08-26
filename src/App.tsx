@@ -1,5 +1,5 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { AuthProvider } from './context/AuthContext';
+import React from 'react';
+import { BrowserRouter as Router , Routes, Route } from 'react-router-dom';
 import ProtectedRoute from "./components/ProtectedRoute";
 import Todos from "./pages/Todos";
 import LoginPage from "./pages/LoginPage";
@@ -11,33 +11,30 @@ import ProtectedPage02 from "./pages/ProtectedPage02";
 function App() {
 
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <Routes>
-          <Route path="/" element={<Todos />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/public01" element={<PublicPage01 />} />
-          <Route
-            path="/protected01"
-            element={
-              <ProtectedRoute>
-                <ProtectedPage01 />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/protected02"
-            element={
-              <ProtectedRoute>
-                <ProtectedPage02 />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route path="public02" element={<PublicPage02 />} />
-        </Routes>
-      </AuthProvider>
-    </BrowserRouter>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Todos />} />
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/public01" element={<PublicPage01 />} />
+        <Route
+          path="/protected01"
+          element={
+            <ProtectedRoute>
+              <ProtectedPage01 />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/protected02"
+          element={
+            <ProtectedRoute>
+              <ProtectedPage02 />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="public02" element={<PublicPage02 />} />
+      </Routes>
+    </Router>
   );
 }
 
