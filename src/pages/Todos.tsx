@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
-import { signOut } from '@aws-amplify/auth'
+// import { useAuthenticator } from '@aws-amplify/ui-react';
 
 const client = generateClient<Schema>();
 
 function Todos() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
+
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -23,10 +24,6 @@ function Todos() {
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id })
   }
-
-  const handleButtonClick = (newDir: string) => {
-    navigate(newDir); // Navigate to the new route
-  };
 
   return (
     <main>
@@ -48,19 +45,10 @@ function Todos() {
         </a>
       </div>
       <div>
-        <button onClick={() => {handleButtonClick("/public01")}}>Go to 1st public page</button>
-      </div>
-      <div>
-        <button onClick={() => {handleButtonClick("/public02")}}>Go to 2nd public page</button>
-      </div>
-      <div>
-        <button onClick={() => {handleButtonClick("/protected01")}}>Go to 1st protected page</button>
-      </div>
-      <div>
-        <button onClick={() => {handleButtonClick("/protected02")}}>Go to 2nd protected page</button>
+        <button onClick={() => {navigate("/logout")}}>Sign Out!</button>
       </div>
     </main>
-  ); 
+  );
 }
 
 export default Todos;
