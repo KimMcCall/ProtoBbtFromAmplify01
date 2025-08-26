@@ -1,12 +1,16 @@
+import { Authenticator } from '@aws-amplify/ui-react';
+import '@aws-amplify/ui-react/styles.css'; // Import default styles
 
 function LogiinPage() {
   return (
-    <main>
-      <h1>Please Log In</h1>
-      <div>
-        The page you were trying to visit requres you to be logged in.
-      </div>
-    </main>
+    <Authenticator>
+      {({ signOut, user }) => (
+        <main>
+          <h1>Hello {user?.username}</h1>
+          <button onClick={signOut}>Sign Out</button>
+        </main>
+      )}
+    </Authenticator>
   );
 }
 

@@ -4,7 +4,7 @@ function ProtectedPage02() {
     <main>
       <h1>My Glorious App</h1>
       <div>
-        You're on the first Protected Page.
+        You're on the second Protected Page.
       </div>
     </main>
   );

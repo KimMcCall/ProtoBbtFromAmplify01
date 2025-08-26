@@ -59,9 +59,6 @@ function Todos() {
       <div>
         <button onClick={() => {handleButtonClick("/protected02")}}>Go to 2nd protected page</button>
       </div>
-      <div>
-        <button onClick={() => signOut}>Sign out</button>
-      </div>
     </main>
   ); 
 }
