@@ -7,6 +7,7 @@ import LogoutPage from "./pages/LogoutPage";
 import Todos from "./pages/Todos";
 import PublicPage01 from "./pages/PublicPage01";
 import PublicPage02 from "./pages/PublicPage02";
+import SketchPage from "./pages/SketchPage";
 import ProtectedPage01 from "./pages/ProtectedPage01";
 import ProtectedPage02 from "./pages/ProtectedPage02";
 
@@ -19,6 +20,8 @@ function App() {
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/todos" element={<Todos />} />
         <Route path="/public01" element={<PublicPage01 />} />
+        <Route path="/public02" element={<PublicPage02 />} />
+        <Route path="/sketch" element={<SketchPage />} />
         <Route
           path="/protected01"
           element={
@@ -35,7 +38,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route path="public02" element={<PublicPage02 />} />
       </Routes>
     </Router>
   );
