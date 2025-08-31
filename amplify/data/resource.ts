@@ -20,6 +20,43 @@ const schema = a.schema({
       price: a.float(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  RegisteredUser: a
+    .model({
+      name: a.string(),
+      canonicalEmail: a.string(),
+      isBanned: a.boolean().default(false),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+  BannedUser: a
+    .model({
+      userId: a.string(),
+      canonicalEmail: a.string(),
+      explanation: a.string(),
+      submissionId: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+  MasterUser: a
+    .model({
+      name: a.string(),
+      canonicalEmail: a.string(),
+      userId: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+  Submission: a
+    .model({
+      userId: a.string(),
+      content: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
+  Issue: a
+    .model({
+      question: a.string(),
+      description: a.string(),
+      truth: a.string(),
+      response: a.string(),
+      furtherDiscussion: a.string(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
