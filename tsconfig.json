@@ -7,10 +7,11 @@
     "skipLibCheck": true,
 
     /* MKM added to see html2pdf.js module */
-      "typeRoots": [
-        "./node_modules/@types",
-        "./typings" // Add this if you created a 'typings' folder
-      ],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./typings" // Add this if you created a 'typings' folder
+    ],
+    "allowJs": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
