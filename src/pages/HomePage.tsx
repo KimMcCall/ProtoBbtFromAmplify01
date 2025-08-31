@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCurrentUser } from '@aws-amplify/auth';
 
 function HomePage() {
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [haveUser, setHaveUser] = useState(false);
 
   const navigate = useNavigate();
@@ -17,7 +17,7 @@ function HomePage() {
         console.log("User ID:", userId);
         console.log("Sign-in Details:", signInDetails);
       }
-      setLoading(false);
+      // setLoading(false);
       setHaveUser(true);
       console.log("Got current user");
       /*
