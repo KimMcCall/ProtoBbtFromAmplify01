@@ -6,6 +6,12 @@
     "module": "ESNext",
     "skipLibCheck": true,
 
+    /* MKM added to see html2pdf.js module */
+      "typeRoots": [
+        "./node_modules/@types",
+        "./typings" // Add this if you created a 'typings' folder
+      ],
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
