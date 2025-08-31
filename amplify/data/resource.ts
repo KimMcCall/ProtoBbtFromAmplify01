@@ -13,6 +13,13 @@ const schema = a.schema({
       isDone: a.boolean().default(false), // Example of adding a new boolean field
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  SaleItem: a
+    .model({
+      name: a.string(),
+      code: a.string(),
+      price: a.float(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;
