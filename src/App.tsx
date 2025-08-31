@@ -6,7 +6,7 @@ import LogoutPage from "./pages/LogoutPage";
 import Todos from "./pages/Todos";
 import PublicPage01 from "./pages/PublicPage01";
 import PublicPage02 from "./pages/PublicPage02";
-import SketchPage from "./pages/SketchPage";
+import SketchPage from "./pages/printing/SketchPage";
 import ProtectedPage01 from "./pages/ProtectedPage01";
 import ProtectedPage02 from "./pages/ProtectedPage02";
 
