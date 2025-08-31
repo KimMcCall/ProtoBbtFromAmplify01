@@ -10,6 +10,7 @@ const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
+      isDone: a.boolean().default(false), // Example of adding a new boolean field
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });
