@@ -48,6 +48,9 @@ function HomePage() {
         <button onClick={() => {handleButtonClick("/sketch")}}>Go to Sketch page</button>
       </div>
       <div>
+        <button onClick={() => {handleButtonClick("/suggestion")}}>Go to Suggestion page</button>
+      </div>
+      <div>
         <button onClick={() => {handleButtonClick("/todos")}}>Go to ToDos page</button>
       </div>
       <div>

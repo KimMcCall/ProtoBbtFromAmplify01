@@ -7,6 +7,7 @@ import Todos from "./pages/Todos";
 import PublicPage01 from "./pages/PublicPage01";
 import PublicPage02 from "./pages/PublicPage02";
 import SketchPage from "./pages/printing/SketchPage";
+import SuggestionPage from "./pages/SuggestionsPage";
 import ProtectedPage01 from "./pages/ProtectedPage01";
 import ProtectedPage02 from "./pages/ProtectedPage02";
 
@@ -21,6 +22,14 @@ function App() {
         <Route path="/public01" element={<PublicPage01 />} />
         <Route path="/public02" element={<PublicPage02 />} />
         <Route path="/sketch" element={<SketchPage />} />
+        <Route
+          path="/suggestion"
+          element={
+            <ProtectedRoute>
+              <SuggestionPage />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/protected01"
           element={
