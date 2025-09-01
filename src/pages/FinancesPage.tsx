@@ -1,13 +1,12 @@
-import BannerBox from "../components/BannerBox.";
+import PageWrapper from "../components/PageWrapper";
 
 function FinancesPage() {
   return (
-    <main>
-      <BannerBox />
+    <PageWrapper>
       <div>
         You're on the (stub of the) Finances Page.
       </div>
-    </main>
+    </PageWrapper>
   );
 }
 

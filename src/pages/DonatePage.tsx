@@ -1,13 +1,12 @@
-import BannerBox from "../components/BannerBox.";
+import PageWrapper from "../components/PageWrapper";
 
 function DonatePage() {
   return (
-    <main>
-      <BannerBox />
+    <PageWrapper>
       <div>
         You're on the (stub of the) Donations Page.
       </div>
-    </main>
+    </PageWrapper>
   );
 }
 

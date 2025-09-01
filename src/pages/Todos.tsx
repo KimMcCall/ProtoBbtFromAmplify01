@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
+import PageWrapper from "../components/PageWrapper";
+import { Flex } from "@aws-amplify/ui-react";
 
 const client = generateClient<Schema>();
 
@@ -25,28 +27,30 @@ function Todos() {
   }
 
   return (
-    <main>
-      <h1>My Glorious Todos</h1>
-      <button onClick={createTodo}>+ new</button>
-      <ul>
-        {todos.map((todo) => (
-          <li
-            onClick={() => deleteTodo(todo.id)}
-            key={todo.id}>{todo.content}
-          </li>
-        ))}
-      </ul>
-      <div>
-        🥳 App successfully hosted. Try creating a new todo.
-        <br />
-        <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
-          Review next step of this tutorial.
-        </a>
-      </div>
-      <div>
-        <button onClick={() => {navigate("/logout")}}>Sign Out!</button>
-      </div>
-    </main>
+    <PageWrapper>
+      <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
+        <h1>My Glorious Todos</h1>
+        <button onClick={createTodo}>+ new</button>
+        <ul>
+          {todos.map((todo) => (
+            <li
+              onClick={() => deleteTodo(todo.id)}
+              key={todo.id}>{todo.content}
+            </li>
+          ))}
+        </ul>
+        <div>
+          🥳 App successfully hosted. Try creating a new todo.
+          <br />
+          <a href="https://docs.amplify.aws/react/start/quickstart/#make-frontend-updates">
+            Review next step of this tutorial.
+          </a>
+        </div>
+        <div>
+          <button onClick={() => {navigate("/logout")}}>Sign Out!</button>
+        </div>
+      </Flex>
+    </PageWrapper>
   );
 }
 

@@ -1,12 +1,13 @@
+import PageWrapper from "../components/PageWrapper";
 
 function ProtectedPage02() {
   return (
-    <main>
+    <PageWrapper>
       <h1>My Glorious App</h1>
       <div>
         You're on the second Protected Page.
       </div>
-    </main>
+    </PageWrapper>
   );
 }
 

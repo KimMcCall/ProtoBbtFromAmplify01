@@ -1,14 +1,13 @@
-import BannerBox from "../components/BannerBox.";
+import PageWrapper from "../components/PageWrapper";
 
 function PublicPage01() {
   return (
-    <main>
-      <BannerBox />
+    <PageWrapper>
       <h1>My Glorious App</h1>
       <div>
         You're on the first Public Page.
       </div>
-    </main>
+    </PageWrapper>
   );
 }
 

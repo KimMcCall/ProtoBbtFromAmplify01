@@ -38,6 +38,10 @@ function BannerBox() {
     navigate("/logout", { replace: true });
   };
 
+  const goToLogInPage = () => {
+    navigate("/login", { replace: true });
+  };
+
   const haveUser = haveLoggedInUser();
 
   return (
@@ -61,7 +65,7 @@ function BannerBox() {
             <MenuItem onClick={() => {logOff()}}>Log Off</MenuItem>
           </Menu>
         :
-          <div onClick={goHome} style={loginDiv}>Log In</div>}
+          <div onClick={() => goToLogInPage()} style={loginDiv}>Log In</div>}
       </Flex>
     </div>
   );
