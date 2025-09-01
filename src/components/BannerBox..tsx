@@ -4,10 +4,9 @@ import { haveLoggedInUser } from '../utils/utils';
 
 const box: React.CSSProperties = {
   height: '46px',
-  width: '1000px',
+  width: '1206px',
   border: '2px solid blue',
   padding: '4px',
-  margin: '4px',
   backgroundColor: '#d0e0ff',
   paddingRight: '20px',
 };

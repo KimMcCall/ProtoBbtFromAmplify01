@@ -2,11 +2,11 @@ import { useNavigate } from 'react-router-dom';
 import { Flex } from '@aws-amplify/ui-react';
 
 const bar: React.CSSProperties = {
-  height: '600px',
+  height: '730px',
   width: '140px',
-  border: '2px solid blue',
-  padding: '4px',
-  margin: '4px',
+  border: '1px solid blue',
+  padding: '6px',
+  margin: '1px',
   backgroundColor: '#d0e0ff',
 };
 
