@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import LogoutPage from "./pages/LogoutPage";
+import ProfilePage from "./pages/ProfilePage";
 import Todos from "./pages/Todos";
 import PublicPage01 from "./pages/PublicPage01";
 import PublicPage02 from "./pages/PublicPage02";
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<LogoutPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
         <Route path="/todos" element={<Todos />} />
         <Route path="/public01" element={<PublicPage01 />} />
         <Route path="/public02" element={<PublicPage02 />} />
