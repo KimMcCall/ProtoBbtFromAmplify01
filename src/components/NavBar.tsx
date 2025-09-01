@@ -1,0 +1,45 @@
+import { useNavigate } from 'react-router-dom';
+import { Flex } from '@aws-amplify/ui-react';
+
+const bar: React.CSSProperties = {
+  height: '600px',
+  width: '140px',
+  border: '2px solid blue',
+  padding: '4px',
+  margin: '4px',
+  backgroundColor: '#d0e0ff',
+};
+
+const buttonDiv: React.CSSProperties = {
+  cursor: 'pointer',
+  fontWeight: 'bold',
+  fontSize: '150%',
+};
+
+function NavBar() {
+  const navigate = useNavigate();
+
+  const handleButtonClick = (newDir: string) => {
+    navigate(newDir); // Navigate to the new route
+  };
+
+  return (
+    <div id="banner-box" style={bar}>
+      <Flex
+        direction="column"
+        justifyContent="space-between"
+        alignItems="left"
+        wrap="nowrap"
+        gap="1rem"
+      >
+        <div onClick={() => {handleButtonClick("/")}} style={buttonDiv}>Home</div>
+        <div onClick={() => {handleButtonClick("/mission")}} style={buttonDiv}>Mission</div>
+        <div onClick={() => {handleButtonClick("/suggestion")}} style={buttonDiv}>Suggest</div>
+        <div onClick={() => {handleButtonClick("/finances")}} style={buttonDiv}>Finances</div>
+        <div onClick={() => {handleButtonClick("/donate")}} style={buttonDiv}>Donate</div>
+      </Flex>
+    </div>
+  );
+}
+
+export default NavBar;

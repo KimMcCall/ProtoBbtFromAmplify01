@@ -11,6 +11,9 @@ import SketchPage from "./pages/printing/SketchPage";
 import SuggestionPage from "./pages/SuggestionsPage";
 import ProtectedPage01 from "./pages/ProtectedPage01";
 import ProtectedPage02 from "./pages/ProtectedPage02";
+import MissionPage from './pages/MissionPage';
+import DonatePage from './pages/DonatePage';
+import FinancesPage from './pages/FinancesPage';
 
 function App() {
   return (
@@ -48,6 +51,9 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/mission" element={<MissionPage />} />
+        <Route path="/finances" element={<FinancesPage />} />
+        <Route path="/donate" element={<DonatePage />} />
       </Routes>
     </Router>
   );
