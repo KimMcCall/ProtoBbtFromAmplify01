@@ -46,9 +46,6 @@ function Todos() {
             Review next step of this tutorial.
           </a>
         </div>
-        <div>
-          <button onClick={() => {navigate("/logout")}}>Sign Out!</button>
-        </div>
       </Flex>
     </PageWrapper>
   );
