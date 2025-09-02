@@ -85,7 +85,7 @@ function BannerBox() {
   };
 
   const goToLogInPage = () => {
-    navigate("/login", { replace: true });
+    navigate("/login");
   };
   
   const {isPhoney, isAdmin, isOwner, canonicalEmail, userId} = user;
