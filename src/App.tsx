@@ -19,8 +19,6 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
-        <Route path="/todos" element={<Todos />} />
-        <Route path="/sketch" element={<SketchPage />} />
         <Route
           path="/suggestion"
           element={
@@ -32,6 +30,15 @@ function App() {
         <Route path="/mission" element={<MissionPage />} />
         <Route path="/finances" element={<FinancesPage />} />
         <Route path="/donate" element={<DonatePage />} />
+        <Route
+          path="/todos"
+          element={
+            <ProtectedRoute>
+              <Todos />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/sketch" element={<SketchPage />} />
       </Routes>
     </Router>
   );
