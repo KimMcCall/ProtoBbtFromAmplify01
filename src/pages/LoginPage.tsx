@@ -10,14 +10,16 @@ const hideButton: React.CSSProperties = {
   display: 'none',
 };
 
-function LogiinPage() {
+function LoginPage() {
   return (
     <PageWrapper>
       <div style={spacer}>
         <Authenticator>
           {({ signOut, user }) => (
             <div>
-              <h1>Hello {user?.username}</h1>
+              <h1>Hello!</h1>
+              <h1>LoginId: {user?.signInDetails?.loginId}</h1>
+              <h1>UserId: {user?.userId}</h1>
               <button onClick={signOut} style={hideButton}>Sign Out</button>
             </div>
           )}
@@ -27,4 +29,4 @@ function LogiinPage() {
   );
 }
 
-export default LogiinPage;
+export default LoginPage;

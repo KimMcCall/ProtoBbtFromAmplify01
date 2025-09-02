@@ -12,23 +12,26 @@ function HomePage() {
 
   async function getUserInfo() {
     try {
-      const showUserInfo = false;
+      const showUserInfo = true;
       const { username, userId, signInDetails } = await getCurrentUser();
       if (showUserInfo) {
         console.log("Username:", username);
         console.log("User ID:", userId);
         console.log("Sign-in Details:", signInDetails);
+        console.log("Login ID:", signInDetails?.loginId);
       }
       // setLoading(false);
       setHaveUser(true);
-      console.log("Got current user");
+      if (showUserInfo) {
+        console.log("Got current user");
+      }
       /*
       console.log("Username:", username);
       console.log("User ID:", userId);
       console.log("Sign-in Details:", signInDetails);
       */
     } catch (error) {
-      // console.error("Error fetching current user:", error);
+      console.error("Error fetching current user:", error);
     }
   }
 
