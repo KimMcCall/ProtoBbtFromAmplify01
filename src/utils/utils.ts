@@ -19,7 +19,10 @@ export async function haveLoggedInUser(): Promise<boolean> {
     }
 }
 
-export function toCanonicalEmail(email: string): string {
+export function toCanonicalEmail(email: string | undefined): string {
+  if (!email) {
+    return "bogusEmail@example.com";
+  }
   const lower: string = email.trim().toLowerCase();
   let result = "Nothing";
   const plusLoc: number = lower.indexOf("+");
