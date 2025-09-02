@@ -1,50 +1,26 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser } from '@aws-amplify/auth';
 import { Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
+import { haveLoggedInUser } from "../utils/utils";
+
+
+let haveUser: boolean = false;
+
+async function checkforUser() {
+    haveUser = await haveLoggedInUser();
+}
 
 function HomePage() {
-  // const [loading, setLoading] = useState(true);
-  const [haveUser, setHaveUser] = useState(false);
-
   const navigate = useNavigate();
 
-  async function getUserInfo() {
-    try {
-      const showUserInfo = true;
-      const { username, userId, signInDetails } = await getCurrentUser();
-      if (showUserInfo) {
-        console.log("Username:", username);
-        console.log("User ID:", userId);
-        console.log("Sign-in Details:", signInDetails);
-        console.log("Login ID:", signInDetails?.loginId);
-      }
-      // setLoading(false);
-      setHaveUser(true);
-      if (showUserInfo) {
-        console.log("Got current user");
-      }
-      /*
-      console.log("Username:", username);
-      console.log("User ID:", userId);
-      console.log("Sign-in Details:", signInDetails);
-      */
-    } catch (error) {
-      console.error("Error fetching current user:", error);
-    }
-  }
-
   useEffect(() => {
-    getUserInfo();
+    checkforUser();
   }, []);
 
   const handleButtonClick = (newDir: string) => {
     navigate(newDir); // Navigate to the new route
   };
-
-  getUserInfo();
-  console.log("HomePage: haveUser=", haveUser);
 
   return (
     <PageWrapper>

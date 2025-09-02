@@ -1,25 +1,22 @@
 // utils.ts
-// import { getCurrentUser } from "aws-amplify/auth";
+import { getCurrentUser } from "aws-amplify/auth";
 
-// export async function haveLoggedInUser(): Promise<boolean> {
-export function haveLoggedInUser():  boolean {
-  /*
+export async function haveLoggedInUser(): Promise<boolean> {
     const showUserInfo = true;
     try {
       const { username, userId, signInDetails } = await getCurrentUser();
       if (showUserInfo) {
-        console.log("Got current user");
-        console.log("Username:", username);
-        console.log("User ID:", userId);
-        console.log("Sign-in Details:", signInDetails);
+        console.log("in utils.ts, Got current user");
+        console.log("ut: Username:", username);
+        console.log("ut: User ID:", userId);
+        console.log("ut: loginId:", signInDetails?.loginId);
+        console.log("ut: returning true from haveLoggedInUser()");
       }
       return true;
     } catch (error) {
-      console.error("Error fetching current user:", error);
+      console.error("ut: Error in getCurrentUser(); returning false", error);
       return false;
     }
-    */
-    return false;
 }
 
 export function toCanonicalEmail(email: string): string {

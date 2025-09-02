@@ -23,7 +23,10 @@ const loginDiv: React.CSSProperties = {
   fontSize: '120%',
 };
 
+const haveUser = await haveLoggedInUser();
+
 function BannerBox() {
+
   const navigate = useNavigate();
 
   const goHome = () => {
@@ -41,8 +44,6 @@ function BannerBox() {
   const goToLogInPage = () => {
     navigate("/login", { replace: true });
   };
-
-  const haveUser = haveLoggedInUser();
 
   return (
     <div id="banner-box" style={box}>
