@@ -24,6 +24,7 @@ const schema = a.schema({
     .model({
       name: a.string(),
       canonicalEmail: a.string(),
+      userId: a.string(),
       isBanned: a.boolean().default(false),
     })
     .authorization((allow) => [allow.publicApiKey()]),

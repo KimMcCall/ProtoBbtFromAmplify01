@@ -1,29 +1,24 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
-import type { Schema } from "../../amplify/data/resource";
-import { generateClient } from "aws-amplify/data";
-import PageWrapper from "../components/PageWrapper";
 import { Flex } from "@aws-amplify/ui-react";
-
-const client = generateClient<Schema>();
+import type { Schema } from "../../amplify/data/resource";
+import { dbClient } from "../main";
+import PageWrapper from "../components/PageWrapper";
 
 function Todos() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
-  const navigate = useNavigate();
-
   useEffect(() => {
-    client.models.Todo.observeQuery().subscribe({
+    dbClient.models.Todo.observeQuery().subscribe({
       next: (data) => setTodos([...data.items]),
     });
   }, []);
 
   function createTodo() {
-    client.models.Todo.create({ content: window.prompt("Todo content") });
+    dbClient.models.Todo.create({ content: window.prompt("Todo content") });
   }  
   
   function deleteTodo(id: string) {
-    client.models.Todo.delete({ id })
+    dbClient.models.Todo.delete({ id })
   }
 
   return (

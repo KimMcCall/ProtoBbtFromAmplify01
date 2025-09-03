@@ -39,6 +39,7 @@ function NavBar() {
         <div onClick={() => {handleButtonClick("/donate")}} style={buttonDiv}>Donate</div>
         <div onClick={() => {handleButtonClick("/play01")}} style={buttonDiv}>Play 1</div>
         <div onClick={() => {handleButtonClick("/play02")}} style={buttonDiv}>Play2</div>
+        <div onClick={() => {handleButtonClick("/todos")}} style={buttonDiv}>ToDos</div>
       </Flex>
     </div>
   );
