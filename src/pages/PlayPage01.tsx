@@ -1,9 +1,10 @@
-import { dbClient } from "../main";
+// import { dbClient } from "../main";
 import PageWrapper from "../components/PageWrapper";
 
 const eMailToFind = "mccall.kim@gmail.com"
 
 const findMasterUserWithCanonicalEmail = (eEmail: string) => {
+  console.log("In PlayPage01, findMasterUserWithCanonicalEmail, NOT looking for", eEmail);
   /*
   const { data: masterUsers, errors } = await client.models.MasterUser.list({
     filter: {
@@ -44,6 +45,9 @@ function PlayPage01() {
     <PageWrapper>
       <div>
         You're on the (stub of the) First Play Page.
+      </div>
+      <div>
+
       </div>
       <div>
         <button onClick={() => findMasterUserWithCanonicalEmail(eMailToFind)}>Show Master User</button>
