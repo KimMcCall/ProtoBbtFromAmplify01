@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from 'react-router-dom';
 import type { Schema } from "../../amplify/data/resource";
 import { generateClient } from "aws-amplify/data";
 import PageWrapper from "../components/PageWrapper";
@@ -9,8 +8,6 @@ const client = generateClient<Schema>();
 
 function Todos() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
