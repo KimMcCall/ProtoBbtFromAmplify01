@@ -11,6 +11,8 @@ import SuggestionPage from "./pages/SuggestionsPage";
 import MissionPage from './pages/MissionPage';
 import DonatePage from './pages/DonatePage';
 import FinancesPage from './pages/FinancesPage';
+import PlayPage01 from './pages/PlayPage01';
+import PlayPage02 from './pages/PlayPage02';
 
 type UserCacheType = {
   isPhoney: boolean;
@@ -73,6 +75,8 @@ function App() {
             }
           />
           <Route path="/sketch" element={<SketchPage />} />
+          <Route path="/play01" element={<PlayPage01 />} />
+          <Route path="/play02" element={<PlayPage02 />} />
         </Routes>
       </Router>
       </UserContext.Provider>
