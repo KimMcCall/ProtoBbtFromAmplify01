@@ -28,7 +28,6 @@ const loginDiv: React.CSSProperties = {
 function BannerBox() {
   const [loading, setLoading] = useState(true);
 
-
   const { userCache, setUserCache } = useContext(UserContext);
   const { isPhoney } = userCache;
   console.log("In BannerBox, isPhoney=", isPhoney);
@@ -67,6 +66,11 @@ function BannerBox() {
   const goToLogInPage = () => {
     navigate("/login");
   };
+
+  // this is just to use the constant 'loading' so that the linter doesn't complain
+  if (loading) {
+    console.log("BB: Still loading...");
+  }
 
   return (
     <div id="banner-box" style={box}>

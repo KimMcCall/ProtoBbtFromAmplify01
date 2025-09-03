@@ -25,6 +25,7 @@ const findMasterUserWithCanonicalEmail = (eEmail: string) => {
 
   console.log("Found MasterUser(s) with canonicalEmail", eEmail, masterUsers);  
   */
+  /*
   dbClient.models.MasterUser.query("byCanonicalEmail", eEmail).then((masterUsers) => {
     if (masterUsers.length === 0) {
       console.log("No MasterUser found with canonicalEmail", eEmail);
@@ -35,6 +36,7 @@ const findMasterUserWithCanonicalEmail = (eEmail: string) => {
   }).catch((error: any) => {
     console.error("Error fetching MasterUser with canonicalEmail", eEmail, error);
   });
+  */
 }
 
 function PlayPage01() {  
