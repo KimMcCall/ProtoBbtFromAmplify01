@@ -19,7 +19,7 @@ export async function haveLoggedInUser(): Promise<boolean> {
     }
 }
 
-export async function cacheUserInfo(setUserCache: (arg0: { isPhoney: boolean; isAdmin: boolean; isSuperAdmin: boolean; email: string | undefined; canonicalEmail: string; userId: string; }) => void) {
+export async function cacheUserInfo(setUserCache: (arg0: { isPhoney: boolean; isAdmin: boolean; isSuperAdmin: boolean; email: string; canonicalEmail: string; userId: string; }) => void) {
     const showUserInfo = true;
     try {
       const { username, userId, signInDetails } = await getCurrentUser();
@@ -29,7 +29,7 @@ export async function cacheUserInfo(setUserCache: (arg0: { isPhoney: boolean; is
         console.log("ut: User ID:", userId);
         console.log("ut: loginId:", signInDetails?.loginId);
       }
-      const email = signInDetails?.loginId;
+      const email = signInDetails && signInDetails.loginId ? signInDetails.loginId : "bogusEmail+22@gmail.com";
       const canonical = toCanonicalEmail(email);
       const userInfo = {
         isPhoney: false,
@@ -55,7 +55,7 @@ export async function cacheUserInfo(setUserCache: (arg0: { isPhoney: boolean; is
     }
 }
 
-export function toCanonicalEmail(email: string | undefined): string {
+export function toCanonicalEmail(email: string): string {
   if (!email) {
     return "bogusEmail@example.com";
   }
