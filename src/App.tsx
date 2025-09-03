@@ -1,3 +1,4 @@
+import { createContext, useContext, useState } from 'react';
 import { BrowserRouter as Router , Routes, Route } from 'react-router-dom';
 import ProtectedRoute from "./components/ProtectedRoute";
 import HomePage from "./pages/HomePage";
@@ -11,36 +12,70 @@ import MissionPage from './pages/MissionPage';
 import DonatePage from './pages/DonatePage';
 import FinancesPage from './pages/FinancesPage';
 
+type UserCacheType = {
+  isPhoney: boolean;
+  isAdmin: boolean;
+  isSuperAdmin: boolean;
+  email: string;
+  canonicalEmail: string;
+  userId: string;
+};
+
+type UserContextType = {
+  userCache: UserCacheType;
+  setUserCache: React.Dispatch<React.SetStateAction<UserCacheType>>;
+};
+
+const bogusUserInfo = {
+  isPhoney: true,
+  isAdmin: false,
+  isSuperAdmin: false,
+  email: "canonicalBogusEmail+123@gmail.com",
+  canonicalEmail: "canonicalBogusEmail@gmail.com",
+  userId: "dsoowr989rhsfaflweru_BOGUS"
+};
+
+export const UserContext = createContext<UserContextType>({
+  userCache: bogusUserInfo,
+  setUserCache: () => {}, // This will be replaced by the real setter in the provider
+});
+
 function App() {
+  const [ userCache, setUserCache ] = useState(bogusUserInfo);
+  const combinedStateAndSetter = { userCache, setUserCache };
+  console.log("In App, userCache=", userCache);
+
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/logout" element={<LogoutPage />} />
-        <Route path="/profile" element={<ProfilePage />} />
-        <Route
-          path="/suggestion"
-          element={
-            <ProtectedRoute>
-              <SuggestionPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/mission" element={<MissionPage />} />
-        <Route path="/finances" element={<FinancesPage />} />
-        <Route path="/donate" element={<DonatePage />} />
-        <Route
-          path="/todos"
-          element={
-            <ProtectedRoute>
-              <Todos />
-            </ProtectedRoute>
-          }
-        />
-        <Route path="/sketch" element={<SketchPage />} />
-      </Routes>
-    </Router>
+    <UserContext.Provider value={combinedStateAndSetter}> {/* Placeholder value */}
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/logout" element={<LogoutPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route
+            path="/suggestion"
+            element={
+              <ProtectedRoute>
+                <SuggestionPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/mission" element={<MissionPage />} />
+          <Route path="/finances" element={<FinancesPage />} />
+          <Route path="/donate" element={<DonatePage />} />
+          <Route
+            path="/todos"
+            element={
+              <ProtectedRoute>
+                <Todos />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/sketch" element={<SketchPage />} />
+        </Routes>
+      </Router>
+      </UserContext.Provider>
   );
 }
 

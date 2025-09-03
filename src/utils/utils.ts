@@ -19,6 +19,42 @@ export async function haveLoggedInUser(): Promise<boolean> {
     }
 }
 
+export async function cacheUserInfo(setUserCache: (arg0: { isPhoney: boolean; isAdmin: boolean; isSuperAdmin: boolean; email: string | undefined; canonicalEmail: string; userId: string; }) => void) {
+    const showUserInfo = true;
+    try {
+      const { username, userId, signInDetails } = await getCurrentUser();
+      if (showUserInfo) {
+        console.log("in utils.ts, Got current user");
+        console.log("ut: Username:", username);
+        console.log("ut: User ID:", userId);
+        console.log("ut: loginId:", signInDetails?.loginId);
+      }
+      const email = signInDetails?.loginId;
+      const canonical = toCanonicalEmail(email);
+      const userInfo = {
+        isPhoney: false,
+        isAdmin: true,
+        isSuperAdmin: true,
+        email: email,
+        canonicalEmail: canonical,
+        userId: userId,
+      }
+      setUserCache(userInfo);
+    } catch (error) {
+      // Fallback to a bogus user if there's an error
+      console.error("ut: Error in cacheUserInfo(); installing bogus user into context", error);
+      const bogusUserInfo = {
+        isPhoney: true,
+        isAdmin: false,
+        isSuperAdmin: false,
+        email: "canonicalEmail+BOGUS@gmail.com",
+        canonicalEmail: "canonicalEmail@gmail.com",
+        userId: "dsoowr989rhsfaflweru_BOGUS"
+      };
+      setUserCache(bogusUserInfo);
+    }
+}
+
 export function toCanonicalEmail(email: string | undefined): string {
   if (!email) {
     return "bogusEmail@example.com";

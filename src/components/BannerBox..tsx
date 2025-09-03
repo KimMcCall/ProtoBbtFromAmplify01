@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser } from 'aws-amplify/auth';
 import { Flex, Menu, MenuItem, Avatar } from '@aws-amplify/ui-react';
-import { toCanonicalEmail } from '../utils/utils';
+import { cacheUserInfo } from '../utils/utils';
+import { UserContext } from '../App';
 
 const box: React.CSSProperties = {
   height: '46px',
@@ -26,57 +26,37 @@ const loginDiv: React.CSSProperties = {
 };
 
 function BannerBox() {
-  const defaultUserInfo = {
-    isPhoney: true,
-    isAdmin: true,
-    isOwner: true,
-    canonicalEmail: "canonicalEmail@gmail.com",
-    userId: "dsoowr989rhsfaflweru"
-  };
-  const [user, setUser] = useState(defaultUserInfo);
   const [loading, setLoading] = useState(true);
+
+
+  const { userCache, setUserCache } = useContext(UserContext);
+  const { isPhoney } = userCache;
+  console.log("In BannerBox, isPhoney=", isPhoney);
+
 
   const navigate = useNavigate();
 
   useEffect(() => {
       const fetchCurrentUser = async () => {
           try {
-            console.log("BB: calling getCurrentUser()");
-            const currentUser = await getCurrentUser();
-            const email = currentUser.signInDetails?.loginId;
-            console.log("BB: got currentUser; email=", email);
-            const canonical = toCanonicalEmail(email);
-            const userInfo = {
-              isPhoney: false,
-              isAdmin: true,
-              isOwner: true,
-              canonicalEmail: canonical,
-              userId: currentUser.userId,
-            }
-            setUser(userInfo);
+            cacheUserInfo(setUserCache)
           } catch (error) {
-              console.error('BB: Error fetching current user:', error);
-              const userInfo = {
-                isPhoney: true,
-                isAdmin: true,
-                isOwner: true,
-                canonicalEmail: "bogusEmail@example.com",
-                userId: "dsoowr989rhsfaflweru_BOGUS",
-              }
-              setUser(userInfo);
+            console.error('BB: Error fetching current user:', error);
+            const { canonicalEmail } = userCache;
+            console.log("BB: userContext.canonicalEmail=", canonicalEmail);
           } finally {
               setLoading(false);
           }
       };
 
       fetchCurrentUser();
-  }, [user.isPhoney]);
+  }, [userCache.email]);
 
   const goHome = () => {
     navigate("/", { replace: true });
   };
 
-  const editProfile = () => {
+  const goToProfile = () => {
     navigate("/profile");
   };
 
@@ -87,9 +67,6 @@ function BannerBox() {
   const goToLogInPage = () => {
     navigate("/login");
   };
-  
-  const {isPhoney, isAdmin, isOwner, canonicalEmail, userId} = user;
-  console.log("BB: userId=", userId, " canonicalEmail=", canonicalEmail, " isPhoney=", isPhoney, " isAdmin=", isAdmin, " isOwner=", isOwner);
 
   return (
     <div id="banner-box" style={box}>
@@ -117,7 +94,7 @@ function BannerBox() {
               <Avatar size="large" variation="filled" />
             }
           >
-            <MenuItem onClick={() => {editProfile()}}>Edit Profile</MenuItem>
+            <MenuItem onClick={() => {goToProfile()}}>Profile</MenuItem>
             <MenuItem onClick={() => {logOff()}}>Log Off</MenuItem>
           </Menu>
           }
