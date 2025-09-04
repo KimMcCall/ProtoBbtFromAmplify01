@@ -90,6 +90,29 @@ const updateNameOfMasterUser = (canonicalEmail: string, /*newName: string*/) => 
   console.log("In updateNameOfMasgerUser, aborting")
 }
 
+const testGet = () => {
+  console.log("running test!")
+  dbClient.models.RegisteredUser.get({id: 'fb54f3eb-7967-4b8b-ac82-fd256ff6c598'})
+  .then((response) => {
+    const user = response.data;
+    // if no match, returns user=null and errors=undefined
+    console.log("Found User: ", user);
+    console.log('with errors: ', response?.errors)
+  });
+};
+
+const testSecondaryIndex = () => {
+  dbClient.models.RegisteredUser.listByCanonicalEmail({
+    canonicalEmail: 'mccall.kim@gmail.com',
+  })
+  .then((response) => {
+    const user = response.data;
+    // if no match, returns user=null and errors=undefined
+    console.log("Found User: ", user);
+    console.log('with errors: ', response?.errors)
+  });
+}
+
 function PlayPage01() { 
   const [ emailToCreate, setEMailToCreate ] = useState(eMailToFind);
   const [ userList, setUserList ] = useState("");
@@ -115,7 +138,7 @@ function PlayPage01() {
       console.error("Error listing MasterUsers", error);
       setUserList("Error listing MasterUsers");
     });
-  }
+  };
 
   const showMatchingMasterUser = (cEmail: string) => {
     const matchingUser = findMatchingMasterUser(cEmail);
@@ -151,7 +174,7 @@ function PlayPage01() {
       console.error("Error listing MasterUsers", error);
       setFoundMasterUser("Error listing MasterUsers");
     });
-  }
+  };
 
   return (
     <PageWrapper>
@@ -205,6 +228,12 @@ function PlayPage01() {
                 placeholder="Wait for click"
                 width="400px"
               />
+            </Flex>
+          </div>
+          <div style={showDiv}>
+             <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
+              <button onClick={() => testGet()}>Test get()</button>
+              <button onClick={() => testSecondaryIndex()}>Test Secondary Index()</button>
             </Flex>
           </div>
         </div>

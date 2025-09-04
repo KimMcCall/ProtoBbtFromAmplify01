@@ -16,10 +16,14 @@ const schema = a.schema({
   RegisteredUser: a
     .model({
       name: a.string(),
-      canonicalEmail: a.string(),
+      canonicalEmail: a.string().required(),
       userId: a.string(),
       isBanned: a.boolean().default(false),
     })
+    .secondaryIndexes((index) => [
+      index("canonicalEmail")
+      .queryField("listByCanonicalEmail"),
+    ])
     .authorization((allow) => [allow.publicApiKey()]),
   MasterUser: a
     .model({
