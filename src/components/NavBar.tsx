@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Flex } from '@aws-amplify/ui-react';
+import './NavBar.css';
 
 const bar: React.CSSProperties = {
   height: '730px',
@@ -32,14 +33,14 @@ function NavBar() {
         wrap="nowrap"
         gap="1rem"
       >
-        <div onClick={() => {handleButtonClick("/")}} style={buttonDiv}>Home</div>
-        <div onClick={() => {handleButtonClick("/mission")}} style={buttonDiv}>Mission</div>
-        <div onClick={() => {handleButtonClick("/suggestion")}} style={buttonDiv}>Suggest</div>
-        <div onClick={() => {handleButtonClick("/finances")}} style={buttonDiv}>Finances</div>
-        <div onClick={() => {handleButtonClick("/donate")}} style={buttonDiv}>Donate</div>
-        <div onClick={() => {handleButtonClick("/play01")}} style={buttonDiv}>Play 1</div>
-        <div onClick={() => {handleButtonClick("/play02")}} style={buttonDiv}>Play2</div>
-        <div onClick={() => {handleButtonClick("/todos")}} style={buttonDiv}>ToDos</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/")}} style={buttonDiv}>Home</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/mission")}} style={buttonDiv}>Mission</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/suggestion")}} style={buttonDiv}>Suggest</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/finances")}} style={buttonDiv}>Finances</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/donate")}} style={buttonDiv}>Donate</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/play01")}} style={buttonDiv}>Play 1</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/play02")}} style={buttonDiv}>Play2</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/todos")}} style={buttonDiv}>ToDos</div>
       </Flex>
     </div>
   );

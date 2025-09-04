@@ -1,0 +1,7 @@
+
+.navBarItem {
+  padding-left: 4px;
+}
+.navBarItem:hover {
+  background-color: #c5ccf5;
+}
