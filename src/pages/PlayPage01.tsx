@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 // Define the MasterUser type
 type MasterUserType = {
-  name: string;
+  id: string;
   canonicalEmail: string;
   userId: string;
 };
@@ -64,7 +64,6 @@ function findMatchingMasterUser(cEmail: string): MasterUserType | null {
 
 const createMasterUser = (eEmail: string) => {
   const stuctToCreate = {
-    name: "Kim McCall",
     canonicalEmail: eEmail,
     userId: "userId_" + Math.floor(Math.random() * 1000000).toString(),
   };
@@ -88,7 +87,7 @@ const updateNameOfMasterUser = (canonicalEmail: string, /*newName: string*/) => 
   }
   // const recordId = matchingUser.id;
   // dbClient.models.MasterUser.update( )
-
+  console.log("In updateNameOfMasgerUser, aborting")
 }
 
 function PlayPage01() { 
@@ -107,7 +106,8 @@ function PlayPage01() {
       }
       let newContent = "";
       masterUsers.forEach((mu) => {
-        newContent += `Name: ${mu.name}, Email: ${mu.canonicalEmail}, UserId: ${mu.userId}\n`;
+        console.log("in listMUs; mu:", mu);
+        newContent += `Name: ***TBD***, Email: ${mu.canonicalEmail}, UserId: ${mu.userId}\n`;
       });
       setUserList(newContent);
     })
@@ -177,6 +177,7 @@ function PlayPage01() {
               <TextAreaField
                 label=""
                 value={userList}
+                readOnly
                 placeholder="Master User details will appear here"
                 width="800px"
                 height="180px" />
@@ -188,11 +189,12 @@ function PlayPage01() {
               <TextField
                 label=""
                 value={foundMasterUser}
+                readOnly
                 placeholder="Wait for click"
                 width="400px"
               />
             </Flex>
-          </div> /// newName
+          </div>
           <div style={showDiv}>
              <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
               <button onClick={() => updateNameOfMasterUser(emailToCreate, /*newName*/)}>Update Name</button>
