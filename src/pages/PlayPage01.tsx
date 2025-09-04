@@ -106,9 +106,12 @@ const testSecondaryIndex = () => {
     canonicalEmail: 'mccall.kim@gmail.com',
   })
   .then((response) => {
-    const user = response.data;
-    // if no match, returns user=null and errors=undefined
-    console.log("Found User: ", user);
+    const users = response.data; // an array
+    if (users.length < 1) {
+      return;
+    }
+    const user = users[0];
+    console.log("Found RegisteredUser: ", user); // contains id and everything
     console.log('with errors: ', response?.errors)
   });
 }
