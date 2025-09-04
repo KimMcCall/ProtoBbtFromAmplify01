@@ -26,8 +26,6 @@ const schema = a.schema({
     .authorization((allow) => [allow.publicApiKey()]),
   MasterUser: a
     .model({
-      id: a.id(),
-      name: a.string(),
       canonicalEmail: a.string(),
       userId: a.string(),
     })
