@@ -17,7 +17,6 @@ const schema = a.schema({
     .model({
       name: a.string(),
       canonicalEmail: a.string().required(),
-      userId: a.string(),
       isBanned: a.boolean().default(false),
     })
     .secondaryIndexes((index) => [
