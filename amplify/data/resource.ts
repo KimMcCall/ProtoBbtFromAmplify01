@@ -13,27 +13,12 @@ const schema = a.schema({
       isDone: a.boolean().default(false), // Example of adding a new boolean field
     })
     .authorization((allow) => [allow.publicApiKey()]),
-  SaleItem: a
-    .model({
-      name: a.string(),
-      code: a.string(),
-      price: a.float(),
-    })
-    .authorization((allow) => [allow.publicApiKey()]),
   RegisteredUser: a
     .model({
       name: a.string(),
       canonicalEmail: a.string(),
       userId: a.string(),
       isBanned: a.boolean().default(false),
-    })
-    .authorization((allow) => [allow.publicApiKey()]),
-  BannedUser: a
-    .model({
-      userId: a.string(),
-      canonicalEmail: a.string(),
-      explanation: a.string(),
-      submissionId: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
   MasterUser: a
