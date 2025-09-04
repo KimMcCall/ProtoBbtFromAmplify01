@@ -177,7 +177,6 @@ function PlayPage01() {
               <TextAreaField
                 label=""
                 value={userList}
-                onChange={(e) =>{}}
                 placeholder="Master User details will appear here"
                 width="800px"
                 height="180px" />
