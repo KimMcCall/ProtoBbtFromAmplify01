@@ -1,7 +1,7 @@
-import { Navigate } from 'react-router-dom';
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css'; // Import default styles
 import PageWrapper from '../components/PageWrapper';
+import LoggedInPage from './LoggedInPage';
 
 const spacer: React.CSSProperties = {
   margin: '120px',
@@ -19,7 +19,7 @@ function LoginPage() {
       <div style={spacer}>
         <Authenticator>
           {({ signOut, user }) => (
-            shouldShowUserInfo
+            shouldShowUserInfo || !user
             ?
               (
               <div>
@@ -31,7 +31,7 @@ function LoginPage() {
               )
             :
               (
-              <Navigate to="/" replace />
+              <LoggedInPage {...user} />
               )
           )}
         </Authenticator>
