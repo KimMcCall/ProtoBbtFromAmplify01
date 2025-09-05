@@ -38,7 +38,7 @@ function NavBar() {
       >
         <div className='navBarItem' onClick={() => {handleButtonClick("/")}} style={buttonDiv}>Home</div>
         <div className='navBarItem' onClick={() => {handleButtonClick("/mission")}} style={buttonDiv}>Mission</div>
-        <div className='navBarItem' onClick={() => {handleButtonClick("/suggestion")}} style={buttonDiv}>Suggest</div>
+        <div className='navBarItem' onClick={() => {handleButtonClick("/suggest")}} style={buttonDiv}>Suggest</div>
         <div className='navBarItem' onClick={() => {handleButtonClick("/finances")}} style={buttonDiv}>Finances</div>
         <div className='navBarItem' onClick={() => {handleButtonClick("/donate")}} style={buttonDiv}>Donate</div>
         {isSuperAdmin && <div className='navBarItem' onClick={() => {handleButtonClick("/play01")}} style={buttonDiv}>Play 1</div>}

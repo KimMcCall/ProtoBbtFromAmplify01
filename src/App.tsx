@@ -56,7 +56,7 @@ function App() {
           <Route path="/logout" element={<LogoutPage />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route
-            path="/suggestion"
+            path="/suggest"
             element={
               <ProtectedRoute>
                 <SuggestionPage />
