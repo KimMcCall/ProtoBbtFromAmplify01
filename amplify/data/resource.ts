@@ -15,6 +15,7 @@ const schema = a.schema({
     .authorization((allow) => [allow.publicApiKey()]),
   RegisteredUser: a
     .model({
+      authId: a.string(),
       name: a.string(),
       canonicalEmail: a.string().required(),
       isSuperAdmin: a.boolean().default(false),
@@ -22,8 +23,8 @@ const schema = a.schema({
       isBanned: a.boolean().default(false),
     })
     .secondaryIndexes((index) => [
-      index("canonicalEmail")
-      .queryField("listByCanonicalEmail"),
+      index("authId").queryField("listByAuthId"),
+      index("canonicalEmail").queryField("listByCanonicalEmail"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
   MasterUser: a
