@@ -12,6 +12,7 @@ const schema = a.schema({
       authId: a.string(),
       name: a.string(),
       canonicalEmail: a.string().required(),
+      initialEmail: a.string(),
       isSuperAdmin: a.boolean().default(false),
       isAdmin: a.boolean().default(false),
       isBanned: a.boolean().default(false),

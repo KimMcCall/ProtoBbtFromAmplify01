@@ -3,22 +3,26 @@ import type { PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store'
 
 // Define a type for the slice state
-interface UserInfoState {
+export interface UserInfoState {
   id: string
+  authId: string
   name: string
   canonicalEmail: string
-  isAdmin: boolean
+  initialEmail: string
   isSuperAdmin: boolean
+  isAdmin: boolean
   isBanned: boolean
 }
 
 // Define the initial state using that type
 const initialState: UserInfoState = {
   id: '',
+  authId: '',
   name: 'Unknoown Name',
   canonicalEmail: 'bogus@example.com',
-  isAdmin: false,
+  initialEmail: 'bogus@example.com',
   isSuperAdmin: false,
+  isAdmin: false,
   isBanned: false,
 }
 
@@ -30,8 +34,10 @@ export const userInfoSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<UserInfoState>) => {
       const newUser = action.payload;
       state.id = newUser.id;
+      state.authId = newUser.authId;
       state.name = newUser.name;
       state.canonicalEmail = newUser.canonicalEmail;
+      state.initialEmail = newUser.initialEmail;
       state.isAdmin = newUser.isAdmin;
       state.isSuperAdmin = newUser.isSuperAdmin;
       state.isBanned = newUser.isBanned;
@@ -49,8 +55,10 @@ export const { setUserInfo, setAsAdmin, setAsSuperAdmin } = userInfoSlice.action
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectUserId = (state: RootState) => state.userInfo.id
+export const selectAuthId = (state: RootState) => state.userInfo.authId
 export const selectUserName = (state: RootState) => state.userInfo.name
 export const selectCanonicalEmail = (state: RootState) => state.userInfo.canonicalEmail
+export const selectInitialEmail = (state: RootState) => state.userInfo.initialEmail
 export const selectIsAdmin = (state: RootState) => state.userInfo.isAdmin
 export const selectIsSuperAdmin = (state: RootState) => state.userInfo.isSuperAdmin
 export const selectIsBanned = (state: RootState) => state.userInfo.isBanned
