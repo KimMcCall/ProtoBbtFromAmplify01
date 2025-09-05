@@ -1,5 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Flex } from '@aws-amplify/ui-react';
+import { useAppSelector } from "../app/hooks";
+import { selectIsSuperAdmin } from "../features/userInfo/userInfoSlice";
 import './NavBar.css';
 
 const bar: React.CSSProperties = {
@@ -19,6 +21,7 @@ const buttonDiv: React.CSSProperties = {
 
 function NavBar() {
   const navigate = useNavigate();
+  const isSuperAdmin =  useAppSelector(selectIsSuperAdmin);
 
   const handleButtonClick = (newDir: string) => {
     navigate(newDir); // Navigate to the new route
@@ -38,9 +41,9 @@ function NavBar() {
         <div className='navBarItem' onClick={() => {handleButtonClick("/suggestion")}} style={buttonDiv}>Suggest</div>
         <div className='navBarItem' onClick={() => {handleButtonClick("/finances")}} style={buttonDiv}>Finances</div>
         <div className='navBarItem' onClick={() => {handleButtonClick("/donate")}} style={buttonDiv}>Donate</div>
-        <div className='navBarItem' onClick={() => {handleButtonClick("/play01")}} style={buttonDiv}>Play 1</div>
-        <div className='navBarItem' onClick={() => {handleButtonClick("/play02")}} style={buttonDiv}>Play2</div>
-        <div className='navBarItem' onClick={() => {handleButtonClick("/todos")}} style={buttonDiv}>ToDos</div>
+        {isSuperAdmin && <div className='navBarItem' onClick={() => {handleButtonClick("/play01")}} style={buttonDiv}>Play 1</div>}
+        {isSuperAdmin && <div className='navBarItem' onClick={() => {handleButtonClick("/play02")}} style={buttonDiv}>Play2</div>}
+        {isSuperAdmin && <div className='navBarItem' onClick={() => {handleButtonClick("/todos")}} style={buttonDiv}>ToDos</div>}
       </Flex>
     </div>
   );

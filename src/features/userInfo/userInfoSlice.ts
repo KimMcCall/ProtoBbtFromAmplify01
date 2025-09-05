@@ -14,7 +14,7 @@ interface UserInfoState {
 
 // Define the initial state using that type
 const initialState: UserInfoState = {
-  id: 'bogus_id_12345',
+  id: '',
   name: 'Unknoown Name',
   canonicalEmail: 'bogus@example.com',
   isAdmin: false,
@@ -36,10 +36,16 @@ export const userInfoSlice = createSlice({
       state.isSuperAdmin = newUser.isSuperAdmin;
       state.isBanned = newUser.isBanned;
     },
+    setAsAdmin: (state, action: PayloadAction<boolean>) => {
+      state.isAdmin = action.payload;
+    },
+    setAsSuperAdmin: (state, action: PayloadAction<boolean>) => {
+      state.isSuperAdmin = action.payload;
+    },
   },
 })
 
-export const { setUserInfo } = userInfoSlice.actions;
+export const { setUserInfo, setAsAdmin, setAsSuperAdmin } = userInfoSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectUserId = (state: RootState) => state.userInfo.id
