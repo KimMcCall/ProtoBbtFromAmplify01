@@ -9,13 +9,13 @@ specifies that any user authenticated via an API key can "create", "read",
 const schema = a.schema({
   RegisteredUser: a
     .model({
-      authId: a.string(),
+      authId: a.string().required(),
       name: a.string(),
       canonicalEmail: a.string().required(),
-      initialEmail: a.string(),
-      isSuperAdmin: a.boolean().default(false),
-      isAdmin: a.boolean().default(false),
-      isBanned: a.boolean().default(false),
+      initialEmail: a.string().required(),
+      isSuperAdmin: a.boolean().required().default(false),
+      isAdmin: a.boolean().required().default(false),
+      isBanned: a.boolean().required().default(false),
     })
     .secondaryIndexes((index) => [
       index("authId").queryField("listByAuthId"),

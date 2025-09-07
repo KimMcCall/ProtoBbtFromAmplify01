@@ -28,6 +28,25 @@ function PlayPage02() {
     setUserStatus(computedStatus);
   }
 
+  /*
+  const checkDbForCorruption = async () => {
+    await dbClient.models.RegisteredUser.list().then(
+      (response) => {
+        const allRecords = response.data;
+        const authIds = [];
+        const testElement = (record) => {
+          authIds.push(record.authId)});
+        };
+        // if (authIds.find())
+        allRecords.forEach((record) => {
+      testElement(record);
+      }}
+    );
+    const computedStatus: UserStatusType = await testComputeStatus();
+    setUserStatus(computedStatus);
+  }
+  */
+
   const expectedCEmail = "mccall.kim@gmail.com"
 
   const simpleTest = async (): Promise<number>  => {
@@ -138,6 +157,7 @@ function PlayPage02() {
         </Flex>
         <Flex direction={"row"}>
           <button onClick={() => toggleCEmail()}>{String(clearOrFill)} cEmail</button>
+          <button onClick={() => toggleCEmail()}>Czech DB for corruption</button>
         </Flex>
         <Flex direction={"row"}>
           <button onClick={() => dispatch(setNextPath(savedPath))}>Set as next path</button>

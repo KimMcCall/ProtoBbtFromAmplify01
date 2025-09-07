@@ -107,13 +107,13 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
     async (response) => {
       const records = response.data;
       if (records.length === 0) {
-        console.log("1) in OUTER records.length === 0 branch");
+        console.log(`1) in OUTER records.length === 0 branch (No record has authId: "${submittedAuthId}")`);
         // There is no record with this authId;
         // Must be 'newRegistrant' || 'alias' || 'bannedAlias'
         const innerResult = await innerComputeStatus(submittedEmail);
         retVal = innerResult;
       } else if (records.length === 1) {
-        console.log("in OUTER records.length === 1 branch")
+        console.log(`Иn OUTER records.length === 1 branch (Оне record has authId: "${submittedAuthId}")`)
         // Normal case of one record with this authId
         // Must be 'returningRegistrant' || 'superAdmin' || 'admin' || 'banned' || 'repeatedCall'
           foundUser = records[0];
@@ -136,10 +136,11 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
             retVal = 'repeatedCall';
             return undefined;
           } else {
-            console.log('NOT recdent')
+            console.log('NOT recdent');
             if (foundUser.initialEmail != submittedEmail) {
-              console.log(`returning: corrupted DB w/ bad initialEmail: ${foundUser.initialEmail}`)
-              return `corrupted DB w/ bad initialEmail: ${foundUser.initialEmail}`;
+              console.log(`returning: corrupted DB w/ bad initialEmail: ${foundUser.initialEmail}`);
+              retVal = 'corrupted DB';
+              return;
             }
             console.log('returning "returningRegistrant"')
             retVal = 'returningRegistrant';
