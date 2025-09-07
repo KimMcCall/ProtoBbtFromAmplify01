@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { clearUserInfo, setUserInfo, UserInfoState } from "../features/userInfo/userInfoSlice";
 import { AuthUser } from "aws-amplify/auth";
-import { computeStatus, toCanonicalEmail } from "../utils/utils";
+import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { dbClient } from "../main";
 import { useEffect } from "react";
 // import { dbClient } from "../main";
@@ -47,7 +47,7 @@ function LoggedInPage(user: AuthUser) {
 
   useEffect(() => {
     const handleLoginInfo = async () => {
-      const status = await computeStatus(submittedAuthId, submittedEmail);
+      const status: UserStatusType = await computeUserStatus(submittedAuthId, submittedEmail);
 
       let memoContent = `userId: ${userId};\nusername: ${username};`;
       memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
@@ -65,15 +65,15 @@ function LoggedInPage(user: AuthUser) {
       if (status === 'alias') {
         dispatch(clearUserInfo());
         dispatch(setNextPath('/alias'));
-        navigate('/alias', { replace: true });
+        navigate('/logout', { replace: true });
       } else if (status === 'banned') {
         dispatch(clearUserInfo());
         dispatch(setNextPath('/banned'));
-        navigate('/banned', { replace: true });
+        navigate('/logout', { replace: true });
       } else  if (status === 'bannedAlias') {
         dispatch(clearUserInfo());
         dispatch(setNextPath('/bannedAlias'));
-        navigate('/bannedAlias', { replace: true });
+        navigate('/logout', { replace: true });
       } else if (returning) {
         // Don't need to do anything more than let them in and set the redux state
         const initialEmail = signInDetails?.loginId || '';
@@ -92,6 +92,28 @@ function LoggedInPage(user: AuthUser) {
       } else if (status === 'repeatedCall') {
         // Don't need to do anything except get them back on the right page
         navigate(newPath, { replace: true });
+      } else if (status === 'uninitialized') {
+        // YIIKES!! let's make a Memo and ask the user to notify us
+        let memoContent = `computeUserStatus() returned: '${status}';`;
+        memoContent += `\nusername: ${username};`;
+        memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
+        const memoData = {
+          subject: 'BadUserStatus',
+          content: memoContent,
+        };
+        dbClient.models.Memo.create(memoData);
+        navigate('/uninitializedUserStatus', { replace: true });
+      } else if (status === 'corrupted DB') {
+        // YIIKES!! let's make a Memo and ask the user to notify us
+        let memoContent = `computeUserStatus() returned: '${status}';`;
+        memoContent += `\nusername: ${username};`;
+        memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
+        const memoData = {
+          subject: 'BadUserStatus',
+          content: memoContent,
+        };
+        dbClient.models.Memo.create(memoData);
+        navigate('/corruptedDb', { replace: true });
       } else if (status === 'newRegistrant') {
         //
         const stuctToCreate = {

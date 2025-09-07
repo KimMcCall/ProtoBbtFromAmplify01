@@ -6,7 +6,7 @@ import PageWrapper from "../components/PageWrapper";
 import { selectIsSuperAdmin, setAsSuperAdmin } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
-import { computeStatus, toCanonicalEmail } from "../utils/utils";
+import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
 
 function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/donate");
@@ -24,7 +24,7 @@ function PlayPage02() {
   const goThere = () => { navigateTo(newPath); }
 
   const computeAndSetStatus = async () => {
-    const computedStatus = await testComputeStatus();
+    const computedStatus: UserStatusType = await testComputeStatus();
     setUserStatus(computedStatus);
   }
 
@@ -48,8 +48,8 @@ function PlayPage02() {
      return retVal;
   }
 
-  const testComputeStatus = async (): Promise<string> => {
-    let retVal = 'nobody overrode retVal';
+  const testComputeStatus = async (): Promise<UserStatusType> => {
+    let retVal: UserStatusType = 'uninitialized';
     const testNormal = false; // Done!
     const testSA = false; // Done!
     const testNewRegistrant = false; // Done!
@@ -97,11 +97,11 @@ function PlayPage02() {
       submitteduthId = repeatAuthId;
       submittedEmail = repeatEmail;
     } else {
-      retVal = 'No Test Chosen'
+      retVal = 'uninitialized';
       return retVal;
     }
 
-    retVal = await computeStatus(submitteduthId, submittedEmail);
+    retVal = await computeUserStatus(submitteduthId, submittedEmail);
     return retVal;
   }
 

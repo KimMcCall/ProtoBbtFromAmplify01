@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { Flex, Menu, MenuItem, Avatar } from '@aws-amplify/ui-react';
 import { cacheUserInfo } from '../utils/utils';
 import { UserContext } from '../App';
-import { useAppDispatch } from '../app/hooks';
-import { setNextPath } from '../features/navigation/navigationSlice';
+import { selectIsSuperAdmin } from '../features/userInfo/userInfoSlice';
+import { useAppSelector } from '../app/hooks';
 
 const box: React.CSSProperties = {
   height: '46px',
@@ -31,9 +31,6 @@ function BannerBox() {
   const [loading, setLoading] = useState(true);
 
   const { userCache, setUserCache } = useContext(UserContext);
-  const { isPhoney } = userCache;
-  console.log("In BannerBox, isPhoney=", isPhoney);
-
 
   const navigate = useNavigate();
 
@@ -64,13 +61,8 @@ function BannerBox() {
   const logOff = () => {
     navigate("/logout", { replace: true });
   };
-  
-  const dispatch = useAppDispatch();
 
   const goToLogInPage = () => {
-    const currentPath = window.location.pathname;
-    console.log("pathname: ", currentPath)
-    dispatch(setNextPath(currentPath));
     navigate("/login");
   };
 
@@ -78,6 +70,7 @@ function BannerBox() {
   if (loading) {
     console.log("BB: Still loading...");
   }
+  const isSuperAdmin =  useAppSelector(selectIsSuperAdmin);
 
   return (
     <div id="banner-box" style={box}>
@@ -97,7 +90,7 @@ function BannerBox() {
           null
         */}
         
-        {isPhoney ?
+        {isSuperAdmin ?
           <div onClick={() => goToLogInPage()} style={loginDiv}>Log In</div>
         :
           <Menu menuAlign="center"

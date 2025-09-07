@@ -16,6 +16,8 @@ import PlayPage02 from './pages/PlayPage02';
 import AliasPage from './pages/AliasPage';
 import BannedPage from './pages/BannedPage';
 import BannedAliasPage from './pages/BannedAliasPage';
+import CorruptedDbPage from './pages/CorruptedDbPage';
+import UninitializedUserStatusPage from './pages/UninitializedUserStatusPage';
 
 type UserCacheType = {
   isPhoney: boolean;
@@ -72,6 +74,8 @@ function App() {
           <Route path="/alias" element={<AliasPage />} />
           <Route path="/banned" element={<BannedPage />} />
           <Route path="/bannedAlias" element={<BannedAliasPage />} />
+          <Route path="/corruptedDb" element={<CorruptedDbPage />} />
+          <Route path="/uninitializedUserStatus" element={<UninitializedUserStatusPage />} />
           <Route
             path="/todos"
             element={

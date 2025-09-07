@@ -2,6 +2,20 @@
 import { getCurrentUser } from "aws-amplify/auth";
 import { dbClient } from "../main";
 
+type UserStatus =
+"returningRegistrant" |
+"superAdmin" |
+"admin" |
+"newRegistrant" |
+"alias" |
+"banned" |
+"bannedAlias" |
+"repeatedCall"  |
+"uninitialized"|
+"corrupted DB";
+
+export type UserStatusType = UserStatus;
+
 export async function haveLoggedInUser(): Promise<boolean> {
     const showUserInfo = true;
     try {
@@ -82,8 +96,8 @@ export function isRecent(timeString: string, nSecs: number) {
   return now < horizon;
 }
 
-export const computeStatus = async (submittedAuthId: string, submittedEmail: string): Promise<string> => {
-  let retVal = 'nobody overrode retVal';
+export const computeUserStatus = async (submittedAuthId: string, submittedEmail: string): Promise<UserStatus> => {
+  let retVal: UserStatus = 'uninitialized';
 
   let foundUser = null;
 
@@ -133,8 +147,9 @@ export const computeStatus = async (submittedAuthId: string, submittedEmail: str
           }
       } else {
         // We have a bug that alloweed us to have multiple records with same authId
-        retVal = 'corrupted DB w/ multiple records with same authId';
-        return undefined;
+        retVal = 'corrupted DB';
+        console.log('corrupted DB w/ multiple records with same authId')
+        return retVal;
       }
     }
   )
@@ -142,8 +157,8 @@ export const computeStatus = async (submittedAuthId: string, submittedEmail: str
   return retVal;
 }
 
-const innerComputeStatus = async (email: string): Promise<string>  => {
-  let retVal = 'in innerComputeStatus, retVal never altered';
+const innerComputeStatus = async (email: string): Promise<UserStatus>  => {
+  let retVal: UserStatus = 'uninitialized';
   const cEmail = toCanonicalEmail(email);
   // if there's a record with this canonicalEmal, then we're dealing with an alias
   console.log(`2) listing records with canonicalEmail: ${cEmail}`);
