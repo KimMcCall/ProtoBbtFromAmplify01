@@ -1,9 +1,6 @@
-import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Flex, Menu, MenuItem, Avatar } from '@aws-amplify/ui-react';
-import { cacheUserInfo } from '../utils/utils';
-import { UserContext } from '../App';
-import { selectIsSuperAdmin } from '../features/userInfo/userInfoSlice';
+import { selectCanonicalEmail } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 
 const box: React.CSSProperties = {
@@ -28,27 +25,7 @@ const loginDiv: React.CSSProperties = {
 };
 
 function BannerBox() {
-  const [loading, setLoading] = useState(true);
-
-  const { userCache, setUserCache } = useContext(UserContext);
-
   const navigate = useNavigate();
-
-  useEffect(() => {
-      const fetchCurrentUser = async () => {
-          try {
-            cacheUserInfo(setUserCache)
-          } catch (error) {
-            console.error('BB: Error fetching current user:', error);
-            const { canonicalEmail } = userCache;
-            console.log("BB: userContext.canonicalEmail=", canonicalEmail);
-          } finally {
-              setLoading(false);
-          }
-      };
-
-      fetchCurrentUser();
-  }, [userCache.email]);
 
   const goHome = () => {
     navigate("/", { replace: true });
@@ -65,12 +42,10 @@ function BannerBox() {
   const goToLogInPage = () => {
     navigate("/login");
   };
-
-  // this is just to use the constant 'loading' so that the linter doesn't complain
-  if (loading) {
-    console.log("BB: Still loading...");
-  }
-  const isSuperAdmin =  useAppSelector(selectIsSuperAdmin);
+  
+  const cEmail =  useAppSelector(selectCanonicalEmail);
+  const isEmpty = cEmail.length === 0;
+  console.log(`BB: cEmail: ${cEmail}; isEmpty: ${isEmpty}`);
 
   return (
     <div id="banner-box" style={box}>
@@ -83,19 +58,13 @@ function BannerBox() {
         gap="1rem"
       >
         <span onClick={goHome} style={logoSpan}>TruthSquad.com</span>
-        {/*
-          loading ?
-          <div>Loading...</div>
-          :
-          null
-        */}
         
-        {isSuperAdmin ?
+        {isEmpty ?
           <div onClick={() => goToLogInPage()} style={loginDiv}>Log In</div>
         :
           <Menu menuAlign="center"
             trigger={
-              <Avatar size="large" variation="filled" />
+              <Avatar variation="filled" />
             }
           >
             <MenuItem onClick={() => {goToProfile()}}>Profile</MenuItem>

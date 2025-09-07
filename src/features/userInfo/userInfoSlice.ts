@@ -58,13 +58,23 @@ export const userInfoSlice = createSlice({
     setId: (state, action: PayloadAction<string>) => {
       state.id = action.payload;
     },
+    setCanonicalEmail: (state, action: PayloadAction<string>) => {
+      state.canonicalEmail = action.payload;
+    },
     setAsSuperAdmin: (state, action: PayloadAction<boolean>) => {
       state.isSuperAdmin = action.payload;
     },
   },
 })
 
-export const { setUserInfo, clearUserInfo, setId, setAsAdmin, setAsSuperAdmin } = userInfoSlice.actions;
+export const {
+  setUserInfo,
+  clearUserInfo,
+  setId,
+  setCanonicalEmail,
+  setAsAdmin,
+  setAsSuperAdmin
+} = userInfoSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectUserId = (state: RootState) => state.userInfo.id
@@ -75,5 +85,6 @@ export const selectInitialEmail = (state: RootState) => state.userInfo.initialEm
 export const selectIsAdmin = (state: RootState) => state.userInfo.isAdmin
 export const selectIsSuperAdmin = (state: RootState) => state.userInfo.isSuperAdmin
 export const selectIsBanned = (state: RootState) => state.userInfo.isBanned
+export const selectFullUser =  (state: RootState) => state.userInfo
 
 export default userInfoSlice.reducer

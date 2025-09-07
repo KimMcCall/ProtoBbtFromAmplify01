@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Flex, TextField } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
-import { selectIsSuperAdmin, setAsSuperAdmin } from "../features/userInfo/userInfoSlice";
+import { selectCanonicalEmail, selectIsSuperAdmin, setAsSuperAdmin, setCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
 import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
@@ -110,6 +110,18 @@ function PlayPage02() {
     setSimpleTestResult(count);
   }
 
+  const currentCEmail = useAppSelector(selectCanonicalEmail);
+
+  const toggleCEmail = () => {
+    let newValue = '';
+    if (currentCEmail.length === 0) {
+      newValue = 'random@example.com';
+    }
+    dispatch(setCanonicalEmail(newValue))
+  }
+
+  const clearOrFill = currentCEmail.length === 0 ? 'Fill' : 'Clear';
+
   return (
     <PageWrapper>
       <Flex direction="column">
@@ -123,6 +135,9 @@ function PlayPage02() {
             placeholder="??"
             width="120px"
           />
+        </Flex>
+        <Flex direction={"row"}>
+          <button onClick={() => toggleCEmail()}>{String(clearOrFill)} cEmail</button>
         </Flex>
         <Flex direction={"row"}>
           <button onClick={() => dispatch(setNextPath(savedPath))}>Set as next path</button>

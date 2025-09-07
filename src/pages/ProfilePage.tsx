@@ -1,26 +1,29 @@
-import { useContext } from 'react';
-import { UserContext } from '../App';
+import { Flex } from '@aws-amplify/ui-react';
 import PageWrapper from "../components/PageWrapper";
+import { selectFullUser } from '../features/userInfo/userInfoSlice';
+import { useAppSelector } from '../app/hooks';
 
 function ProfilePage() {
-  const cachePair = useContext(UserContext);
-  const userCache = cachePair.userCache;
-  console.log("In ProfilePage, userCache=", userCache);
-  const {isPhoney, isAdmin, isSuperAdmin, email, canonicalEmail, userId} = userCache;
+  const reduxUser =  useAppSelector(selectFullUser);
+  const {id, authId, canonicalEmail, initialEmail, name, isSuperAdmin, isAdmin, isBanned} = reduxUser;
   return (
     <PageWrapper>
-      <h1>My Profile Page</h1>
-      <div>
-        You're on the (stub of the) Profile Page.
-      </div>
-      <div>
-        `isPhoney` = {String(isPhoney)} <br />
-        `isAdmin` = {String(isAdmin)} <br />
-        `isSuperAdmin` = {String(isSuperAdmin)} <br />
-        `email` = {String(email)} <br />
-        `canonicalEmail` = {String(canonicalEmail)} <br />
-        `userId` = {String(userId)} <br />
-      </div>
+      <Flex direction={"column"}>
+        <h1>My Profile Page</h1>
+        <div>
+          You're on the (stub of the) Profile Page.
+        </div>
+        <div>
+          id: "{String(id)}"<br />
+          authId: "{String(authId)}"<br />
+          canonicalEmail: "{String(canonicalEmail)}"<br />
+          initialEmail: "{String(initialEmail)}"<br />
+          name: "{String(name)}" <br />
+          isSuperAdmin: "{String(isSuperAdmin)}"<br />
+          isAdmin: "{String(isAdmin)}"<br />
+          isBanned: "{String(isBanned)}"<br />
+        </div>
+      </Flex>
     </PageWrapper>
   );
 }
