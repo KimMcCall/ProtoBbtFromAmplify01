@@ -1,15 +1,35 @@
-import { configureStore } from '@reduxjs/toolkit'
-// import counterReducer from '../features/counter/counterSlice'
+import { combineReducers, configureStore } from '@reduxjs/toolkit'
+
+// Found the following by googling "redux toolkit resilient to page refresh"
+import { persistStore, persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+
 import navigationReducer from '../features/navigation/navigationSlice'
 import userInfoReducer from '../features/userInfo/userInfoSlice'
 
+
+
+const persistConfig = {
+  key: 'root',
+  storage,
+};
+
+const combinedReducer = combineReducers({
+  userInfo: userInfoReducer,
+  navigation: navigationReducer,
+});
+
+const persistedReducer = persistReducer(persistConfig, combinedReducer);
+
 export const store = configureStore({
   reducer: {
-    // counter: counterReducer,
-    navigation: navigationReducer,
-    userInfo: userInfoReducer,
+    // navigation: navigationReducer,
+    // userInfo: userInfoReducer,
+    persistedReducer
   },
 })
+
+export const persistor = persistStore(store);
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
 export type RootState = ReturnType<typeof store.getState>

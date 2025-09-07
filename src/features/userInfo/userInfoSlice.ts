@@ -77,15 +77,15 @@ export const {
 } = userInfoSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectUserId = (state: RootState) => state.userInfo.id
-export const selectAuthId = (state: RootState) => state.userInfo.authId
-export const selectUserName = (state: RootState) => state.userInfo.name
-export const selectCanonicalEmail = (state: RootState) => state.userInfo.canonicalEmail
-export const selectInitialEmail = (state: RootState) => state.userInfo.initialEmail
-export const selectIsAdmin = (state: RootState) => state.userInfo.isAdmin
-export const selectIsSuperAdmin = (state: RootState) => state.userInfo.isSuperAdmin
-export const selectIsBanned = (state: RootState) => state.userInfo.isBanned
-export const selectFullUser =  (state: RootState) => state.userInfo
-export const selectIsLoggedIn =  (state: RootState) => state.userInfo.canonicalEmail.length > 0
+export const selectUserId = (state: RootState) => state.persistedReducer.userInfo.id
+export const selectAuthId = (state: RootState) => state.persistedReducer.userInfo.authId
+export const selectUserName = (state: RootState) => state.persistedReducer.userInfo.name
+export const selectCanonicalEmail = (state: RootState) => state.persistedReducer.userInfo.canonicalEmail
+export const selectInitialEmail = (state: RootState) => state.persistedReducer.userInfo.initialEmail
+export const selectIsAdmin = (state: RootState) => state.persistedReducer.userInfo.isAdmin
+export const selectIsSuperAdmin = (state: RootState) => state.persistedReducer.userInfo.isSuperAdmin
+export const selectIsBanned = (state: RootState) => state.persistedReducer.userInfo.isBanned
+export const selectFullUser =  (state: RootState) => state.persistedReducer.userInfo
+export const selectIsLoggedIn =  (state: RootState) => state.persistedReducer.userInfo.canonicalEmail.length > 0
 
 export default userInfoSlice.reducer

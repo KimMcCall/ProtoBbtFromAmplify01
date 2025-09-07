@@ -31,8 +31,8 @@ export const navigationSlice = createSlice({
 export const { navigateTo, setNextPath } = navigationSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selecCurrent = (state: RootState) => state.navigation.currentPath
-export const selecNext = (state: RootState) => state.navigation.nextPath
+export const selecCurrent = (state: RootState) => state.persistedReducer.navigation.currentPath
+export const selecNext = (state: RootState) => state.persistedReducer.navigation.nextPath
 
 export default navigationSlice.reducer
 
