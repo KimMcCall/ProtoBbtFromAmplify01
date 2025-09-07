@@ -6,9 +6,9 @@ import type { RootState } from '../../app/store'
 export interface UserInfoState {
   id: string
   authId: string
-  name: string
   canonicalEmail: string
   initialEmail: string
+  name: string
   isSuperAdmin: boolean
   isAdmin: boolean
   isBanned: boolean
@@ -18,9 +18,9 @@ export interface UserInfoState {
 const initialState: UserInfoState = {
   id: '',
   authId: '',
-  name: 'Unknoown Name',
-  canonicalEmail: 'bogus@example.com',
-  initialEmail: 'bogus@example.com',
+  canonicalEmail: '',
+  initialEmail: '',
+  name: '',
   isSuperAdmin: false,
   isAdmin: false,
   isBanned: false,
@@ -35,15 +35,28 @@ export const userInfoSlice = createSlice({
       const newUser = action.payload;
       state.id = newUser.id;
       state.authId = newUser.authId;
-      state.name = newUser.name;
       state.canonicalEmail = newUser.canonicalEmail;
       state.initialEmail = newUser.initialEmail;
+      state.name = newUser.name;
       state.isAdmin = newUser.isAdmin;
       state.isSuperAdmin = newUser.isSuperAdmin;
       state.isBanned = newUser.isBanned;
     },
+    clearUserInfo: (state) => {
+      state.id = '';
+      state.authId = '';
+      state.canonicalEmail = '';
+      state.initialEmail = '';
+      state.name = '';
+      state.isAdmin = false;
+      state.isSuperAdmin = false;
+      state.isBanned = false;
+    },
     setAsAdmin: (state, action: PayloadAction<boolean>) => {
       state.isAdmin = action.payload;
+    },
+    setId: (state, action: PayloadAction<string>) => {
+      state.id = action.payload;
     },
     setAsSuperAdmin: (state, action: PayloadAction<boolean>) => {
       state.isSuperAdmin = action.payload;
@@ -51,7 +64,7 @@ export const userInfoSlice = createSlice({
   },
 })
 
-export const { setUserInfo, setAsAdmin, setAsSuperAdmin } = userInfoSlice.actions;
+export const { setUserInfo, clearUserInfo, setId, setAsAdmin, setAsSuperAdmin } = userInfoSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectUserId = (state: RootState) => state.userInfo.id

@@ -62,21 +62,21 @@ function findMatchingMasterUser(cEmail: string): MasterUserType | null {
   return null;
 }
 
-const createMasterUser = (eEmail: string) => {
+const createMasterUser = (cEmail: string) => {
   const stuctToCreate = {
-    canonicalEmail: eEmail,
+    canonicalEmail: cEmail,
     userId: "userId_" + Math.floor(Math.random() * 1000000).toString(),
   };
   console.log("In PlayPage01, createMasterUser, creating", stuctToCreate);
   // client.models.MasterUser.create(stuctToCreate).then((newUser) => {
-  //   console.log("Created new MasterUser with canonicalEmail", eEmail, newUser);
+  //   console.log("Created new MasterUser with canonicalEmail", cEmail, newUser);
   // }).catch((error: any) => {
-  //   console.error("Error creating MasterUser with canonicalEmail", eEmail, error);
+  //   console.error("Error creating MasterUser with canonicalEmail", cEmail, error);
   // });
   dbClient.models.MasterUser.create(stuctToCreate).then((newUser) => {
-    console.log("Created new MasterUser with canonicalEmail", eEmail, newUser);
+    console.log("Created new MasterUser with canonicalEmail", cEmail, newUser);
   }).catch((error) => {
-    console.error("Error creating MasterUser with canonicalEmail", eEmail, error);
+    console.error("Error creating MasterUser with canonicalEmail", cEmail, error);
   });
 }
 

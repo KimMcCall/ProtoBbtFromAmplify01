@@ -1,5 +1,6 @@
 // utils.ts
 import { getCurrentUser } from "aws-amplify/auth";
+import { dbClient } from "../main";
 
 export async function haveLoggedInUser(): Promise<boolean> {
     const showUserInfo = true;
@@ -60,15 +61,112 @@ export function toCanonicalEmail(email: string): string {
     return "bogusEmail@example.com";
   }
   const lower: string = email.trim().toLowerCase();
-  let result = "Nothing";
   const plusLoc: number = lower.indexOf("+");
+
   if (plusLoc >= 0) {
     const ampLoc: number = lower.indexOf("@");
     const part1: string = lower.substring(0, plusLoc);
-    const part2: string = lower.substring(ampLoc)
-    result = part1 + part2;
+    const part2: string = lower.substring(ampLoc);
+    return part1 + part2;
   } else {
-  result = lower;
+    return lower;
   }
-  return result;
 } 
+
+export function isRecent(timeString: string, nSecs: number) {
+  // Does the timeString represent a time that is less than nSeecs in the past?
+  const submittedTime = Date.parse(timeString);
+  const maxGap = nSecs * 1000;
+  const horizon = submittedTime + maxGap; // Anything before horizon is not recent
+  const now = Date.now();
+  return now < horizon;
+}
+
+export const computeStatus = async (submittedAuthId: string, submittedEmail: string): Promise<string> => {
+  let retVal = 'nobody overrode retVal';
+
+  let foundUser = null;
+
+  await dbClient.models.RegisteredUser.listByAuthId({
+    authId: submittedAuthId,
+  }).then (
+    async (response) => {
+      const records = response.data;
+      if (records.length === 0) {
+        console.log("1) in OUTER records.length === 0 branch");
+        // There is no record with this authId;
+        // Must be 'newRegistrant' || 'alias' || 'bannedAlias'
+        const innerResult = await innerComputeStatus(submittedEmail);
+        retVal = innerResult;
+      } else if (records.length === 1) {
+        console.log("in OUTER records.length === 1 branch")
+        // Normal case of one record with this authId
+        // Must be 'returningRegistrant' || 'superAdmin' || 'admin' || 'banned' || 'repeatedCall'
+          foundUser = records[0];
+          console.log("foundUser: ", foundUser);
+          if (foundUser.isBanned) {
+            retVal = 'banned';
+            return undefined;
+          }
+          if (foundUser.isSuperAdmin) {
+            retVal = 'superAdmin';
+            return undefined;
+          }
+          if (foundUser.isAdmin) {
+            retVal = 'admin';
+            return undefined;
+          }
+          const createdAtString = foundUser.createdAt;
+          if (isRecent(createdAtString, 5)) { // in last 5 seconds
+            console.log('recdent; returning "repeatedCall"')
+            retVal = 'repeatedCall';
+            return undefined;
+          } else {
+            console.log('NOT recdent')
+            if (foundUser.initialEmail != submittedEmail) {
+              console.log(`returning: corrupted DB w/ bad initialEmail: ${foundUser.initialEmail}`)
+              return `corrupted DB w/ bad initialEmail: ${foundUser.initialEmail}`;
+            }
+            console.log('returning "returningRegistrant"')
+            retVal = 'returningRegistrant';
+            return undefined;
+          }
+      } else {
+        // We have a bug that alloweed us to have multiple records with same authId
+        retVal = 'corrupted DB w/ multiple records with same authId';
+        return undefined;
+      }
+    }
+  )
+  console.log(`at final return, returning "${retVal}"`);
+  return retVal;
+}
+
+const innerComputeStatus = async (email: string): Promise<string>  => {
+  let retVal = 'in innerComputeStatus, retVal never altered';
+  const cEmail = toCanonicalEmail(email);
+  // if there's a record with this canonicalEmal, then we're dealing with an alias
+  console.log(`2) listing records with canonicalEmail: ${cEmail}`);
+  await dbClient.models.RegisteredUser.listByCanonicalEmail({ canonicalEmail: cEmail }).then(
+    (response) => {
+      console.log('3) Back from call to listByCanonicalEmail()')
+      const usersWithMatchingCanonicalEmail = response.data;
+      console.log(`4) usersWithMatchingCanonicalEmail.length: ${usersWithMatchingCanonicalEmail.length}`);
+      if (usersWithMatchingCanonicalEmail.length === 0) {
+        console.log("5a) in INNER records.length === 0 branch; returning: newRegistrant");
+        retVal = 'newRegistrant';
+      } else {
+        console.log("5b) in INNER records.length !== 0 branch; should return: alias || bannedAlias");
+        // We're dealing with an alias. Let's distinguish between banned ones and not banned
+        const thisUser = usersWithMatchingCanonicalEmail[0];
+        if (thisUser.isBanned) {
+          retVal = 'bannedAlias'
+        } else {
+          retVal = 'alias';
+        }
+      }
+    }
+  )
+  console.log(`returning ${retVal} from end of innerComputeStatus`)
+  return retVal;
+}

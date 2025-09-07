@@ -1,11 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import PageWrapper from "../components/PageWrapper";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { selecNext } from "../features/navigation/navigationSlice";
-import { setUserInfo, UserInfoState } from "../features/userInfo/userInfoSlice";
+import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
+import { clearUserInfo, setUserInfo, UserInfoState } from "../features/userInfo/userInfoSlice";
 import { AuthUser } from "aws-amplify/auth";
-import { toCanonicalEmail } from "../utils/utils";
+import { computeStatus, toCanonicalEmail } from "../utils/utils";
 import { dbClient } from "../main";
+import { useEffect } from "react";
 // import { dbClient } from "../main";
 
 
@@ -34,40 +35,109 @@ const fetchUser = (userId: string) => {
 };*/
 
 function LoggedInPage(user: AuthUser) {
-  const { userId, username, signInDetails } = user;
-  const memoData = {
-    subject: 'LoginInfo',
-    content: `userId: ${userId};\nusername: ${username};\nsignInDetails.loginId: ${signInDetails?.loginId};\nsignInDetails.authFlowType: ${signInDetails?.authFlowType}`,
-  };
-  dbClient.models.Memo.create(memoData);
-  let newPath = useAppSelector(selecNext);
-  newPath = newPath || '/';
-  
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
-  const cEmail = toCanonicalEmail(signInDetails?.loginId || '');
 
-  const reduxUser: UserInfoState = {
-    id: userId,
-    authId: signInDetails?.loginId || '',
-    name: '',
-    canonicalEmail: cEmail,
-    isSuperAdmin: true,
-    isAdmin: true,
-    isBanned: false,
-  }
+  const { userId, username, signInDetails } = user;
 
-  const saveUserToReduxAndNavigate = () => {
-    dispatch(setUserInfo(reduxUser))
-    navigate(newPath,  { replace: true });
-  }
+  const submittedAuthId = userId;
+  const submittedEmail = signInDetails?.loginId || '';
+  const newPath = useAppSelector(selecNext);
+  const cEmail = toCanonicalEmail(submittedEmail);
 
-  saveUserToReduxAndNavigate();
+  useEffect(() => {
+    const handleLoginInfo = async () => {
+      const status = await computeStatus(submittedAuthId, submittedEmail);
+
+      let memoContent = `userId: ${userId};\nusername: ${username};`;
+      memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
+      memoContent += `\nsignInDetails.authFlowType: ${signInDetails?.authFlowType}`;
+      memoContent += `\nstatus: ${status}`;
+
+      const memoData = {
+        subject: 'LoginInfo',
+        content: memoContent,
+      };
+      dbClient.models.Memo.create(memoData);
+
+      const returning = status === 'returningRegistrant' || status === 'superAdmin' || status === 'admin';
+
+      if (status === 'alias') {
+        dispatch(clearUserInfo());
+        dispatch(setNextPath('/alias'));
+        navigate('/alias', { replace: true });
+      } else if (status === 'banned') {
+        dispatch(clearUserInfo());
+        dispatch(setNextPath('/banned'));
+        navigate('/banned', { replace: true });
+      } else  if (status === 'bannedAlias') {
+        dispatch(clearUserInfo());
+        dispatch(setNextPath('/bannedAlias'));
+        navigate('/bannedAlias', { replace: true });
+      } else if (returning) {
+        // Don't need to do anything more than let them in and set the redux state
+        const initialEmail = signInDetails?.loginId || '';
+        const reduxUser: UserInfoState = {
+          id: '',
+          authId: userId,
+          name: '',
+          canonicalEmail: cEmail,
+          initialEmail: initialEmail,
+          isSuperAdmin: status === 'superAdmin',
+          isAdmin: status === 'admin' || status === 'superAdmin',
+          isBanned: false,
+        };
+        dispatch(setUserInfo(reduxUser));
+        navigate(newPath, { replace: true });
+      } else if (status === 'repeatedCall') {
+        // Don't need to do anything except get them back on the right page
+        navigate(newPath, { replace: true });
+      } else if (status === 'newRegistrant') {
+        //
+        const stuctToCreate = {
+          authId: submittedAuthId,
+          name: '',
+          canonicalEmail: cEmail,
+          initialEmail: submittedEmail,
+          isSuperAdmin: false,
+          isAdmin: false,
+          isBanned: false,
+        };
+        dbClient.models.MasterUser.create(stuctToCreate).then((newUser) => {
+          console.log("Created new MasterUser with canonicalEmail", cEmail, newUser);
+          const returnedUserRecord = newUser.data;
+          if (returnedUserRecord) {
+            const newReduxUser = {
+              id: returnedUserRecord.id,
+              authId: submittedAuthId,
+              name: '',
+              canonicalEmail: cEmail,
+              initialEmail: submittedEmail,
+              isSuperAdmin: false,
+              isAdmin: false,
+              isBanned: false,
+            };
+            dispatch(setUserInfo(newReduxUser));
+          }
+        }).catch((error) => {
+          console.log("Error creating MasterUser with canonicalEmail", cEmail, error);
+        });
+        navigate(newPath, { replace: true });
+      } else {
+        //
+        console.log(`Computed surprise stats: "$${status}"`);
+      }
+
+    };
+
+    handleLoginInfo();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <PageWrapper>
       <div>
-        You're on the (stub of the) LoggedIn Page.
+        You're on the LoggedIn Page.
       </div>
       <div>
         userId: {userId}

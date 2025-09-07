@@ -13,6 +13,9 @@ import DonatePage from './pages/DonatePage';
 import FinancesPage from './pages/FinancesPage';
 import PlayPage01 from './pages/PlayPage01';
 import PlayPage02 from './pages/PlayPage02';
+import AliasPage from './pages/AliasPage';
+import BannedPage from './pages/BannedPage';
+import BannedAliasPage from './pages/BannedAliasPage';
 
 type UserCacheType = {
   isPhoney: boolean;
@@ -66,6 +69,9 @@ function App() {
           <Route path="/mission" element={<MissionPage />} />
           <Route path="/finances" element={<FinancesPage />} />
           <Route path="/donate" element={<DonatePage />} />
+          <Route path="/alias" element={<AliasPage />} />
+          <Route path="/banned" element={<BannedPage />} />
+          <Route path="/bannedAlias" element={<BannedAliasPage />} />
           <Route
             path="/todos"
             element={

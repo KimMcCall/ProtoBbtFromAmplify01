@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { signOut } from 'aws-amplify/auth';
 
 import '@aws-amplify/ui-react/styles.css'; // Import default styles
+import PageWrapper from "../components/PageWrapper";
+import { selecNext } from "../features/navigation/navigationSlice";
+import { useAppSelector } from "../app/hooks";
 
 async function handleSignOut(setSignedOut: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; }) {
   try {
@@ -19,19 +22,23 @@ function LogoutPage() {
   const navigate = useNavigate();
 
   handleSignOut(setSignedOut);
+  const newPath = useAppSelector(selecNext);
 
   useEffect(() => {
     if (signedOut) {
-      console.log("in LogoutPage, signedOut is true; navigating to /");
-      navigate("/", { replace: true });
+      console.log(`in LogoutPage, signedOut is true; navigating to ${newPath}`);
+      navigate(newPath, { replace: true });
     } else {
       console.log("in LogoutPage, signedOut is false; staying here");
     }
-  }, [navigate, signedOut]);
+  }, [navigate, newPath, signedOut]);
   
   return (
-    <>
-    </>
+    <PageWrapper>
+      <div>
+        <p>You're being logged out........</p>
+      </div>
+    </PageWrapper>
   );
 }
 
