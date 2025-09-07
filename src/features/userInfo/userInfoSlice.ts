@@ -86,5 +86,6 @@ export const selectIsAdmin = (state: RootState) => state.userInfo.isAdmin
 export const selectIsSuperAdmin = (state: RootState) => state.userInfo.isSuperAdmin
 export const selectIsBanned = (state: RootState) => state.userInfo.isBanned
 export const selectFullUser =  (state: RootState) => state.userInfo
+export const selectIsLoggedIn =  (state: RootState) => state.userInfo.canonicalEmail.length > 0
 
 export default userInfoSlice.reducer

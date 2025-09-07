@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Flex, TextField } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
-import { selectCanonicalEmail, selectIsSuperAdmin, setAsSuperAdmin, setCanonicalEmail } from "../features/userInfo/userInfoSlice";
+import { selectIsLoggedIn, selectIsSuperAdmin, setAsSuperAdmin, setCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
 import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
@@ -110,17 +110,17 @@ function PlayPage02() {
     setSimpleTestResult(count);
   }
 
-  const currentCEmail = useAppSelector(selectCanonicalEmail);
+  const isLoggedIn = useAppSelector(selectIsLoggedIn)
 
   const toggleCEmail = () => {
     let newValue = '';
-    if (currentCEmail.length === 0) {
+    if (!isLoggedIn) {
       newValue = 'random@example.com';
     }
     dispatch(setCanonicalEmail(newValue))
   }
 
-  const clearOrFill = currentCEmail.length === 0 ? 'Fill' : 'Clear';
+  const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
 
   return (
     <PageWrapper>
