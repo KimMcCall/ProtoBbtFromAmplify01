@@ -23,11 +23,11 @@ const fetchUser = (userId: string) => {
     }
     const reduxUser: UserInfoState = {
       id: userId,
-      name: userRecord?.name || '',
-      canonicalEmail: userRecord?.canonicalEmail || '',
-      isSuperAdmin: userRecord?.isSuperAdmin || false,
-      isAdmin: userRecord?.isAdmin || false,
-      isBanned: userRecord?.isBanned || false,
+      name: userRecord?.name,
+      canonicalEmail: userRecord?.canonicalEmail,
+      isSuperAdmin: userRecord?.isSuperAdmin,
+      isAdmin: userRecord?.isAdmin,
+      isBanned: userRecord?.isBanned,
     };
     console.log("Calling setUserInfo with arg:", reduxUser);
     dispatch(setUserInfo(reduxUser))
