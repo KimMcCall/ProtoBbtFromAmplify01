@@ -11,6 +11,7 @@ import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/ut
 function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/donate");
   const [ userStatus, setUserStatus ] = useState("");
+  const [ dbCheckFeedback, setDbCheckFeedback ] = useState("Waiting for czech");
   const [simpleTestResult, setSimpleTestResult] = useState(42)
   const dispatch = useAppDispatch();
   const isNowSuperAdmin = useAppSelector(selectIsSuperAdmin);
@@ -28,24 +29,43 @@ function PlayPage02() {
     setUserStatus(computedStatus);
   }
 
-  /*
+  const checkDbAndShowResult = async () => {
+    const result: string = await checkDbForCorruption();
+    setDbCheckFeedback(result);
+  }
+
   const checkDbForCorruption = async () => {
+    let retVal = 'retVal never got overidden';
+    let haveResetRetVal = false;
     await dbClient.models.RegisteredUser.list().then(
       (response) => {
         const allRecords = response.data;
-        const authIds = [];
-        const testElement = (record) => {
-          authIds.push(record.authId)});
-        };
-        // if (authIds.find())
+        const authIds: string[] = [];
         allRecords.forEach((record) => {
-      testElement(record);
-      }}
-    );
-    const computedStatus: UserStatusType = await testComputeStatus();
-    setUserStatus(computedStatus);
+          const thisAuthId = record.authId;
+          if (authIds.find((element) => element === thisAuthId)) {
+            // Found duplicate authId. make a Memo and return something useful to display
+            const memoContent = `found multiple records with authId: ${thisAuthId}`;
+            const memoData = {
+              subject: 'DB Corruption',
+              content: memoContent,
+            };
+            dbClient.models.Memo.create(memoData);
+            console.log(`found multiple records with authId: ${thisAuthId}`);
+            retVal = `found multiple records with authId: ${thisAuthId}`;
+            haveResetRetVal = true;
+          } else {
+            authIds.push(thisAuthId);
+          }
+        })
+        if (!haveResetRetVal) {
+          console.log('found no duplicate authIds');
+          retVal = 'no dupllicate authId\'s';
+        }
+      }
+    )
+    return retVal;
   }
-  */
 
   const expectedCEmail = "mccall.kim@gmail.com"
 
@@ -157,7 +177,13 @@ function PlayPage02() {
         </Flex>
         <Flex direction={"row"}>
           <button onClick={() => toggleCEmail()}>{String(clearOrFill)} cEmail</button>
-          <button onClick={() => toggleCEmail()}>Czech DB for corruption</button>
+          <button onClick={() => checkDbAndShowResult()}>Czech DB for corruption</button>
+          <TextField
+            label=""
+            value={dbCheckFeedback}
+            readOnly
+            width="420px"
+          />
         </Flex>
         <Flex direction={"row"}>
           <button onClick={() => dispatch(setNextPath(savedPath))}>Set as next path</button>
