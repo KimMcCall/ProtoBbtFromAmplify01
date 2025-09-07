@@ -136,9 +136,19 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
             retVal = 'repeatedCall';
             return undefined;
           } else {
-            console.log('NOT recdent');
+            console.log('There\'s a a DB record with submitted authID, but NOT recdent');
             if (foundUser.initialEmail != submittedEmail) {
-              console.log(`returning: corrupted DB w/ bad initialEmail: ${foundUser.initialEmail}`);
+              // found a record with matching authId but different email
+              // I don't see how this could ever happen
+              const feebackStr = `found an existing record with submittedAuthId (${submittedAuthId}) but different initialEmail (${foundUser.initialEmail}) vs submittedEmail (${submittedEmail}). This should neever happen, so returning: 'corrupted DB'`;
+
+              const memoData = {
+                subject: 'Login Issue',
+                content: feebackStr,
+              };
+              dbClient.models.Memo.create(memoData);
+
+              console.log(feebackStr);
               retVal = 'corrupted DB';
               return;
             }
