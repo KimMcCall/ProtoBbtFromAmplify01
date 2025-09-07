@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Flex, Menu, MenuItem, Avatar } from '@aws-amplify/ui-react';
-import { selectCanonicalEmail } from '../features/userInfo/userInfoSlice';
+import { selectIsLoggedIn } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 
 const box: React.CSSProperties = {
@@ -43,9 +43,7 @@ function BannerBox() {
     navigate("/login");
   };
   
-  const cEmail =  useAppSelector(selectCanonicalEmail);
-  const isEmpty = cEmail.length === 0;
-  console.log(`BB: cEmail: ${cEmail}; isEmpty: ${isEmpty}`);
+  const isLoggeddIn = useAppSelector(selectIsLoggedIn);
 
   return (
     <div id="banner-box" style={box}>
@@ -59,7 +57,7 @@ function BannerBox() {
       >
         <span onClick={goHome} style={logoSpan}>TruthSquad.com</span>
         
-        {isEmpty ?
+        {!isLoggeddIn ?
           <div onClick={() => goToLogInPage()} style={loginDiv}>Log In</div>
         :
           <Menu menuAlign="center"
