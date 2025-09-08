@@ -1,0 +1,7 @@
+.suggPanel {
+  height: 592px;
+  width: 1000px;
+  background-color: red;
+  overflow: auto;
+  padding-left: 8px;
+}
