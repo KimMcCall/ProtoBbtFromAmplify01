@@ -20,7 +20,7 @@ const printDocument = () => {
 function SketchPage() {
   const outerBoxStyle: React.CSSProperties = {
     width: '600px',
-    height: '400px',
+    height: '440px',
     background: 'linear-gradient(to top right, #ed1515ff, #1a2cf1ff)', // Example linear gradient
     border: '2px solid black',
     padding: '20px',
