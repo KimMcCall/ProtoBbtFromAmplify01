@@ -25,7 +25,8 @@ const schema = a.schema({
   Submission: a
     .model({
       userId: a.string(),
-      content: a.string(),
+      category: a.string().required(),
+      content: a.string().required(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
   Issue: a
