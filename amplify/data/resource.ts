@@ -28,6 +28,9 @@ const schema = a.schema({
       category: a.string().required(),
       content: a.string().required(),
     })
+    .secondaryIndexes((index) => [
+      index("userId").queryField("listByUserId"),
+    ])
     .authorization((allow) => [allow.publicApiKey()]),
   Issue: a
     .model({
