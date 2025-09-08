@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import PageWrapper from "../components/PageWrapper";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { clearUserInfo, setUserInfo, UserInfoState } from "../features/userInfo/userInfoSlice";
@@ -7,32 +6,7 @@ import { AuthUser } from "aws-amplify/auth";
 import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { dbClient } from "../main";
 import { useEffect } from "react";
-// import { dbClient } from "../main";
-
-
-/*
-const fetchUser = (userId: string) => {
-  return async (dispatch: (arg0: { type: string; payload: any; }) => void, getState: any) => {
-    // dispatch({ type: 'FETCH_USERS_REQUEST' });
-    const response = await dbClient.models.RegisteredUser.get({ id: userId });
-    const userRecord = response.data;
-    const err = response.errors;
-    if (err) {
-      console.log("Error on get(): ", err)
-      return;
-    }
-    const reduxUser: UserInfoState = {
-      id: userId,
-      name: userRecord?.name,
-      canonicalEmail: userRecord?.canonicalEmail,
-      isSuperAdmin: userRecord?.isSuperAdmin,
-      isAdmin: userRecord?.isAdmin,
-      isBanned: userRecord?.isBanned,
-    };
-    console.log("Calling setUserInfo with arg:", reduxUser);
-    dispatch(setUserInfo(reduxUser))
-  };
-};*/
+import { cacheAbortedCallFrom, selectNowIsWithinRecencyHorizon, setLastLoginTimeToNow } from "../features/loginTracking/loginTracking";
 
 function LoggedInPage(user: AuthUser) {
   const navigate = useNavigate();
@@ -45,13 +19,22 @@ function LoggedInPage(user: AuthUser) {
   const newPath = useAppSelector(selecNext);
   const cEmail = toCanonicalEmail(submittedEmail);
 
+  const isRepeated = useAppSelector(selectNowIsWithinRecencyHorizon);
+  console.log(`isRepeated: ${isRepeated}; dispatching '${isRepeated ? 'cacheAbortedCallFrom' : 'setLastLoginTimeToNow'}'`)
+  if (isRepeated) {
+    dispatch(cacheAbortedCallFrom(submittedEmail));
+  } else {
+    dispatch(setLastLoginTimeToNow());
+  }
+
   useEffect(() => {
     const handleLoginInfo = async () => {
-      const status: UserStatusType = await computeUserStatus(submittedAuthId, submittedEmail);
+      const statusAndUser = await computeUserStatus(submittedAuthId, submittedEmail);
+      const status: UserStatusType = statusAndUser.status;
+      const user = statusAndUser.user;
 
       let memoContent = `userId: ${userId};\nusername: ${username};`;
       memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
-      memoContent += `\nsignInDetails.authFlowType: ${signInDetails?.authFlowType}`;
       memoContent += `\nstatus: ${status}`;
 
       const memoData = {
@@ -78,9 +61,9 @@ function LoggedInPage(user: AuthUser) {
         // Don't need to do anything more than let them in and set the redux state
         const initialEmail = signInDetails?.loginId || '';
         const reduxUser: UserInfoState = {
-          id: '',
+          id: user.id,
           authId: userId,
-          name: '',
+          name: user.name || '',
           canonicalEmail: cEmail,
           initialEmail: initialEmail,
           isSuperAdmin: status === 'superAdmin',
@@ -89,66 +72,63 @@ function LoggedInPage(user: AuthUser) {
         };
         dispatch(setUserInfo(reduxUser));
         navigate(newPath, { replace: true });
-      } else if (status === 'repeatedCall') {
-        // Don't need to do anything except get them back on the right page
-        navigate(newPath, { replace: true });
-      } else if (status === 'uninitialized') {
-        // YIIKES!! let's make a Memo and ask the user to notify us
-        let memoContent = `computeUserStatus() returned: '${status}';`;
-        memoContent += `\nusername: ${username};`;
-        memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
-        const memoData = {
-          subject: 'BadUserStatus',
-          content: memoContent,
-        };
-        dbClient.models.Memo.create(memoData);
-        navigate('/uninitializedUserStatus', { replace: true });
-      } else if (status === 'corrupted DB') {
-        // YIIKES!! let's make a Memo and ask the user to notify us
-        let memoContent = `computeUserStatus() returned: '${status}';`;
-        memoContent += `\nusername: ${username};`;
-        memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
-        const memoData = {
-          subject: 'BadUserStatus',
-          content: memoContent,
-        };
-        dbClient.models.Memo.create(memoData);
-        navigate('/corruptedDb', { replace: true });
-      } else if (status === 'newRegistrant') {
-        //
-        const stuctToCreate = {
-          authId: submittedAuthId,
-          name: '',
-          canonicalEmail: cEmail,
-          initialEmail: submittedEmail,
-          isSuperAdmin: false,
-          isAdmin: false,
-          isBanned: false,
-        };
-        dbClient.models.MasterUser.create(stuctToCreate).then((newUser) => {
-          console.log("Created new MasterUser with canonicalEmail", cEmail, newUser);
-          const returnedUserRecord = newUser.data;
-          if (returnedUserRecord) {
-            const newReduxUser = {
-              id: returnedUserRecord.id,
-              authId: submittedAuthId,
-              name: '',
-              canonicalEmail: cEmail,
-              initialEmail: submittedEmail,
-              isSuperAdmin: false,
-              isAdmin: false,
-              isBanned: false,
-            };
-            dispatch(setUserInfo(newReduxUser));
-          }
-        }).catch((error) => {
-          console.log("Error creating MasterUser with canonicalEmail", cEmail, error);
-        });
-        navigate(newPath, { replace: true });
-      } else {
-        //
-        console.log(`Computed surprise stats: "$${status}"`);
-      }
+    } else if (status === 'repeatedCall') {
+      // Don't need to do anything except get them back on the right page
+      navigate(newPath, { replace: true });
+    } else if (status === 'uninitialized') {
+      // YIIKES!! let's make a Memo and ask the user to notify us
+      let memoContent = `computeUserStatus() returned: '${status}';`;
+      memoContent += `\nusername: ${username};`;
+      memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
+      const memoData = {
+        subject: 'BadUserStatus',
+        content: memoContent,
+      };
+      dbClient.models.Memo.create(memoData);
+      navigate('/uninitializedUserStatus', { replace: true });
+    } else if (status === 'corrupted DB') {
+      // YIIKES!! let's make a Memo and ask the user to notify us
+      let memoContent = `computeUserStatus() returned: '${status}';`;
+      memoContent += `\nusername: ${username};`;
+      memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
+      const memoData = {
+        subject: 'BadUserStatus',
+        content: memoContent,
+      };
+      dbClient.models.Memo.create(memoData);
+      navigate('/corruptedDb', { replace: true });
+    } else if (status === 'newRegistrant') {
+      //
+      const stuctToCreate = {
+        authId: submittedAuthId,
+        name: '',
+        canonicalEmail: cEmail,
+        initialEmail: submittedEmail,
+        isSuperAdmin: false,
+        isAdmin: false,
+        isBanned: false,
+      };
+      dbClient.models.RegisteredUser.create(stuctToCreate).then((newUser) => {
+        console.log("Created new RegisteredUser with canonicalEmail", cEmail, newUser);
+        const returnedUserRecord = newUser.data;
+        if (returnedUserRecord) {
+          const newReduxUser = {
+            id: returnedUserRecord.id,
+            authId: submittedAuthId,
+            name: '',
+            canonicalEmail: cEmail,
+            initialEmail: submittedEmail,
+            isSuperAdmin: false,
+            isAdmin: false,
+            isBanned: false,
+          };
+          dispatch(setUserInfo(newReduxUser));
+        }
+      })
+      navigate(newPath, { replace: true });
+    } else {
+      console.log(`Computed surprise stats: "${status}"`);
+    }
 
     };
 
@@ -157,10 +137,10 @@ function LoggedInPage(user: AuthUser) {
   }, []);
 
   return (
-    <PageWrapper>
-      <div>
+    <div>
+      <h2>
         You're on the LoggedIn Page.
-      </div>
+      </h2>
       <div>
         userId: {userId}
       </div>
@@ -170,7 +150,7 @@ function LoggedInPage(user: AuthUser) {
       <div>
         signInDetails.loginId: {user.signInDetails?.loginId}
       </div>
-    </PageWrapper>
+    </div>
   );
 }
 

@@ -14,6 +14,24 @@ type UserStatus =
 "uninitialized"|
 "corrupted DB";
 
+type DBUser = {
+    authId: string;
+    canonicalEmail: string;
+    initialEmail: string;
+    isSuperAdmin: boolean;
+    isAdmin: boolean;
+    isBanned: boolean;
+    name: string | null;
+    readonly id: string;
+    readonly createdAt: string;
+    readonly updatedAt: string;
+}
+
+type UserStatusAndUser = {
+  status: UserStatus
+  user: DBUser
+}
+
 export type UserStatusType = UserStatus;
 
 export async function haveLoggedInUser(): Promise<boolean> {
@@ -96,10 +114,21 @@ export function isRecent(timeString: string, nSecs: number) {
   return now < horizon;
 }
 
-export const computeUserStatus = async (submittedAuthId: string, submittedEmail: string): Promise<UserStatus> => {
+export const computeUserStatus = async (submittedAuthId: string, submittedEmail: string): Promise<UserStatusAndUser> => {
   let retVal: UserStatus = 'uninitialized';
 
-  let foundUser = null;
+  let foundUser: DBUser = {
+    authId: '',
+    canonicalEmail: '',
+    initialEmail: '',
+    isSuperAdmin: false,
+    isAdmin: false,
+    isBanned: false,
+    name: '',
+    id: '',
+    createdAt: '',
+    updatedAt: '',
+  };
 
   await dbClient.models.RegisteredUser.listByAuthId({
     authId: submittedAuthId,
@@ -113,7 +142,7 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
         const innerResult = await innerComputeStatus(submittedEmail);
         retVal = innerResult;
       } else if (records.length === 1) {
-        console.log(`Иn OUTER records.length === 1 branch (Оне record has authId: "${submittedAuthId}")`)
+        console.log(`in OUTER records.length === 1 branch (Оне record has authId: "${submittedAuthId}")`)
         // Normal case of one record with this authId
         // Must be 'returningRegistrant' || 'superAdmin' || 'admin' || 'banned' || 'repeatedCall'
           foundUser = records[0];
@@ -136,7 +165,7 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
             retVal = 'repeatedCall';
             return undefined;
           } else {
-            console.log('There\'s a a DB record with submitted authID, but NOT recdent');
+            console.log('There\'s a DB record with submitted authID, but NOT recent');
             if (foundUser.initialEmail != submittedEmail) {
               // found a record with matching authId but different email
               // I don't see how this could ever happen
@@ -160,12 +189,16 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
         // We have a bug that alloweed us to have multiple records with same authId
         retVal = 'corrupted DB';
         console.log('corrupted DB w/ multiple records with same authId')
-        return retVal;
+        return undefined;
       }
     }
   )
   console.log(`at final return, returning "${retVal}"`);
-  return retVal;
+  const fullRetVal = {
+    status: retVal,
+    user: foundUser
+    };
+  return fullRetVal;
 }
 
 const innerComputeStatus = async (email: string): Promise<UserStatus>  => {

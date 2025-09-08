@@ -5,13 +5,18 @@ import { signOut } from 'aws-amplify/auth';
 import '@aws-amplify/ui-react/styles.css'; // Import default styles
 import PageWrapper from "../components/PageWrapper";
 import { selecNext } from "../features/navigation/navigationSlice";
-import { useAppSelector } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { clearUserInfo } from "../features/userInfo/userInfoSlice";
+
+let logoutSucceded = false;
 
 async function handleSignOut(setSignedOut: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; }) {
   try {
     await signOut();
     console.log('User signed out successfully.');
     setSignedOut(true);
+    logoutSucceded = true
+    
   } catch (error) {
     console.error('Error signing out:', error);
   }
@@ -20,8 +25,12 @@ async function handleSignOut(setSignedOut: { (value: SetStateAction<boolean>): v
 function LogoutPage() {
   const [signedOut, setSignedOut] = useState(false);
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   handleSignOut(setSignedOut);
+  if (logoutSucceded) {
+    dispatch(clearUserInfo());
+  }
   const newPath = useAppSelector(selecNext);
 
   useEffect(() => {

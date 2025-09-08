@@ -57,24 +57,25 @@ const testSecondaryIndex = () => {
 function PlayPage01() { 
   const [ userList, setUserList ] = useState("");
 
-  const listMasterUsers = () => {
-    dbClient.models.MasterUser.list()
+  const listSuperAdmins = () => {
+    dbClient.models.RegisteredUser.list()
     .then((response) => {
-      const masterUsers = response.data;
-      if (masterUsers.length === 0) {
-        setUserList("No MasterUsers found");
+      const allUsers = response.data;
+      const superUsers = allUsers.filter((user) => user.isSuperAdmin);
+      if (superUsers.length === 0) {
+        setUserList("No SuperAdmins found");
         return;
       }
       let newContent = "";
-      masterUsers.forEach((mu) => {
-        console.log("in listMUs; mu:", mu);
-        newContent += `Name: ***TBD***, Email: ${mu.canonicalEmail}, UserId: ${mu.userId}\n`;
+      superUsers.forEach((sa) => {
+        console.log("in listSAs; sa:", sa);
+        newContent += `Name: ***TBD***, Email: ${sa.canonicalEmail}, id: ${sa.id}\n`;
       });
       setUserList(newContent);
     })
     .catch((error) => {
-      console.error("Error listing MasterUsers", error);
-      setUserList("Error listing MasterUsers");
+      console.error("Error listing SuperAdmins", error);
+      setUserList("Error listing SuperAdmins");
     });
   };
 
@@ -85,12 +86,12 @@ function PlayPage01() {
         <div style={muDiv}>
           <div style={listDiv}>
              <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
-              <button onClick={() => listMasterUsers()}>List Master Users</button>
+              <button onClick={() => listSuperAdmins()}>List SuperAdmins</button>
               <TextAreaField
                 label=""
                 value={userList}
                 readOnly
-                placeholder="Master User details will appear here"
+                placeholder="SuperAdmin details will appear here"
                 width="800px"
                 height="180px" />
             </Flex>

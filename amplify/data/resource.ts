@@ -22,12 +22,6 @@ const schema = a.schema({
       index("canonicalEmail").queryField("listByCanonicalEmail"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
-  MasterUser: a
-    .model({
-      canonicalEmail: a.string(),
-      userId: a.string(),
-    })
-    .authorization((allow) => [allow.publicApiKey()]),
   Submission: a
     .model({
       userId: a.string(),

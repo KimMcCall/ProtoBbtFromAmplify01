@@ -7,6 +7,7 @@ import { selectIsLoggedIn, selectIsSuperAdmin, setAsSuperAdmin, setCanonicalEmai
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
 import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
+import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
 
 function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/donate");
@@ -140,13 +141,21 @@ function PlayPage02() {
       return retVal;
     }
 
-    retVal = await computeUserStatus(submitteduthId, submittedEmail);
-    return retVal;
+    const statusAndUser = await computeUserStatus(submitteduthId, submittedEmail);
+    return statusAndUser.status;
   }
 
   const runSimpleTest = async () => {
     const count = await simpleTest();
     setSimpleTestResult(count);
+  }
+
+  const resetLoginTracking = async () => {
+    dispatch(resetTracking())
+  }
+
+  const addToLoginTracking = async () => {
+    dispatch(cacheAbortedCallFrom('person@example.com'))
   }
 
   const isLoggedIn = useAppSelector(selectIsLoggedIn)
@@ -213,6 +222,8 @@ function PlayPage02() {
             readOnly
             width="60px"
           />
+          <button onClick={() => resetLoginTracking()}>Reset Login Tracking</button>
+          <button onClick={() => addToLoginTracking()}>Add to Login Tracking</button>
         </Flex>
       </Flex>
     </PageWrapper>
