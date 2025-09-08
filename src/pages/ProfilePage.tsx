@@ -19,9 +19,9 @@ function ProfilePage() {
           canonicalEmail: "{String(canonicalEmail)}"<br />
           initialEmail: "{String(initialEmail)}"<br />
           name: "{String(name)}" <br />
-          isSuperAdmin: "{String(isSuperAdmin)}"<br />
-          isAdmin: "{String(isAdmin)}"<br />
-          isBanned: "{String(isBanned)}"<br />
+          isSuperAdmin: {String(isSuperAdmin)}<br />
+          isAdmin: {String(isAdmin)}<br />
+          isBanned: {String(isBanned)}<br />
         </div>
       </Flex>
     </PageWrapper>
