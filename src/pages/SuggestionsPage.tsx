@@ -3,7 +3,7 @@ import PageWrapper from '../components/PageWrapper';
 import SuggestionsPanel from '../components/SuggestionsPanel';
 import { selectUserId } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
-import { dbClient } from '../main';
+// import { dbClient } from '../main';
 
 const policyP: React.CSSProperties = {
   fontStyle: 'italic',
@@ -18,27 +18,22 @@ function SuggestionsPage() {
 
   const userId =  useAppSelector(selectUserId);
 
-  const handleSiteSSubmit = (event) => {
+  const handleSiteSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     handleSubmit(event, 'Site Suggestion')
   };
 
-  const handleSubmit = (event, category) => {
-    event.preventDefault(); // Prevent default form submission behavior
-    // Handle form data here, e.g., send to an API or update state
-    const form = event.target;
-    const formData = new FormData(form);
-    const formJson = Object.fromEntries(formData.entries());
-    const suggestion = formJson.siteSuggestion;
-    // dbClient.models.Submission.create() // using userId, category, suggestion
-    console.log(suggestion);
+  const handleTopicSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
+    handleSubmit(event, 'Topic Suggestion')
   };
-  const handleTopicSubmit = (event) => {
+
+  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>, category: string) => {
     event.preventDefault(); // Prevent default form submission behavior
     // Handle form data here, e.g., send to an API or update state
-    const form = event.target;
+    const form: HTMLFormElement = event.currentTarget
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
-    console.log(formJson);
+    const submittedText = formJson.suggestion;
+    console.log(`userId: "${userId}"; submittedText: "${submittedText}"; category: "${category}"`);
   };
 
   return (
@@ -59,9 +54,8 @@ function SuggestionsPage() {
               Site administrotrs reserve the right to summarily ban anyone who submits
               vulgar, hateful, name-calling, or otherwise abusive content.
             </p>
-            <Flex as="form" direction="column" onSubmit={handleSiteSSubmit}>
-                <TextAreaField label="Your wise suggestion" name="siteSuggestion" rows={13} cols={120} />
-              <br />
+            <Flex as="form" direction="column" onSubmit={handleSiteSubmit}>
+              <TextAreaField label="Your wise suggestion" name="suggestion" rows={13} cols={120} />
               <Button type="submit">Submit Site Suggestion</Button>
             </Flex>
           </div>
@@ -80,9 +74,8 @@ function SuggestionsPage() {
               vulgar, hateful, name-calling, or otherwise abusive content.
             </p>
             <Flex as="form" direction="column" onSubmit={handleTopicSubmit}>
-              Topic Suggestion:
-              <textarea name="topic" rows={16} cols={120} />
-              <button type="submit">Submit Topic Suggestion</button>
+              <TextAreaField label="Topic Suggestion:" name="suggestion" rows={16} cols={120} />
+              <Button type="submit">Submit Topic Suggestion</Button>
             </Flex>
           </div>
         </Tabs.Panel>
