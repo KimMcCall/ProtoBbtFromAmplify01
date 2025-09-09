@@ -3,7 +3,7 @@ import PageWrapper from '../components/PageWrapper';
 import SuggestionsPanel from '../components/SuggestionsPanel';
 import { selectUserId } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
-// import { dbClient } from '../main';
+import { dbClient } from '../main';
 
 const policyP: React.CSSProperties = {
   fontStyle: 'italic',
@@ -33,7 +33,13 @@ function SuggestionsPage() {
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
     const submittedText = formJson.suggestion;
-    console.log(`userId: "${userId}"; submittedText: "${submittedText}"; category: "${category}"`);
+    const convertedText = submittedText.toString()
+    const structToCreate = {
+      userId: userId,
+      category: category,
+      content: convertedText,
+    };
+    dbClient.models.Submission.create(structToCreate);
   };
 
   return (
