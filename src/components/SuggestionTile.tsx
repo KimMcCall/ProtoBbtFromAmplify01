@@ -3,6 +3,8 @@ import './SuggestionTile.css';
 interface MyProps {
   key: string;
   suggestionId: string;
+  category: string;
+  content: string;
 }
 
 const handleButtonClick = (suggestionId: string) => {
@@ -10,10 +12,10 @@ const handleButtonClick = (suggestionId: string) => {
 }
 
 const SuggestionTile: React.FC<MyProps> = (props)  => {
-  const { suggestionId } = props;
+  const { suggestionId, /*category, */ content } = props;
   return (
-    <div className='tile' onClick={() => {handleButtonClick(suggestionId)}} >
-      Partial content of suggestion with ID: {String(suggestionId)}
+    <div key={suggestionId} className='tile' onClick={() => {handleButtonClick(suggestionId)}} >
+      {content}
     </div>
   );
 }

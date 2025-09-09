@@ -4,6 +4,7 @@ import SuggestionsPanel from '../components/SuggestionsPanel';
 import { selectUserId } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
+import { useState } from 'react';
 
 const policyP: React.CSSProperties = {
   fontStyle: 'italic',
@@ -15,15 +16,19 @@ const policyP: React.CSSProperties = {
 };
 
 function SuggestionsPage() {
+  const [siteText, setSiteText] = useState("");
+  const [topicText, setTopicText] = useState("");
 
   const userId =  useAppSelector(selectUserId);
 
   const handleSiteSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
-    handleSubmit(event, 'Site Suggestion')
+    handleSubmit(event, 'Site Suggestion');
+    setSiteText('');
   };
 
   const handleTopicSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     handleSubmit(event, 'Topic Suggestion')
+    setTopicText('');
   };
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>, category: string) => {
@@ -61,7 +66,14 @@ function SuggestionsPage() {
               vulgar, hateful, name-calling, or otherwise abusive content.
             </p>
             <Flex as="form" direction="column" onSubmit={handleSiteSubmit}>
-              <TextAreaField label="Your wise suggestion" name="suggestion" rows={13} cols={120} />
+              <TextAreaField 
+                label="Your wise suggestion"
+                name="suggestion"
+                value={siteText}
+                onChange={(e) => {
+                  setSiteText(e.target.value);
+                }}
+                rows={13} cols={120} />
               <Button type="submit">Submit Site Suggestion</Button>
             </Flex>
           </div>
@@ -80,7 +92,14 @@ function SuggestionsPage() {
               vulgar, hateful, name-calling, or otherwise abusive content.
             </p>
             <Flex as="form" direction="column" onSubmit={handleTopicSubmit}>
-              <TextAreaField label="Topic Suggestion:" name="suggestion" rows={16} cols={120} />
+              <TextAreaField
+                label="Topic Suggestion:"
+                name="suggestion"
+                value={topicText}
+                onChange={(e) => {
+                  setTopicText(e.target.value);
+                }}
+                rows={16} cols={120} />
               <Button type="submit">Submit Topic Suggestion</Button>
             </Flex>
           </div>
