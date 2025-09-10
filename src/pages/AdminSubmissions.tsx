@@ -2,17 +2,19 @@ import { Flex } from "@aws-amplify/ui-react";
 import { MdStar, MdStarBorder, MdLabelImportantOutline, MdLabelImportant } from 'react-icons/md';
 import PageWrapper from "../components/PageWrapper";
 import './AdminSubmissions.css';
+import { useState } from "react";
 
 
 
 const fakeSubmissions = [
   {
     id: 'lksdfajpaij',
-    status: 'inbox',
     isRead: false,
     isInteresting: false,
     isStarred: false,
-    rating: 5,
+    isArchived: false,
+    isBanned: false,
+    isTrashed: false,
     sender: 'person01@example.com',
     title: 'Title IX',
     content: 'Content of submision #1',
@@ -20,44 +22,48 @@ const fakeSubmissions = [
   },
   {
     id: 'peroifhnfn',
-    status: 'inbox',
     isRead: true,
     isInteresting: false,
     isStarred: true,
-    rating: 8,
+    isArchived: false,
+    isBanned: false,
+    isTrashed: false,
     sender: 'person02@example.com',
     title: 'A heartbreaking work of whatever',
     content: 'Content of submision #2',
   },
   {
     id: '7688yuighjnrkjwle',
-    status: 'banned',
     isRead: true,
     isInteresting: false,
     isStarred: false,
-    rating: 2,
+    isArchived: false,
+    isBanned: true,
+    isTrashed: false,
     sender: 'person02@example.com',
     title: 'A heartbreaking work of whatever',
     content: 'Content of submision #3',
   },
   {
     id: 'ert0poflsjdkhck',
-    status: 'archived',
     isRead: false,
     isInteresting: false,
     isStarred: false,
-    rating: 2,
+    isArchived: true,
+    isBanned: false,
+    isTrashed: false,
     sender: 'person02@example.com',
     title: 'A heartbreaking work of whatever',
     content: 'Content of submision #4',
   },
   {
     id: 'lkloiew475wro3r4u8oi',
-    status: 'archived',
     isRead: false,
     isInteresting: false,
     isStarred: false,
-    rating: 3,
+    isArchived: true,
+    isBanned: false,
+    isTrashed: true,
     sender: 'person02@example.com',
     title: 'A heartbreaking work of whatever',
     content: 'Content of submision #5',
@@ -67,18 +73,16 @@ const fakeSubmissions = [
 
 type TilePropType = {
   id: string
-  status: string
   isRead: boolean
   isInteresting: boolean
   isStarred: boolean
-  rating: number,
   sender: string,
   title: string
   content: string
 }
 
 function GMailTile(props: TilePropType) {
-  const {id, /*status,*/ isRead, isInteresting, isStarred, /*rating,*/ sender, title, content} = props;
+  const {id, isRead, isInteresting, isStarred, sender, title, content} = props;
 
   return (
     <div key={id}>
@@ -101,13 +105,82 @@ function GMailTile(props: TilePropType) {
   );
 }
 
+const selectedColor = '#818080ff';
+
+type CategoryButtonPropType = {
+  label: string
+  name: string
+  chosen: string
+  setChosen: any
+}
+
+function CategoryButton (props: CategoryButtonPropType) {
+  
+  const { label, name, chosen, setChosen} = props;
+  const isSelected = chosen === name;
+
+  const handleButtonClick = (xyz: string) => {
+    console.log(`Should now respond to click on ${xyz} button`);
+    setChosen(name);
+  }
+
+  // GOOD: style={{ fontWeight: isRead ? 'normal' : 'bold' }}>
+  //         <div style={{ backgroundColor: isSelected ? selectedColor : 'white' }}>
+  // style={{ backgroundColor: isSelected ? selectedColor : 'white' }}
+  // style={{ isSelected ? 'abc' : '' }}>
+
+  const conditionalStyle = {
+    backgroundColor: selectedColor,
+  };
+
+  return (
+    <div className='categoryButton'
+        onClick={() => handleButtonClick(name)}
+        style={isSelected ? conditionalStyle : {}} >
+      {label}
+    </div>
+  );
+}
+
+const filterSubmissionsForCategory = (category: string) => {
+  if (category === "inbox") {
+    const filtered = fakeSubmissions.filter((sub) => !sub.isArchived && !sub.isBanned && !sub.isTrashed);
+    return filtered;
+  } else if (category === 'starred') {
+    const filtered = fakeSubmissions.filter((sub) => sub.isStarred && !sub.isBanned && !sub.isTrashed);
+    return filtered;
+  } else if (category === 'important') {
+    const filtered = fakeSubmissions.filter((sub) => sub.isInteresting && !sub.isBanned && !sub.isTrashed);
+    return filtered;
+  } else if (category === 'archived') {
+    const filtered = fakeSubmissions.filter((sub) => sub.isArchived && !sub.isBanned && !sub.isTrashed);
+    return filtered;
+  } else if (category === 'banned') {
+    const filtered = fakeSubmissions.filter((sub) => sub.isBanned);
+    return filtered;
+  } else if (category === 'trash') {
+    const filtered = fakeSubmissions.filter((sub) => sub.isTrashed);
+    return filtered;
+  }
+};
+
 function AdminSubmissionsPage() {
+  const [chosenCategory, setChosenCategory] = useState('inbox');
+
+  console.log(`in AdminSubmissionsPage showing with chosenCategory: '${chosenCategory}'`)
+  const submissionsToShow = filterSubmissionsForCategory(chosenCategory) || [];
+
   return (
     <PageWrapper>
       <div>
-        <Flex direction="row">
+        <Flex direction="row" gap="4px">
           <div className='categoryBar'>
-            selectable list of categories
+            <CategoryButton label='Inbox' name='inbox' chosen={chosenCategory} setChosen={setChosenCategory} />
+            <CategoryButton label='Starred' name='starred' chosen={chosenCategory} setChosen={setChosenCategory} />
+            <CategoryButton label='Important' name='important' chosen={chosenCategory} setChosen={setChosenCategory} />
+            <CategoryButton label='Archived' name='archived' chosen={chosenCategory} setChosen={setChosenCategory} />
+            <CategoryButton label='Banned' name='banned' chosen={chosenCategory} setChosen={setChosenCategory} />
+            <CategoryButton label='Trash' name='trash' chosen={chosenCategory} setChosen={setChosenCategory} />
           </div>
           <div className='listDiv'>
             <Flex
@@ -118,14 +191,12 @@ function AdminSubmissionsPage() {
               
             >
               {
-              fakeSubmissions.map(sub => (
+              submissionsToShow.map(sub => (
               <GMailTile key={sub.id}
                 id={sub.id}
-                status={sub.status}
                 isRead={sub.isRead}
                 isInteresting={sub.isInteresting}
                 isStarred={sub.isStarred}
-                rating={sub.rating}
                 sender={sub.sender}
                 title={sub.title}
                 content={sub.content}

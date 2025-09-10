@@ -1,8 +1,22 @@
 .categoryBar {
-  width: 100px;
+  width: 120px;
+}
+
+.categoryButton {
+  cursor: pointer;
+  font-size: 120%;
+  font-weight: bold;
+  margin-top: 12px;
+  padding-left: 4px;
+  border-radius: 0px 18px 18px 00px; /* Different radius for each corner */
+}
+
+.categoryButton:hover {
+  background-color: #cecbcb;
 }
 
 .listDiv {
+  width: 920px;
   border: 1px red solid;
 }
 

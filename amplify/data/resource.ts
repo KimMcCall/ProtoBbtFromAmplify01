@@ -27,6 +27,12 @@ const schema = a.schema({
       userId: a.string(),
       category: a.string().required(),
       content: a.string().required(),
+      isRead: a.boolean().required().default(false),
+      isStarred: a.boolean().required().default(false),
+      isImportant: a.boolean().required().default(false),
+      isArchived: a.boolean().required().default(false),
+      isBanned: a.boolean().required().default(false),
+      isTrashed: a.boolean().required().default(false),
     })
     .secondaryIndexes((index) => [
       index("userId").queryField("listByUserId"),
