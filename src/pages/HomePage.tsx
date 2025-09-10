@@ -20,9 +20,6 @@ function HomePage() {
         <div>
           <button onClick={() => {handleButtonClick("/sketch")}}>Go to Sketch page</button>
         </div>
-        <div>
-          <button onClick={() => {handleButtonClick("/todos")}}>Go to ToDos page</button>
-        </div>
         {/* loading &&  <div>Loading user info...</div> */}
       </Flex>
     </PageWrapper>

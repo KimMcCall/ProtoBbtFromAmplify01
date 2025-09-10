@@ -17,6 +17,8 @@ import BannedPage from './pages/BannedPage';
 import BannedAliasPage from './pages/BannedAliasPage';
 import CorruptedDbPage from './pages/CorruptedDbPage';
 import UninitializedUserStatusPage from './pages/UninitializedUserStatusPage';
+import AdminUsers from './pages/AdminUsers';
+import AdminSubmissions from './pages/AdminSubmissions';
 
 function App() {
   return (
@@ -37,6 +39,22 @@ function App() {
         <Route path="/mission" element={<MissionPage />} />
         <Route path="/finances" element={<FinancesPage />} />
         <Route path="/donate" element={<DonatePage />} />
+        <Route
+          path="/adminUsers"
+          element={
+            <ProtectedRoute>
+              <AdminUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/adminSubmissions"
+          element={
+            <ProtectedRoute>
+              <AdminSubmissions />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/alias" element={<AliasPage />} />
         <Route path="/banned" element={<BannedPage />} />
         <Route path="/bannedAlias" element={<BannedAliasPage />} />
