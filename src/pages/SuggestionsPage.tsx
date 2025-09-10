@@ -43,6 +43,12 @@ function SuggestionsPage() {
       userId: userId,
       category: category,
       content: convertedText,
+      isRead: false,
+      isStarred: false,
+      isImportant: false,
+      isArchived: false,
+      isBanned: false,
+      isTrashed: false,
     };
     dbClient.models.Submission.create(structToCreate);
   };
