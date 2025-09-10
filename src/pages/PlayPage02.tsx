@@ -8,6 +8,7 @@ import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
 import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
+import { sendEmail } from "../features/email/Email";
 
 function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/donate");
@@ -152,10 +153,18 @@ function PlayPage02() {
 
   const resetLoginTracking = async () => {
     dispatch(resetTracking())
-  }
+  }// 
 
   const addToLoginTracking = async () => {
     dispatch(cacheAbortedCallFrom('person@example.com'))
+  }
+
+  const testEmail = async () => {
+    // toAddressess: string[]; subject: string; body: string
+    const toAddresses = ['mccall.kim@gmail.com'];
+    const subject = 'testSubject';
+    const body= '<p>Some <b>lovely</b> message</>';
+    sendEmail({toAddresses, subject, body } );
   }
 
   const isLoggedIn = useAppSelector(selectIsLoggedIn)
@@ -224,6 +233,7 @@ function PlayPage02() {
           />
           <button onClick={() => resetLoginTracking()}>Reset Login Tracking</button>
           <button onClick={() => addToLoginTracking()}>Add to Login Tracking</button>
+          <button onClick={() => testEmail()}>Test Email</button>
         </Flex>
       </Flex>
     </PageWrapper>
