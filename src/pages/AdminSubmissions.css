@@ -1,0 +1,26 @@
+.categoryBar {
+  width: 100px;
+}
+
+.listDiv {
+  border: 1px red solid;
+}
+
+.senderDiv {
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+  width: 120px; /* Example: Set a specific width for truncation to occur */
+}
+
+.titleDiv {
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+  width: 120px; /* Example: Set a specific width for truncation to occur */
+}
+
+.optionsDiv {
+  border: 1px green solid;
+}
+
