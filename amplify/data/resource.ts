@@ -26,6 +26,7 @@ const schema = a.schema({
     .model({
       userId: a.string(),
       category: a.string().required(),
+      title: a.string().default(''),
       content: a.string().required(),
       isRead: a.boolean().required().default(false),
       isStarred: a.boolean().required().default(false),
