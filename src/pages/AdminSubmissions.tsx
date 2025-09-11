@@ -190,8 +190,6 @@ function AdminSubmissionsPage() {
   const [chosenCategory, setChosenCategory] = useState('inbox');
   const [submissionsToShow, setSubmissionsToShow] = useState(emptySubmissions);
 
-  console.log(`in AdminSubmissionsPage showing with chosenCategory: '${chosenCategory}'`)
-
   useEffect(() => {
       const fetchSubmissions = async () => {
         await dbClient.models.Submission.list().then(

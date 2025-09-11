@@ -42,6 +42,8 @@ function SuggestionsPage() {
     const structToCreate = {
       userId: userId,
       category: category,
+      // GATOR: get this right
+      title: 'Untitled',
       content: convertedText,
       isRead: false,
       isStarred: false,
