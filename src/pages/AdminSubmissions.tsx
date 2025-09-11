@@ -81,21 +81,45 @@ const fakeSubmissions = [
 */
 
 type TilePropType = {
-  submission: SubmissionWithDateType
-  sender: string,
+  submission: SubmissionWithDateAndSenderType
 }
 
 function GMailTile(props: TilePropType) {
-  const { submission, sender, } = props;
-  const { id, isRead, isImportant, isStarred, content } = submission;
-  // GATOR: get title from submission
-  const title = 'Untitled';
+  const { submission } = props;
+  const { id, sender, title, content, isRead, isImportant, isStarred } = submission;
+
+  const [starred, setStarred] = useState(isStarred);
+  const [important, setImportant] = useState(isImportant);
+
+  const toggleStarred = () => {
+    const newState = !starred;
+    const myUpdate =  {
+      id: id,
+      isStarred: newState,
+    };
+    setStarred(newState);
+    dbClient.models.Submission.update(myUpdate);
+  };
+
+  const toggleImportant = () => {
+    const newState = !important;
+    const myUpdate =  {
+      id: id,
+      isImportant: newState,
+    };
+    setImportant(newState);
+    dbClient.models.Submission.update(myUpdate);
+  };
 
   return (
     <div key={id}>
       <Flex className='tileDiv' direction="row" gap="8px">
-        { isStarred ? (<MdStar color='#ffbb00eb' size='22px' onClick={() => {console.log('clicked')}} />) : ( <MdStarBorder size='22px' />)}
-        { isImportant ? (<MdLabelImportant color='#ffbb00eb' size='22px' />) : ( <MdLabelImportantOutline size='22px' />)}
+        { starred ?
+          (<MdStar color='#ffbb00eb' size='22px' onClick={toggleStarred} />) :
+          ( <MdStarBorder size='22px' onClick={toggleStarred} />)}
+        { important ?
+          (<MdLabelImportant color='#ffbb00eb' size='22px' onClick={toggleImportant} />) :
+          ( <MdLabelImportantOutline size='22px' onClick={toggleImportant} />)}
         <div style={{ fontWeight: isRead ? 'normal' : 'bold' }}>
           <Flex direction="row" >
             <div className='senderDiv'>{sender}</div>
@@ -126,8 +150,7 @@ function CategoryButton (props: CategoryButtonPropType) {
   const { label, name, chosen, setChosen} = props;
   const isSelected = chosen === name;
 
-  const handleButtonClick = (xyz: string) => {
-    console.log(`Should now respond to click on ${xyz} button`);
+  const handleButtonClick = () => {
     setChosen(name);
   }
 
@@ -142,7 +165,7 @@ function CategoryButton (props: CategoryButtonPropType) {
 
   return (
     <div className='categoryButton'
-        onClick={() => handleButtonClick(name)}
+        onClick={() => handleButtonClick()}
         style={isSelected ? conditionalStyle : {}} >
       {label}
     </div>
@@ -180,20 +203,36 @@ if (category === "inbox") {
 type SubmissionWithDateType = {
     id: string;
     userId: string | null;
+    // sender: string;
+    category: string;
+    title: string;
+    content: string;
+    createdAt: string;
     isRead: boolean;
     isImportant: boolean;
     isStarred: boolean;
     isArchived: boolean;
     isBanned: boolean;
     isTrashed: boolean;
-    // sender: string;
-    // title: string;
-    category: string;
-    content: string;
-    createdAt: string;
 }
 
-const emptySubmissions: SubmissionWithDateType[] = [];
+type SubmissionWithDateAndSenderType = {
+    id: string;
+    userId: string | null;
+    sender: string;
+    category: string;
+    title: string;
+    content: string;
+    createdAt: string;
+    isRead: boolean;
+    isImportant: boolean;
+    isStarred: boolean;
+    isArchived: boolean;
+    isBanned: boolean;
+    isTrashed: boolean;
+}
+
+const emptySubmissions: SubmissionWithDateAndSenderType[] = [];
 
 function AdminSubmissionsPage() {
   const [chosenCategory, setChosenCategory] = useState('inbox');
@@ -202,18 +241,35 @@ function AdminSubmissionsPage() {
   useEffect(() => {
       const fetchSubmissions = async () => {
         await dbClient.models.Submission.list().then(
-        (response) => {
-          const submissions: SubmissionWithDateType[] = response.data;
+        (submissionsResponse) => {
+          const submissions: SubmissionWithDateType[] = submissionsResponse.data;
           const filteredSubmissions = filterSubmissionsForCategory(submissions, chosenCategory);
-          setSubmissionsToShow(filteredSubmissions);
+          // now build the userId2EmailMap
+          dbClient.models.RegisteredUser.list().then(
+            (usersResponse) => {
+              const allUsers = usersResponse.data;
+              const userId2EmailMap = new Map();
+              allUsers.forEach((user) => {userId2EmailMap.set(user.id, user.canonicalEmail)});
+              // and use the map to populate all the submissions records with values for 'sender'
+              const submissionWithSenders: SubmissionWithDateAndSenderType[] = filteredSubmissions.map((sub) => {
+                const senderId = sub.userId;
+                const senderEmail = userId2EmailMap.get(senderId);
+                const senderObj = { sender: senderEmail };
+                const submissionWithSender = {...sub, ...senderObj};
+                return submissionWithSender;
+              });
+              setSubmissionsToShow(submissionWithSenders);
+            }
+          );
         }
       )
       };
   
       fetchSubmissions(); // Call the async function
-    console.log('running useEffect')
   }, [chosenCategory]
 );
+
+// GATOR: Find a way not to have to do these DB queries every time the user switches categories
 
   return (
     <PageWrapper>
@@ -237,10 +293,9 @@ function AdminSubmissionsPage() {
             >
               {
               submissionsToShow.map(sub => (
-              <GMailTile key={sub.id}
-                submission={sub}
-                sender='tempEmail@example.com'
-              />
+                <GMailTile key={sub.id}
+                  submission={sub}
+                />
             ))}
             </Flex>
           </div>
@@ -249,8 +304,5 @@ function AdminSubmissionsPage() {
     </PageWrapper>
   );
 }
-
-// GATOR: eleven lines above, find a real way to get sender (include as part of submission object)
-// That was synthesized by client-side JOIN, constituting an object of a new type
 
 export default AdminSubmissionsPage;
