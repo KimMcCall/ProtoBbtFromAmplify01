@@ -35,7 +35,8 @@
 
 .singleMsgContenteDiv {
   border: 1px black solid;
-  height: 300px
+  height: 300px;
+  padding: 8px;;
 }
 
 .singleSubmissionButtonFlex {
@@ -43,6 +44,7 @@
 }
 
 .listDiv {
+  height: 720px;
   width: 920px;
   padding-top: 10px;
   border: 1px red solid;

@@ -158,21 +158,18 @@ type CategoryButtonPropType = {
   name: string
   chosen: string
   setChosen: (str: string) => void 
+  showSingle: (b: boolean) => void 
 }
 
 function CategoryButton (props: CategoryButtonPropType) {
   
-  const { label, name, chosen, setChosen} = props;
+  const { label, name, chosen, setChosen, showSingle} = props;
   const isSelected = chosen === name;
 
   const handleButtonClick = () => {
     setChosen(name);
+    showSingle(false);
   }
-
-  // GOOD: style={{ fontWeight: isRead ? 'normal' : 'bold' }}>
-  //         <div style={{ backgroundColor: isSelected ? selectedColor : 'white' }}>
-  // style={{ backgroundColor: isSelected ? selectedColor : 'white' }}
-  // style={{ isSelected ? 'abc' : '' }}>
 
   const conditionalStyle = {
     backgroundColor: selectedColor,
@@ -342,13 +339,13 @@ function AdminSubmissionsPage() {
       <div>
         <Flex direction="row" gap="4px">
           <div className='categoryBar'>
-            <CategoryButton label='Inbox' name='inbox' chosen={chosenCategory} setChosen={setChosenCategory} />
-            <CategoryButton label='Starred' name='starred' chosen={chosenCategory} setChosen={setChosenCategory} />
-            <CategoryButton label='Important' name='important' chosen={chosenCategory} setChosen={setChosenCategory} />
-            <CategoryButton label='Archived' name='archived' chosen={chosenCategory} setChosen={setChosenCategory} />
-            <CategoryButton label='Banned' name='banned' chosen={chosenCategory} setChosen={setChosenCategory} />
-            <CategoryButton label='Trash' name='trash' chosen={chosenCategory} setChosen={setChosenCategory} />
-            <CategoryButton label='All' name='all' chosen={chosenCategory} setChosen={setChosenCategory} />
+            <CategoryButton label='Inbox' name='inbox' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
+            <CategoryButton label='Starred' name='starred' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
+            <CategoryButton label='Important' name='important' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
+            <CategoryButton label='Archived' name='archived' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
+            <CategoryButton label='Banned' name='banned' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
+            <CategoryButton label='Trash' name='trash' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
+            <CategoryButton label='All' name='all' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
           </div>
           <div>
             { shouldShowSngleSubmission
