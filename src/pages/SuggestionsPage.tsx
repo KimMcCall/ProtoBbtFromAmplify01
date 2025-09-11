@@ -1,4 +1,4 @@
-import { Button, Flex, Tabs, TextAreaField } from '@aws-amplify/ui-react';
+import { Button, Flex, Tabs, TextAreaField, TextField } from '@aws-amplify/ui-react';
 import PageWrapper from '../components/PageWrapper';
 import SuggestionsPanel from '../components/SuggestionsPanel';
 import { selectUserId } from '../features/userInfo/userInfoSlice';
@@ -16,18 +16,22 @@ const policyP: React.CSSProperties = {
 };
 
 function SuggestionsPage() {
-  const [siteText, setSiteText] = useState("");
-  const [topicText, setTopicText] = useState("");
+  const [siteTitle, setSiteTitle] = useState('');
+  const [siteText, setSiteText] = useState('');
+  const [topicTitle, setTopicTitle] = useState('');
+  const [topicText, setTopicText] = useState('');
 
   const userId =  useAppSelector(selectUserId);
 
   const handleSiteSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     handleSubmit(event, 'Site Suggestion');
+    setSiteTitle('');
     setSiteText('');
   };
 
   const handleTopicSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     handleSubmit(event, 'Topic Suggestion')
+    setTopicTitle('');
     setTopicText('');
   };
 
@@ -37,13 +41,14 @@ function SuggestionsPage() {
     const form: HTMLFormElement = event.currentTarget
     const formData = new FormData(form);
     const formJson = Object.fromEntries(formData.entries());
+    const submittedTitle = formJson.title;
+    const convertedTitle = submittedTitle.toString();
     const submittedText = formJson.suggestion;
-    const convertedText = submittedText.toString()
+    const convertedText = submittedText.toString();
     const structToCreate = {
       userId: userId,
       category: category,
-      // GATOR: get this right
-      title: 'Untitled',
+      title: convertedTitle,
       content: convertedText,
       isRead: false,
       isStarred: false,
@@ -74,8 +79,16 @@ function SuggestionsPage() {
               vulgar, hateful, name-calling, or otherwise abusive content.
             </p>
             <Flex as="form" direction="column" onSubmit={handleSiteSubmit}>
+              <TextField
+                label='Title (optional):'
+                name='title'
+                value={siteTitle}
+                onChange={(e) => {
+                  setSiteTitle(e.target.value);
+                }}
+              />
               <TextAreaField 
-                label="Your wise suggestion"
+                label=''
                 name="suggestion"
                 value={siteText}
                 onChange={(e) => {
@@ -100,8 +113,16 @@ function SuggestionsPage() {
               vulgar, hateful, name-calling, or otherwise abusive content.
             </p>
             <Flex as="form" direction="column" onSubmit={handleTopicSubmit}>
+              <TextField
+                label='Title (optional):'
+                name='title'
+                value={topicTitle}
+                onChange={(e) => {
+                  setTopicTitle(e.target.value);
+                }}
+              />
               <TextAreaField
-                label="Topic Suggestion:"
+                label=''
                 name="suggestion"
                 value={topicText}
                 onChange={(e) => {
