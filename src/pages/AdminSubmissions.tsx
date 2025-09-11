@@ -2,15 +2,15 @@ import { Flex } from "@aws-amplify/ui-react";
 import { MdStar, MdStarBorder, MdLabelImportantOutline, MdLabelImportant } from 'react-icons/md';
 import PageWrapper from "../components/PageWrapper";
 import './AdminSubmissions.css';
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { dbClient } from "../main";
 
-
-
+/*
 const fakeSubmissions = [
   {
     id: 'lksdfajpaij',
     isRead: false,
-    isInteresting: false,
+    isImportant: false,
     isStarred: false,
     isArchived: false,
     isBanned: false,
@@ -23,7 +23,7 @@ const fakeSubmissions = [
   {
     id: 'peroifhnfn',
     isRead: true,
-    isInteresting: false,
+    isImportant: false,
     isStarred: true,
     isArchived: false,
     isBanned: false,
@@ -35,7 +35,7 @@ const fakeSubmissions = [
   {
     id: '7688yuighjnrkjwle',
     isRead: true,
-    isInteresting: false,
+    isImportant: false,
     isStarred: false,
     isArchived: false,
     isBanned: true,
@@ -47,7 +47,7 @@ const fakeSubmissions = [
   {
     id: 'ert0poflsjdkhck',
     isRead: false,
-    isInteresting: false,
+    isImportant: false,
     isStarred: false,
     isArchived: true,
     isBanned: false,
@@ -59,7 +59,7 @@ const fakeSubmissions = [
   {
     id: 'lkloiew475wro3r4u8oi',
     isRead: false,
-    isInteresting: false,
+    isImportant: false,
     isStarred: false,
     isArchived: true,
     isBanned: false,
@@ -69,26 +69,24 @@ const fakeSubmissions = [
     content: 'Content of submision #5',
   },
 ];
-
+*/
 
 type TilePropType = {
-  id: string
-  isRead: boolean
-  isInteresting: boolean
-  isStarred: boolean
+  submission: SubmissionWithDateType
   sender: string,
-  title: string
-  content: string
 }
 
 function GMailTile(props: TilePropType) {
-  const {id, isRead, isInteresting, isStarred, sender, title, content} = props;
+  const { submission, sender, } = props;
+  const { id, isRead, isImportant, isStarred, content } = submission;
+  // GATOR: get title from submission
+  const title = 'Untitled';
 
   return (
     <div key={id}>
       <Flex direction="row" gap="8px">
         { isStarred ? (<MdStar />) : ( <MdStarBorder />)}
-        { isInteresting ? (<MdLabelImportant />) : ( <MdLabelImportantOutline />)}
+        { isImportant ? (<MdLabelImportant />) : ( <MdLabelImportantOutline />)}
         <div style={{ fontWeight: isRead ? 'normal' : 'bold' }}>
           <Flex direction="row" >
             <div className='senderDiv'>{sender}</div>
@@ -111,7 +109,7 @@ type CategoryButtonPropType = {
   label: string
   name: string
   chosen: string
-  setChosen: any
+  setChosen: (str: string) => void 
 }
 
 function CategoryButton (props: CategoryButtonPropType) {
@@ -142,33 +140,73 @@ function CategoryButton (props: CategoryButtonPropType) {
   );
 }
 
-const filterSubmissionsForCategory = (category: string) => {
-  if (category === "inbox") {
-    const filtered = fakeSubmissions.filter((sub) => !sub.isArchived && !sub.isBanned && !sub.isTrashed);
+const filterSubmissionsForCategory = (submissions: SubmissionWithDateType[], category: string) => {
+if (category === "inbox") {
+    const filtered = submissions.filter((sub) => sub && !sub.isArchived && !sub.isBanned && !sub.isTrashed);
     return filtered;
   } else if (category === 'starred') {
-    const filtered = fakeSubmissions.filter((sub) => sub.isStarred && !sub.isBanned && !sub.isTrashed);
+    const filtered = submissions.filter((sub) => sub && sub.isStarred && !sub.isBanned && !sub.isTrashed);
     return filtered;
   } else if (category === 'important') {
-    const filtered = fakeSubmissions.filter((sub) => sub.isInteresting && !sub.isBanned && !sub.isTrashed);
+    const filtered = submissions.filter((sub) => sub && sub.isImportant && !sub.isBanned && !sub.isTrashed);
     return filtered;
   } else if (category === 'archived') {
-    const filtered = fakeSubmissions.filter((sub) => sub.isArchived && !sub.isBanned && !sub.isTrashed);
+    const filtered = submissions.filter((sub) => sub && sub.isArchived && !sub.isBanned && !sub.isTrashed);
     return filtered;
   } else if (category === 'banned') {
-    const filtered = fakeSubmissions.filter((sub) => sub.isBanned);
+    const filtered = submissions.filter((sub) => sub && sub.isBanned);
     return filtered;
   } else if (category === 'trash') {
-    const filtered = fakeSubmissions.filter((sub) => sub.isTrashed);
+    const filtered = submissions.filter((sub) => sub && sub.isTrashed);
     return filtered;
+  } else if (category === 'all') {
+    const filtered = submissions.filter((sub) => sub);
+    return filtered;
+  } else {
+    return emptySubmissions;
   }
+  
 };
+
+type SubmissionWithDateType = {
+    id: string;
+    userId: string | null;
+    isRead: boolean;
+    isImportant: boolean;
+    isStarred: boolean;
+    isArchived: boolean;
+    isBanned: boolean;
+    isTrashed: boolean;
+    // sender: string;
+    // title: string;
+    category: string;
+    content: string;
+    createdAt: string;
+}
+
+const emptySubmissions: SubmissionWithDateType[] = [];
 
 function AdminSubmissionsPage() {
   const [chosenCategory, setChosenCategory] = useState('inbox');
+  const [submissionsToShow, setSubmissionsToShow] = useState(emptySubmissions);
 
   console.log(`in AdminSubmissionsPage showing with chosenCategory: '${chosenCategory}'`)
-  const submissionsToShow = filterSubmissionsForCategory(chosenCategory) || [];
+
+  useEffect(() => {
+      const fetchSubmissions = async () => {
+        await dbClient.models.Submission.list().then(
+        (response) => {
+          const submissions: SubmissionWithDateType[] = response.data;
+          const filteredSubmissions = filterSubmissionsForCategory(submissions, chosenCategory);
+          setSubmissionsToShow(filteredSubmissions);
+        }
+      )
+      };
+  
+      fetchSubmissions(); // Call the async function
+    console.log('running useEffect')
+  }, [chosenCategory]
+);
 
   return (
     <PageWrapper>
@@ -181,6 +219,7 @@ function AdminSubmissionsPage() {
             <CategoryButton label='Archived' name='archived' chosen={chosenCategory} setChosen={setChosenCategory} />
             <CategoryButton label='Banned' name='banned' chosen={chosenCategory} setChosen={setChosenCategory} />
             <CategoryButton label='Trash' name='trash' chosen={chosenCategory} setChosen={setChosenCategory} />
+            <CategoryButton label='All' name='all' chosen={chosenCategory} setChosen={setChosenCategory} />
           </div>
           <div className='listDiv'>
             <Flex
@@ -188,18 +227,12 @@ function AdminSubmissionsPage() {
               justifyContent="space-between"
               alignItems="left"
               wrap="nowrap"
-              
             >
               {
               submissionsToShow.map(sub => (
               <GMailTile key={sub.id}
-                id={sub.id}
-                isRead={sub.isRead}
-                isInteresting={sub.isInteresting}
-                isStarred={sub.isStarred}
-                sender={sub.sender}
-                title={sub.title}
-                content={sub.content}
+                submission={sub}
+                sender='tempEmail@example.com'
               />
             ))}
             </Flex>
@@ -209,5 +242,8 @@ function AdminSubmissionsPage() {
     </PageWrapper>
   );
 }
+
+// GATOR: eleven lines above, find a real way to get sender (include as part of submission object)
+// That was synthesized by client-side JOIN, constituting an object of a new type
 
 export default AdminSubmissionsPage;

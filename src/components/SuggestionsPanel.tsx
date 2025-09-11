@@ -30,6 +30,12 @@ function SuggestionsPanel() {
             id: sub.id,
             category: sub.category,
             content: sub.content,
+            isRead: sub.isRead,
+            isStarred: sub.isStarred,
+            isImportant: sub.isImportant,
+            isArchived: sub.isArchived,
+            isBanned: sub.isBanned,
+            isTrashed: sub.isTrashed,
           };
         })
         setFoundSubmissions(prunedSubmissions || emptyProps);
