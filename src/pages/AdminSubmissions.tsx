@@ -84,9 +84,9 @@ function GMailTile(props: TilePropType) {
 
   return (
     <div key={id}>
-      <Flex direction="row" gap="8px">
-        { isStarred ? (<MdStar />) : ( <MdStarBorder />)}
-        { isImportant ? (<MdLabelImportant />) : ( <MdLabelImportantOutline />)}
+      <Flex className='tileDiv' direction="row" gap="8px">
+        { isStarred ? (<MdStar color='#ffbb00eb' size='22px' onClick={() => {console.log('clicked')}} />) : ( <MdStarBorder size='22px' />)}
+        { isImportant ? (<MdLabelImportant color='#ffbb00eb' size='22px' />) : ( <MdLabelImportantOutline size='22px' />)}
         <div style={{ fontWeight: isRead ? 'normal' : 'bold' }}>
           <Flex direction="row" >
             <div className='senderDiv'>{sender}</div>

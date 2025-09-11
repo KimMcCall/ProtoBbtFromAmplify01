@@ -1,12 +1,13 @@
 .categoryBar {
   width: 120px;
+  padding-top: 10px;
 }
 
 .categoryButton {
   cursor: pointer;
   font-size: 120%;
   font-weight: bold;
-  margin-top: 12px;
+  margin-bottom: 12px;
   padding-left: 4px;
   border-radius: 0px 18px 18px 00px; /* Different radius for each corner */
 }
@@ -17,7 +18,12 @@
 
 .listDiv {
   width: 920px;
+  padding-top: 10px;
   border: 1px red solid;
+}
+
+.tileDiv {
+  border-bottom: 1px black solid;
 }
 
 .senderDiv {
