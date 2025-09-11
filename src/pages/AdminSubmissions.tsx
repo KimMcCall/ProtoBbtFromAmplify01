@@ -79,11 +79,38 @@ function GMailTile(props: TilePropType) {
   const { submission } = props;
   const { id, sender, title, content, isRead, isImportant, isStarred } = submission;
 
+  const [starred, setStarred] = useState(isStarred);
+  const [important, setImportant] = useState(isImportant);
+
+  const toggleStarred = () => {
+    const newState = !starred;
+    const myUpdate =  {
+      id: id,
+      isStarred: newState,
+    };
+    setStarred(newState);
+    dbClient.models.Submission.update(myUpdate);
+  };
+
+  const toggleImportant = () => {
+    const newState = !important;
+    const myUpdate =  {
+      id: id,
+      isImportant: newState,
+    };
+    setImportant(newState);
+    dbClient.models.Submission.update(myUpdate);
+  };
+
   return (
     <div key={id}>
       <Flex className='tileDiv' direction="row" gap="8px">
-        { isStarred ? (<MdStar color='#ffbb00eb' size='22px' onClick={() => {console.log('clicked')}} />) : ( <MdStarBorder size='22px' />)}
-        { isImportant ? (<MdLabelImportant color='#ffbb00eb' size='22px' />) : ( <MdLabelImportantOutline size='22px' />)}
+        { starred ?
+          (<MdStar color='#ffbb00eb' size='22px' onClick={toggleStarred} />) :
+          ( <MdStarBorder size='22px' onClick={toggleStarred} />)}
+        { important ?
+          (<MdLabelImportant color='#ffbb00eb' size='22px' onClick={toggleImportant} />) :
+          ( <MdLabelImportantOutline size='22px' onClick={toggleImportant} />)}
         <div style={{ fontWeight: isRead ? 'normal' : 'bold' }}>
           <Flex direction="row" >
             <div className='senderDiv'>{sender}</div>
