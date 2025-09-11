@@ -16,6 +16,32 @@
   background-color: #cecbcb;
 }
 
+.singleMessageUI {
+  width: 920px;
+  padding-top: 10px;
+  border: 1px red solid;
+}
+
+.singleMessageDataFlex {
+  width: 720px;
+  border: 1px blue solid;
+  padding: 12px;
+}
+
+.singleMsgTitleDiv {
+  font-size: 115%;
+  font-weight: bold;
+}
+
+.singleMsgContenteDiv {
+  border: 1px black solid;
+  height: 300px
+}
+
+.singleSubmissionButtonFlex {
+  /*background-color: pink;*/
+}
+
 .listDiv {
   width: 920px;
   padding-top: 10px;

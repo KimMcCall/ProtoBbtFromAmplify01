@@ -1,4 +1,4 @@
-import { Flex } from "@aws-amplify/ui-react";
+import { Button, Flex } from "@aws-amplify/ui-react";
 import { MdStar, MdStarBorder, MdLabelImportantOutline, MdLabelImportant } from 'react-icons/md';
 import PageWrapper from "../components/PageWrapper";
 import './AdminSubmissions.css';
@@ -71,12 +71,21 @@ const fakeSubmissions = [
 ];
 */
 
-type TilePropType = {
+type SingleSubmissionUiPropType = {
   submission: SubmissionWithDateAndSenderType
 }
 
+type TilePropType = {
+  submission: SubmissionWithDateAndSenderType
+  singleUiSetter: (arg: boolean) => void
+  submissionSetter: (arg: SubmissionWithDateAndSenderType) => void
+}
+
+// GATOR remove this comment
+// props: SubmissionWithDateAndSenderType
+
 function GMailTile(props: TilePropType) {
-  const { submission } = props;
+  const { submission, singleUiSetter, submissionSetter } = props;
   const { id, sender, title, content, isRead, isImportant, isStarred } = submission;
 
   const [starred, setStarred] = useState(isStarred);
@@ -102,8 +111,13 @@ function GMailTile(props: TilePropType) {
     dbClient.models.Submission.update(myUpdate);
   };
 
+  const showSingleSibmissionUI = () => {
+    submissionSetter(submission);
+    singleUiSetter(true);
+  };
+
   return (
-    <div key={id}>
+    <div key={id} onClick={showSingleSibmissionUI}>
       <Flex className='tileDiv' direction="row" gap="8px">
         { starred ?
           (<MdStar color='#ffbb00eb' size='22px' onClick={toggleStarred} />) :
@@ -224,10 +238,61 @@ type SubmissionWithDateAndSenderType = {
 }
 
 const emptySubmissions: SubmissionWithDateAndSenderType[] = [];
+const protoSubmission: SubmissionWithDateAndSenderType = {
+    id: '',
+    userId: '',
+    sender: '',
+    category: '',
+    title: '',
+    content: '',
+    createdAt: '',
+    isRead: false,
+    isImportant: false,
+    isStarred: false,
+    isArchived: false,
+    isBanned: false,
+    isTrashed: false,
+};
+
+function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
+  const { submission } = props;
+
+  return (
+    <Flex className='singleMessageUI' direction='row'>
+      <Flex className='singleMessageDataFlex' direction='column'>
+        <div className='singleMsgTitleDiv' >
+          {submission.title}
+        </div>
+        <div className='singleMsgContenteDiv' >
+          {submission.content}
+        </div>
+      </Flex>
+      <Flex className='singleSubmissionButtonFlex' direction='column'>
+        <Button className='singleMsgButtonseDiv'>
+          { submission.isStarred  ? ( 'Unstar' ) : ( 'Star' )}
+        </Button>
+        <Button className='singleMsgButtonseDiv'>
+          { submission.isImportant  ? ( 'Unmark Important' ) : ( 'Mark Important' )}
+        </Button>
+        <Button>
+          { submission.isArchived  ? ( 'Unarchive' ) : ( 'Archive' )}
+        </Button>
+        <Button>
+          { submission.isBanned  ? ( 'Unban' ) : ( 'Ban' )}
+        </Button>
+        <Button>
+          { submission.isTrashed  ? ( 'Untrash' ) : ( 'Trash' )}
+        </Button>
+      </Flex>
+    </Flex>
+  );
+}
 
 function AdminSubmissionsPage() {
   const [chosenCategory, setChosenCategory] = useState('inbox');
   const [submissionsToShow, setSubmissionsToShow] = useState(emptySubmissions);
+  const [singleSubmissionToShow, setSingleSubmissionToShow] = useState(protoSubmission);
+  const [shouldShowSngleSubmission, setShouldShowSngleSubmission] = useState(false);
 
   useEffect(() => {
       const fetchSubmissions = async () => {
@@ -275,20 +340,34 @@ function AdminSubmissionsPage() {
             <CategoryButton label='Trash' name='trash' chosen={chosenCategory} setChosen={setChosenCategory} />
             <CategoryButton label='All' name='all' chosen={chosenCategory} setChosen={setChosenCategory} />
           </div>
-          <div className='listDiv'>
-            <Flex
-              direction="column"
-              justifyContent="space-between"
-              alignItems="left"
-              wrap="nowrap"
-            >
-              {
-              submissionsToShow.map(sub => (
-                <GMailTile key={sub.id}
-                  submission={sub}
-                />
-            ))}
-            </Flex>
+          <div>
+            { shouldShowSngleSubmission
+            ?
+            (
+              <SingleSubmissionUI submission={singleSubmissionToShow} />
+            )
+            :
+            (
+              <div className='listDiv'>
+                <Flex
+                  direction="column"
+                  justifyContent="space-between"
+                  alignItems="left"
+                  wrap="nowrap"
+                >
+                  {
+                  submissionsToShow.map(sub => (
+                    <GMailTile key={sub.id}
+                      submission={sub}
+                      singleUiSetter={setShouldShowSngleSubmission}
+                      submissionSetter={setSingleSubmissionToShow}
+                    />
+                ))}
+                </Flex>
+              </div>
+            )
+            }
+            
           </div>
         </Flex>
       </div>
