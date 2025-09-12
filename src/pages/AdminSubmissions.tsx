@@ -352,6 +352,9 @@ function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
         <div className='singleMsgTitleDiv' >
           {submission.title}
         </div>
+        <div className='singleMsgSenderDiv' >
+          From: {submission.sender}
+        </div>
         <div className='singleMsgContenteDiv' >
           {submission.content}
         </div>
