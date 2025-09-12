@@ -101,7 +101,8 @@ function GMailTile(props: TilePropType) {
   const [starred, setStarred] = useState(isStarred);
   const [important, setImportant] = useState(isImportant);
 
-  const toggleStarred = () => {
+  const toggleStarred = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
     const newState = !starred;
     const myUpdate =  {
       id: id,
@@ -111,7 +112,8 @@ function GMailTile(props: TilePropType) {
     dbClient.models.Submission.update(myUpdate);
   };
 
-  const toggleImportant = () => {
+  const toggleImportant = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
     const newState = !important;
     const myUpdate =  {
       id: id,
@@ -121,9 +123,18 @@ function GMailTile(props: TilePropType) {
     dbClient.models.Submission.update(myUpdate);
   };
 
-  const showSingleSibmissionUI = () => {
+  const showSingleSibmissionUI = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
     submissionSetter(submission);
     singleUiSetter(true);
+    if (!submission.isRead) {
+      submission.isRead = true;
+      const myUpdate =  {
+        id: id,
+        isRead: true,
+      };
+      dbClient.models.Submission.update(myUpdate);
+    }
   };
 
   return (
@@ -131,10 +142,10 @@ function GMailTile(props: TilePropType) {
       <Flex className='tileDiv' direction="row" gap="8px">
         { starred ?
           (<MdStar color='#ffbb00eb' size='22px' onClick={toggleStarred} />) :
-          ( <MdStarBorder size='22px' onClick={toggleStarred} />)}
+          (<MdStarBorder size='22px' onClick={toggleStarred} />)}
         { important ?
           (<MdLabelImportant color='#ffbb00eb' size='22px' onClick={toggleImportant} />) :
-          ( <MdLabelImportantOutline size='22px' onClick={toggleImportant} />)}
+          (<MdLabelImportantOutline size='22px' onClick={toggleImportant} />)}
         <div style={{ fontWeight: isRead ? 'normal' : 'bold' }}>
           <Flex direction="row" >
             <div className='senderDiv'>{sender}</div>
@@ -166,7 +177,8 @@ function CategoryButton (props: CategoryButtonPropType) {
   const { label, name, chosen, setChosen, showSingle} = props;
   const isSelected = chosen === name;
 
-  const handleButtonClick = () => {
+  const handleButtonClick = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
     setChosen(name);
     showSingle(false);
   }
@@ -177,7 +189,7 @@ function CategoryButton (props: CategoryButtonPropType) {
 
   return (
     <div className='categoryButton'
-        onClick={() => handleButtonClick()}
+        onClick={handleButtonClick}
         style={isSelected ? conditionalStyle : {}} >
       {label}
     </div>
@@ -262,7 +274,77 @@ const protoSubmission: SubmissionWithDateAndSenderType = {
 };
 
 function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
-  const { submission } = props;
+  const { submission  } = props;
+  const [isStarred, setIsStarred] = useState(submission.isStarred);
+  const [isImportant, setIsImportant] = useState(submission.isImportant);
+  const [isArchived, setIsArchived] = useState(submission.isArchived);
+  const [isBanned, setIsBanned] = useState(submission.isBanned);
+  const [isTrashed, setIsTrashed] = useState(submission.isTrashed);
+
+  const toggleStarred = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    const newState = !isStarred;
+    const myUpdate =  {
+      id: submission.id,
+      isStarred: newState,
+    };
+    setIsStarred(newState);
+    submission.isStarred = newState;
+    console.log(`setting isStarred: ${newState}`);
+    dbClient.models.Submission.update(myUpdate);
+  }
+
+  const toggleImportant = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    const newState = !isImportant;
+    const myUpdate =  {
+      id: submission.id,
+      isImportant: newState,
+    };
+    setIsImportant(newState);
+    submission.isImportant = newState;
+    console.log(`setting isImportant: ${newState}`);
+    dbClient.models.Submission.update(myUpdate);
+  }
+
+  const toggleArchived = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    const newState = !isArchived;
+    const myUpdate =  {
+      id: submission.id,
+      isArchived: newState,
+    };
+    setIsArchived(newState);
+    submission.isArchived = newState;
+    console.log(`setting isArchived: ${newState}`);
+    dbClient.models.Submission.update(myUpdate);
+  }
+
+  const toggleBanned = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    const newState = !isBanned;
+    const myUpdate =  {
+      id: submission.id,
+      isBanned: newState,
+    };
+    setIsBanned(newState);
+    submission.isBanned = newState;
+    console.log(`setting isBanned: ${newState}`);
+    dbClient.models.Submission.update(myUpdate);
+  }
+
+  const toggleTrashed = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    const newState = !isTrashed;
+    const myUpdate =  {
+      id: submission.id,
+      isTrashed: newState,
+    };
+    setIsTrashed(newState);
+    submission.isTrashed = newState;
+    console.log(`setting isTrashed: ${newState}`);
+    dbClient.models.Submission.update(myUpdate);
+  }
 
   return (
     <Flex className='singleMessageUI' direction='row'>
@@ -275,19 +357,19 @@ function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
         </div>
       </Flex>
       <Flex className='singleSubmissionButtonFlex' direction='column'>
-        <Button className='singleMsgButtonseDiv'>
+        <Button className='singleMsgButtonseDiv' onClick={toggleStarred} >
           { submission.isStarred  ? ( 'Unstar' ) : ( 'Star' )}
         </Button>
-        <Button className='singleMsgButtonseDiv'>
+        <Button className='singleMsgButtonseDiv' onClick={toggleImportant}>
           { submission.isImportant  ? ( 'Unmark Important' ) : ( 'Mark Important' )}
         </Button>
-        <Button>
+        <Button className='singleMsgButtonseDiv' onClick={toggleArchived}>
           { submission.isArchived  ? ( 'Unarchive' ) : ( 'Archive' )}
         </Button>
-        <Button>
+        <Button className='singleMsgButtonseDiv' onClick={toggleBanned}>
           { submission.isBanned  ? ( 'Unban' ) : ( 'Ban' )}
         </Button>
-        <Button>
+        <Button className='singleMsgButtonseDiv' onClick={toggleTrashed}>
           { submission.isTrashed  ? ( 'Untrash' ) : ( 'Trash' )}
         </Button>
       </Flex>
@@ -299,7 +381,7 @@ function AdminSubmissionsPage() {
   const [chosenCategory, setChosenCategory] = useState('inbox');
   const [submissionsToShow, setSubmissionsToShow] = useState(emptySubmissions);
   const [singleSubmissionToShow, setSingleSubmissionToShow] = useState(protoSubmission);
-  const [shouldShowSngleSubmission, setShouldShowSngleSubmission] = useState(false);
+  const [shouldShowSingleSubmission, setShouldShowSingleSubmission] = useState(false);
 
   useEffect(() => {
       const fetchSubmissions = async () => {
@@ -339,16 +421,16 @@ function AdminSubmissionsPage() {
       <div>
         <Flex direction="row" gap="4px">
           <div className='categoryBar'>
-            <CategoryButton label='Inbox' name='inbox' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
-            <CategoryButton label='Starred' name='starred' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
-            <CategoryButton label='Important' name='important' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
-            <CategoryButton label='Archived' name='archived' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
-            <CategoryButton label='Banned' name='banned' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
-            <CategoryButton label='Trash' name='trash' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
-            <CategoryButton label='All' name='all' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSngleSubmission} />
+            <CategoryButton label='Inbox' name='inbox' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSingleSubmission} />
+            <CategoryButton label='Starred' name='starred' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSingleSubmission} />
+            <CategoryButton label='Important' name='important' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSingleSubmission} />
+            <CategoryButton label='Archived' name='archived' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSingleSubmission} />
+            <CategoryButton label='Banned' name='banned' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSingleSubmission} />
+            <CategoryButton label='Trash' name='trash' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSingleSubmission} />
+            <CategoryButton label='All' name='all' chosen={chosenCategory} setChosen={setChosenCategory} showSingle={setShouldShowSingleSubmission} />
           </div>
           <div>
-            { shouldShowSngleSubmission
+            { shouldShowSingleSubmission
             ?
             (
               <SingleSubmissionUI submission={singleSubmissionToShow} />
@@ -366,7 +448,7 @@ function AdminSubmissionsPage() {
                   submissionsToShow.map(sub => (
                     <GMailTile key={sub.id}
                       submission={sub}
-                      singleUiSetter={setShouldShowSngleSubmission}
+                      singleUiSetter={setShouldShowSingleSubmission}
                       submissionSetter={setSingleSubmissionToShow}
                     />
                 ))}
