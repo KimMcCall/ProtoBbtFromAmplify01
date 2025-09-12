@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Button, Flex } from "@aws-amplify/ui-react";
 import {
   MdStar,
@@ -11,8 +12,7 @@ import {
 } from 'react-icons/md';
 
 import PageWrapper from "../components/PageWrapper";
-import './AdminSubmissions.css';
-import { useEffect, useState } from "react";
+import './AdminSubmissionsPage.css';
 import { dbClient } from "../main";
 
 /*
@@ -90,9 +90,6 @@ type TilePropType = {
   singleUiSetter: (arg: boolean) => void
   submissionSetter: (arg: SubmissionWithDateAndSenderType) => void
 }
-
-// GATOR remove this comment
-// props: SubmissionWithDateAndSenderType
 
 function GMailTile(props: TilePropType) {
   const { submission, singleUiSetter, submissionSetter } = props;
@@ -224,7 +221,7 @@ if (category === "inbox") {
   
 };
 
-type SubmissionWithDateType = {
+export type SubmissionWithDateType = {
     id: string;
     userId: string | null;
     // sender: string;

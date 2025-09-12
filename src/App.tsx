@@ -18,7 +18,7 @@ import BannedAliasPage from './pages/BannedAliasPage';
 import CorruptedDbPage from './pages/CorruptedDbPage';
 import UninitializedUserStatusPage from './pages/UninitializedUserStatusPage';
 import AdminUsers from './pages/AdminUsers';
-import AdminSubmissions from './pages/AdminSubmissions';
+import AdminSubmissions from './pages/AdminSubmissionsPage';
 
 function App() {
   return (

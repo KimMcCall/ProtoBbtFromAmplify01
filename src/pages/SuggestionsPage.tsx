@@ -64,11 +64,11 @@ function SuggestionsPage() {
     <PageWrapper>
       <Tabs.Container defaultValue="1">
         <Tabs.List spacing='equal' >
-          <Tabs.Item value="1">Suggestion for Site</Tabs.Item>
-          <Tabs.Item value="2">Suggest New Topic</Tabs.Item>
-          <Tabs.Item value="3">Review/Edit your Suggestions</Tabs.Item>
+          <Tabs.Item value="1">Review/Edit your Suggestions</Tabs.Item>
+          <Tabs.Item value="2">Suggestion for Site</Tabs.Item>
+          <Tabs.Item value="3">Suggest New Topic</Tabs.Item>
         </Tabs.List>
-        <Tabs.Panel value="1">
+        <Tabs.Panel value="2">
           <div>
             <h2>Suggestion for Site</h2>
             <p>Please share with us any suggestions you have about how to improve this web site.
@@ -99,7 +99,7 @@ function SuggestionsPage() {
             </Flex>
           </div>
         </Tabs.Panel>
-        <Tabs.Panel value="2">
+        <Tabs.Panel value="3">
           <div>
             <h2>Suggest New Topic</h2>
             <p>Please share with us any suggestions for new topics on which we might fruitfully
@@ -133,7 +133,7 @@ function SuggestionsPage() {
             </Flex>
           </div>
         </Tabs.Panel>
-        <Tabs.Panel value="3">
+        <Tabs.Panel value="1">
           <div>
             <h2>Review/Edit/Delete your Suggestions</h2>
             <SuggestionsPanel />

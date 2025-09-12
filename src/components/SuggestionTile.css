@@ -1,9 +1,10 @@
-.tile {
+.suggestionTile {
   height: 100px;
   padding-left: 4px;
   background-color: #a3aff4;
 }
-.tile:hover {
+
+.suggestionTile:hover {
   background-color: #c5ccf5;
   cursor: pointer;
 }
