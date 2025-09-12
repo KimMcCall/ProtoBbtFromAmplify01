@@ -8,3 +8,14 @@
   border: 1px black solid;
   padding: 8px 4px 0px 8px;
 }
+
+.editorPanel {
+  height: 592px;
+  width: 1000px;
+  /*background-color: pink;*/
+  overflow: auto;
+  padding-left: 8px;
+  padding-top: 8px;
+  border: 1px black solid;
+  padding: 8px 4px 0px 8px;
+}

@@ -3,19 +3,21 @@ import './SuggestionTile.css';
 
 interface MyProps {
   suggestion: SubmissionType;
+  submissionSetter: (submission: SubmissionType) => void;
+  editorSetter: (b: boolean) => void;
 }
 
 const SuggestionTile: React.FC<MyProps> = (props)  => {
-  const { suggestion } = props;
+  const { suggestion, submissionSetter, editorSetter } = props;
 
-  const handleButtonClick = (event: { stopPropagation: () => void; }) => {
+  const handleTileClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
-    const suggestionId = suggestion.id;
-    console.log(`Should now bring up editor for suggestion with ID ${suggestionId}`)
+    submissionSetter(suggestion);
+    editorSetter(true);
   }
 
   return (
-    <div key={suggestion.id} className='suggestionTile' onClick={handleButtonClick} >
+    <div key={suggestion.id} className='suggestionTile' onClick={handleTileClick} >
       {suggestion.content}
     </div>
   );
