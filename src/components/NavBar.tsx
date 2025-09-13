@@ -56,6 +56,8 @@ function NavBar() {
         {isAdmin && <NavBarItem  dest="/adminSubmissions"  label="Admin Texts" />}
         {isSuperAdmin && <NavBarItem  dest="/play01"  label="Play 1" />}
         {isSuperAdmin && <NavBarItem  dest="/play02"  label="Play 2" />}
+        {isSuperAdmin && <NavBarItem  dest="/play03"  label="Play 3" />}
+        {isSuperAdmin && <NavBarItem  dest="/play04"  label="Play 4" />}
         {isSuperAdmin && <NavBarItem  dest="/todos"  label="ToDos" />}
       </Flex>
     </div>

@@ -12,6 +12,8 @@ import DonatePage from './pages/DonatePage';
 import FinancesPage from './pages/FinancesPage';
 import PlayPage01 from './pages/PlayPage01';
 import PlayPage02 from './pages/PlayPage02';
+import PlayPage03 from './pages/PlayPage03';
+import PlayPage04 from './pages/PlayPage04';
 import AliasPage from './pages/AliasPage';
 import BannedPage from './pages/BannedPage';
 import BannedAliasPage from './pages/BannedAliasPage';
@@ -71,6 +73,8 @@ function App() {
         <Route path="/sketch" element={<SketchPage />} />
         <Route path="/play01" element={<PlayPage01 />} />
         <Route path="/play02" element={<PlayPage02 />} />
+        <Route path="/play03" element={<PlayPage03 />} />
+        <Route path="/play04" element={<PlayPage04 />} />
       </Routes>
     </Router>
   );
