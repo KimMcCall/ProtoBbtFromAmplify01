@@ -49,9 +49,7 @@ function SuggestionsPage() {
     const convertedTitle = submittedTitle.toString();
     const submittedText = formJson.suggestion;
     const convertedText = submittedText.toString();
-    console.log(`length of content: ${convertedText.length}`);
     if (convertedText.length === 0) {
-      console.log(`  showing toast and aborting`);
       setToastMessage('Sorry! You need to fill in some content for your suggestion');
       setShouldShowAcceptanceToast(true);
       return;
