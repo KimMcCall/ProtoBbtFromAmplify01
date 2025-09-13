@@ -9,12 +9,14 @@ import { dbClient } from "../main";
 import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
 import { sendEmail } from "../features/email/Email";
+import ToastNotifier from "../components/ToastNotifier";
 
 function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/donate");
   const [ userStatus, setUserStatus ] = useState("");
   const [ dbCheckFeedback, setDbCheckFeedback ] = useState("Waiting for czech");
   const [simpleTestResult, setSimpleTestResult] = useState(42)
+  const [showToast, setShowToast] = useState(false);
   const dispatch = useAppDispatch();
   const isNowSuperAdmin = useAppSelector(selectIsSuperAdmin);
   const newPath = useAppSelector(selecNext);
@@ -177,6 +179,11 @@ function PlayPage02() {
     dispatch(setCanonicalEmail(newValue))
   }
 
+  const handleShowToastClick = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    setShowToast(true);
+  }
+
   const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
 
   return (
@@ -235,6 +242,8 @@ function PlayPage02() {
           <button onClick={() => addToLoginTracking()}>Add to Login Tracking</button>
           <button onClick={() => testEmail()}>Test Email</button>
         </Flex>
+        <ToastNotifier message="This is a brief notice" shouldShow={showToast} showF={setShowToast}/>
+        <button onClick={handleShowToastClick}>Show Toast</button>
       </Flex>
     </PageWrapper>
   );

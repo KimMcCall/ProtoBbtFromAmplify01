@@ -1,0 +1,27 @@
+/* ToastNotifier.css */
+
+.toastNotifierRoot {
+  width: 300px;
+  height: 8cqh;
+  border: 1px black solid;
+  background-color: green;
+  z-index: 2;
+  position: absolute;
+  top: 300px;
+  left: 600px;
+  display: none;
+  direction: row;
+}
+
+.toastMessage {
+  width: 260px;
+  padding: 12px;
+  color: white;
+  margin: 0px;
+}
+
+.toastCloseIcon {
+  margin-top: 30px;
+  color: white;
+  padding: 10px;
+}
