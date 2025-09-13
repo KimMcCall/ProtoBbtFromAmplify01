@@ -1,9 +1,9 @@
 /* ToastNotifier.css */
 
 .toastNotifierRoot {
-  width: 300px;
-  height: 8cqh;
-  border: 1px black solid;
+  width: 350px;
+  height: 90px;
+  border: 3px yellow solid;
   background-color: green;
   z-index: 2;
   position: absolute;
@@ -11,17 +11,20 @@
   left: 600px;
   display: none;
   direction: row;
+  border-radius: 12px;
 }
 
 .toastMessage {
-  width: 260px;
+  width: 316px;
+  height: 86px;
   padding: 12px;
   color: white;
   margin: 0px;
+  display: flex;
+  align-items: center; /* Vertically centers items along the cross-axis */
 }
 
 .toastCloseIcon {
-  margin-top: 30px;
+  margin-top: 36px;
   color: white;
-  padding: 10px;
 }

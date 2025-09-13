@@ -185,6 +185,7 @@ function PlayPage02() {
   }
 
   const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
+  const toastMessage = "This is a long enough text to stretch across multiple lines, I hope";
 
   return (
     <PageWrapper>
@@ -242,7 +243,7 @@ function PlayPage02() {
           <button onClick={() => addToLoginTracking()}>Add to Login Tracking</button>
           <button onClick={() => testEmail()}>Test Email</button>
         </Flex>
-        <ToastNotifier message="This is a brief notice" shouldShow={showToast} showF={setShowToast}/>
+        <ToastNotifier message={toastMessage} shouldShow={showToast} showF={setShowToast}/>
         <button onClick={handleShowToastClick}>Show Toast</button>
       </Flex>
     </PageWrapper>

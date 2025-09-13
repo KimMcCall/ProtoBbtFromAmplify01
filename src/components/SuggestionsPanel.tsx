@@ -39,7 +39,7 @@ function SuggestionsPanel() {
       await dbClient.models.Submission.listByUserId({ userId: userId }).then(
       (response) => {
         const submissions = response.data;
-        console.log(`found ${submissions.length} submissions for userId: ${userId}`);
+        // console.log(`found ${submissions.length} submissions for userId: ${userId}`);
         setFoundSubmissions(submissions || emptyProps);
       }
     )

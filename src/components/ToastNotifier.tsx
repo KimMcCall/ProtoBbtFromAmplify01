@@ -20,7 +20,7 @@ function ToastNotifier (props: MyPropsType) {
 
   return (
     <div className='toastNotifierRoot' style={{ display: shouldShow ? 'block' : ''}}>
-      <Flex direction='row' >
+      <Flex direction='row' gap="0px">
         <div className="toastMessage">
           {message}
         </div>

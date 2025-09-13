@@ -5,6 +5,7 @@ import { selectUserId } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
 import { useState } from 'react';
+import ToastNotifier from '../components/ToastNotifier';
 
 const policyP: React.CSSProperties = {
   fontStyle: 'italic',
@@ -20,6 +21,9 @@ function SuggestionsPage() {
   const [siteText, setSiteText] = useState('');
   const [topicTitle, setTopicTitle] = useState('');
   const [topicText, setTopicText] = useState('');
+  const [shouldShowAcceptanceToast,setShouldShowAcceptanceToast ] = useState(false);
+  const [toastMessage, setToastMessage] = useState('Your suggestion has been received');
+
 
   const userId =  useAppSelector(selectUserId);
 
@@ -45,6 +49,13 @@ function SuggestionsPage() {
     const convertedTitle = submittedTitle.toString();
     const submittedText = formJson.suggestion;
     const convertedText = submittedText.toString();
+    console.log(`length of content: ${convertedText.length}`);
+    if (convertedText.length === 0) {
+      console.log(`  showing toast and aborting`);
+      setToastMessage('Sorry! You need to fill in some content for your suggestion');
+      setShouldShowAcceptanceToast(true);
+      return;
+    }
     const structToCreate = {
       userId: userId,
       category: category,
@@ -58,17 +69,19 @@ function SuggestionsPage() {
       isTrashed: false,
     };
     dbClient.models.Submission.create(structToCreate);
+    setToastMessage('Your suggestion has been received');
+    setShouldShowAcceptanceToast(true);
   };
 
   return (
     <PageWrapper>
       <Tabs.Container defaultValue="1">
         <Tabs.List spacing='equal' >
-          <Tabs.Item value="1">Review/Edit your Suggestions</Tabs.Item>
-          <Tabs.Item value="2">Suggestion for Site</Tabs.Item>
-          <Tabs.Item value="3">Suggest New Topic</Tabs.Item>
+          <Tabs.Item value="1">Suggestion for Site</Tabs.Item>
+          <Tabs.Item value="2">Suggest New Topic</Tabs.Item>
+          <Tabs.Item value="3">Review/Edit your Suggestions</Tabs.Item>
         </Tabs.List>
-        <Tabs.Panel value="2">
+        <Tabs.Panel value="1">
           <div>
             <h2>Suggestion for Site</h2>
             <p>Please share with us any suggestions you have about how to improve this web site.
@@ -99,7 +112,7 @@ function SuggestionsPage() {
             </Flex>
           </div>
         </Tabs.Panel>
-        <Tabs.Panel value="3">
+        <Tabs.Panel value="2">
           <div>
             <h2>Suggest New Topic</h2>
             <p>Please share with us any suggestions for new topics on which we might fruitfully
@@ -128,18 +141,23 @@ function SuggestionsPage() {
                 onChange={(e) => {
                   setTopicText(e.target.value);
                 }}
-                rows={16} cols={120} />
+                rows={13} cols={120} />
               <Button type="submit">Submit Topic Suggestion</Button>
             </Flex>
           </div>
         </Tabs.Panel>
-        <Tabs.Panel value="1">
+        <Tabs.Panel value="3">
           <div>
             <h2>Review/Edit/Delete your Suggestions</h2>
             <SuggestionsPanel />
           </div>
         </Tabs.Panel>
       </Tabs.Container>
+      <ToastNotifier
+        message={toastMessage}
+        shouldShow={shouldShowAcceptanceToast}
+        showF={setShouldShowAcceptanceToast} />
+
     </PageWrapper>
   );
 }
