@@ -22,6 +22,7 @@ import UninitializedUserStatusPage from './pages/UninitializedUserStatusPage';
 import AdminUsers from './pages/AdminUsers';
 import AdminIssuesPage from './pages/AdminIssuesPage';
 import AdminSubmissions from './pages/AdminSubmissionsPage';
+import IssuePage from './pages/IssuePage';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/issue" element={<IssuePage />} />
         <Route
           path="/suggest"
           element={

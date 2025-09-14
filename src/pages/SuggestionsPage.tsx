@@ -151,6 +151,7 @@ function SuggestionsPage() {
           </div>
         </Tabs.Panel>
       </Tabs.Container>
+      
       <ToastNotifier
         message={toastMessage}
         shouldShow={shouldShowAcceptanceToast}
