@@ -20,6 +20,7 @@ import BannedAliasPage from './pages/BannedAliasPage';
 import CorruptedDbPage from './pages/CorruptedDbPage';
 import UninitializedUserStatusPage from './pages/UninitializedUserStatusPage';
 import AdminUsers from './pages/AdminUsers';
+import AdminIssuesPage from './pages/AdminIssuesPage';
 import AdminSubmissions from './pages/AdminSubmissionsPage';
 
 function App() {
@@ -46,6 +47,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminUsers />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/adminIssues"
+          element={
+            <ProtectedRoute>
+              <AdminIssuesPage />
             </ProtectedRoute>
           }
         />
