@@ -43,7 +43,7 @@ async function addProCommentToIssue(issueId: string) {
   }
 }
 
-// Alternative UPDATE - If you want to modify an existing comment
+// Another UPDATE - If you want to modify an existing comment
 async function updateExistingComment(issueId: string, proCommentId: string) {
   try {
     const result = await dbClient.models.IssueP1.update({

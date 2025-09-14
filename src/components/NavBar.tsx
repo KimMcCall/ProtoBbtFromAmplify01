@@ -53,6 +53,7 @@ function NavBar() {
         <NavBarItem dest="/finances" label="Finances" />
         <NavBarItem dest="/donate" label="Donate" />
         {isAdmin && <NavBarItem  dest="/adminUsers"  label="Admin Users" />}
+        {isAdmin && <NavBarItem  dest="/adminIssues"  label="Admn Issues" />}
         {isAdmin && <NavBarItem  dest="/adminSubmissions"  label="Admin Texts" />}
         {isSuperAdmin && <NavBarItem  dest="/play01"  label="Play 1" />}
         {isSuperAdmin && <NavBarItem  dest="/play02"  label="Play 2" />}

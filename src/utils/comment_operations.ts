@@ -12,7 +12,7 @@ async function createProComment(issueId: string, commentText: string, authorId: 
       commentId: commentId,
       commentText: commentText,
       authorId: authorId,
-      createdAt: new Date().toISOString(),
+      createdT: new Date().toISOString(),
     });
     
     console.log('Pro comment created:', result);
@@ -34,7 +34,7 @@ async function createConComment(issueId: string, commentText: string, authorId: 
       commentId: commentId,
       commentText: commentText,
       authorId: authorId,
-      createdAt: new Date().toISOString(),
+      createdT: new Date().toISOString(),
     });
     
     console.log('Con comment created:', result);
@@ -99,7 +99,7 @@ async function getAllComments(issueId: string) {
       if (a.commentType !== b.commentType) {
         return a.commentType === 'PRO' ? -1 : 1; // PRO comments first
       }
-      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      return new Date(a.createdT).getTime() - new Date(b.createdT).getTime();
     });
     
     console.log('All comments:', sortedComments);

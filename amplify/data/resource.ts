@@ -33,8 +33,8 @@ const schema = a.schema({
       commentId: a.string().required(), // Unique identifier for the comment
       commentText: a.string().required(),
       authorId: a.string().required(),
-      createdAt: a.datetime(),
-      updatedAt: a.datetime(),
+      createdT: a.datetime().required(),
+      updatedT: a.datetime().required(),
     })
     .identifier(['issueId', 'commentKey']) // Composite primary key
     .authorization((allow) => [allow.publicApiKey()]),
