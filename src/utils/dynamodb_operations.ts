@@ -4,6 +4,8 @@ import { dbClient } from '../main';
 async function createIssue(
     proUrl: string,
     conUrl: string,
+    proAuthorId: string,
+    conAuthorId: string,
   ) {
   const nowStr = new Date().toISOString();
   try {
@@ -11,22 +13,34 @@ async function createIssue(
       issueId: 'ISSUE#' + nowStr,
       proUrl: proUrl,
       conUrl: conUrl,
+      proAuthorId: proAuthorId,
+      conAuthorId: conAuthorId,
       // commentId: `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`, // This acts as a unique identifier for this comment
       commentId: '',
-      commentKey: '',
+      commentKey: 'PRO#',
       commentType: 'PRO',
       authorId: '',
       commentText: '',
       createdT: nowStr,
       updatedT: nowStr,
     });
-    console.log('IssueP1 with comment created:', result);
+    const { data, errors } = result;
+    if (data === null) {
+      if (errors) {
+        const message = errors[0].message;
+        console.log(message);
+      }
+    } else {
+      console.log('Returned from createIssue: ', result);
+    }
     return result;
   } catch (error) {
     console.error('Error creating issue:', error);
     throw error;
   }
 }
+
+// One or more parameter values are not valid. The AttributeValue for a key attribute cannot contain an empty string value. Key: commentKey (Service: DynamoDb, Status Code: 400, Request ID: 6GV7ABSRK00OJLJ8052D5K2KIRVV4KQNSO5AEMVJF66Q9ASUAAJG) (SDK Attempt Count: 1)
 
 /*
 // CREATE Operation - Adding a new issue with first comment
@@ -58,6 +72,8 @@ async function addCommentToIssue(
     isPro: boolean,
     coppiedIssueId: string,
     copiedProUrl: string,
+    copiedProAuthorId: string,
+    copiedConAuthorId: string,
     copiedConUrl: string,
     commentText: string,
     authorId: string,
@@ -73,6 +89,8 @@ async function addCommentToIssue(
       issueId: coppiedIssueId, // Same issue ID
       proUrl: copiedProUrl,
       conUrl: copiedConUrl,
+      proAuthorId: copiedProAuthorId,
+      conAuthorId: copiedConAuthorId,
       commentId: commentId, // This acts as a unique identifier for this comment
       commentText: commentText,
       commentType: isPro ? 'PRO' : 'CON',
