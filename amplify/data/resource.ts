@@ -22,6 +22,22 @@ const schema = a.schema({
       index("canonicalEmail").queryField("listByCanonicalEmail"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
+  IssueP1: a
+    .model({
+      issueId: a.string().required(),
+      commentKey: a.string().required(), // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
+      /* The 'required()' call in the following line is commented out because it
+         generated an error Property 'required' does not exist on type 'EnumType<readonly
+      */
+      commentType: a.enum(['PRO', 'CON'])/*.required()*/, // Helper field to identify comment type
+      commentId: a.string().required(), // Unique identifier for the comment
+      commentText: a.string().required(),
+      authorId: a.string().required(),
+      createdAt: a.datetime(),
+      updatedAt: a.datetime(),
+    })
+    .identifier(['issueId', 'commentKey']) // Composite primary key
+    .authorization((allow) => [allow.publicApiKey()]),
   Submission: a
     .model({
       userId: a.string(),
@@ -38,15 +54,6 @@ const schema = a.schema({
     .secondaryIndexes((index) => [
       index("userId").queryField("listByUserId"),
     ])
-    .authorization((allow) => [allow.publicApiKey()]),
-  Issue: a
-    .model({
-      question: a.string(),
-      description: a.string(),
-      truth: a.string(),
-      response: a.string(),
-      furtherDiscussion: a.string(),
-    })
     .authorization((allow) => [allow.publicApiKey()]),
   Memo: a
     .model({
