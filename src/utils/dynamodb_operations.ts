@@ -2,14 +2,39 @@
 import { dbClient } from '../main';
 
 // CREATE Operation - Adding a new issue with first comment
+async function createIssueWithoutComment(proUrl: string, conUrl: string) {
+  const nowStr = new Date().toISOString();
+  try {
+    const result = await dbClient.models.IssueP1.create({
+      issueId: 'ISSUE-001',
+      proUrl: proUrl,
+      conUrl: conUrl,
+      proComment: 'PRO-COMMENT-001', // This acts as a unique identifier for this comment
+      authorId: 'user-123',
+      createdT: nowStr,
+      updatedT: nowStr,
+      // Add any other fields you need
+    });
+    
+    console.log('IssueP1 with comment created:', result);
+    return result;
+  } catch (error) {
+    console.error('Error creating issue:', error);
+    throw error;
+  }
+}
+
+// CREATE Operation - Adding a new issue with first comment
 async function createIssueWithComment() {
+  const nowStr = new Date().toISOString();
   try {
     const result = await dbClient.models.IssueP1.create({
       issueId: 'ISSUE-001',
       proComment: 'PRO-COMMENT-001', // This acts as a unique identifier for this comment
       commentText: 'This is the first pro comment for this issue',
       authorId: 'user-123',
-      createdAt: new Date().toISOString(),
+      createdT: nowStr,
+      updatedT: nowStr,
       // Add any other fields you need
     });
     
@@ -27,12 +52,15 @@ async function addProCommentToIssue(issueId: string) {
     // Since we're using a composite key (partition + sort), 
     // adding a new comment means creating a new item with the same issueId
     // but a different proComment value
+    const nowStr = new Date().toISOString();
+
     const result = await dbClient.models.IssueP1.create({
       issueId: issueId, // Same issue ID
       proComment: `PRO-COMMENT-${Date.now()}`, // New unique sort key
       commentText: 'This is another pro comment for the same issue',
       authorId: 'user-456',
-      createdAt: new Date().toISOString(),
+      createdT: nowStr,
+      updatedT: nowStr,
     });
     
     console.log('New pro comment added:', result);
@@ -82,6 +110,7 @@ async function getProCommentsForIssue(issueId: string) {
 // Example usage
 export {
   createIssueWithComment,
+  createIssueWithoutComment,
   addProCommentToIssue,
   updateExistingComment,
   getProCommentsForIssue
