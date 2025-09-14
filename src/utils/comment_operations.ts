@@ -41,6 +41,36 @@ async function getConComments(issueId: string) {
 }
 
 // Query all comments for an issue (both PRO and CON)
+async function getIssue(issueId: string) {
+  try {
+    const result = await dbClient.models.IssueP1.list({
+      filter: {
+        issueId: { eq: issueId }
+      }
+    });
+
+    const issues = result.data;
+    const nIssues = issues.length;
+    if (nIssues < 1) {
+      console.log(`No Issues found with issueId="${issueId}"`);
+      return;
+    } else if (nIssues === 1) {
+      console.log(`One Issue found with issueId="${issueId}"`);
+      const issue = issues[0];
+      console.log('issue: ', issue);
+    } else {
+      // GATOR: probably will get multiple returns;
+      //   Should probably just accept the first
+      console.log(`Multiple Issues found with issueId="${issueId}"`);
+      return;
+    }
+  } catch (error) {
+    console.error('Error querying for Issues:', error);
+    throw error;
+  }
+}
+
+// Query all comments for an issue (both PRO and CON)
 async function getAllComments(issueId: string) {
   try {
     const result = await dbClient.models.IssueP1.list({
@@ -100,6 +130,7 @@ async function deleteComment(issueId: string, commentKey: string) {
 }
 
 export {
+  getIssue,
   getProComments,
   getConComments,
   getAllComments,

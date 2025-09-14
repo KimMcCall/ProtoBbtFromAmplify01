@@ -25,6 +25,7 @@ const schema = a.schema({
   IssueP1: a
     .model({
       issueId: a.string().required(),
+      priority: a.integer(),
       proUrl: a.string().required(),
       conUrl: a.string().required(),
       proAuthorId: a.string().required(), // Who contributed the proUrl

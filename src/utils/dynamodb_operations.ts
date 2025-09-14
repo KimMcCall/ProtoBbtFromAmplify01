@@ -2,6 +2,7 @@ import { dbClient } from '../main';
 
 // CREATE Operation - Adding a new issue with first comment
 async function createIssue(
+    priority: number,
     proUrl: string,
     conUrl: string,
     proAuthorId: string,
@@ -11,6 +12,7 @@ async function createIssue(
   try {
     const result = await dbClient.models.IssueP1.create({
       issueId: 'ISSUE#' + nowStr,
+      priority: priority,
       proUrl: proUrl,
       conUrl: conUrl,
       proAuthorId: proAuthorId,
@@ -70,6 +72,7 @@ async function createIssueWithComment(
 // UPDATE Operation - Adding another proComment to the same issue
 async function addCommentToIssue(
     isPro: boolean,
+    coppiedPriority: number,
     coppiedIssueId: string,
     copiedProUrl: string,
     copiedProAuthorId: string,
@@ -87,6 +90,7 @@ async function addCommentToIssue(
 
     const result = await dbClient.models.IssueP1.create({
       issueId: coppiedIssueId, // Same issue ID
+      priority: coppiedPriority,
       proUrl: copiedProUrl,
       conUrl: copiedConUrl,
       proAuthorId: copiedProAuthorId,
