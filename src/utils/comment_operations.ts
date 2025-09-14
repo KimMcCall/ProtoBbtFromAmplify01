@@ -1,49 +1,4 @@
-/*
 import { dbClient } from '../main';
-
-// Create a PRO comment
-async function createProComment(issueId: string, commentText: string, authorId: string) {
-  try {
-    const commentId = `PRO-${Date.now()}`;
-    const result = await dbClient.models.IssueP1.create({
-      issueId: issueId,
-      commentKey: `PRO#${commentId}`, // Composite sort key
-      commentType: 'PRO',
-      commentId: commentId,
-      commentText: commentText,
-      authorId: authorId,
-      createdT: new Date().toISOString(),
-    });
-    
-    console.log('Pro comment created:', result);
-    return result;
-  } catch (error) {
-    console.error('Error creating pro comment:', error);
-    throw error;
-  }
-}
-
-// Create a CON comment
-async function createConComment(issueId: string, commentText: string, authorId: string) {
-  try {
-    const commentId = `CON-${Date.now()}`;
-    const result = await dbClient.models.IssueP1.create({
-      issueId: issueId,
-      commentKey: `CON#${commentId}`, // Composite sort key
-      commentType: 'CON',
-      commentId: commentId,
-      commentText: commentText,
-      authorId: authorId,
-      createdT: new Date().toISOString(),
-    });
-    
-    console.log('Con comment created:', result);
-    return result;
-  } catch (error) {
-    console.error('Error creating con comment:', error);
-    throw error;
-  }
-}
 
 // Query all PRO comments for an issue
 async function getProComments(issueId: string) {
@@ -86,6 +41,36 @@ async function getConComments(issueId: string) {
 }
 
 // Query all comments for an issue (both PRO and CON)
+async function getIssue(issueId: string) {
+  try {
+    const result = await dbClient.models.IssueP1.list({
+      filter: {
+        issueId: { eq: issueId }
+      }
+    });
+
+    const issues = result.data;
+    const nIssues = issues.length;
+    if (nIssues < 1) {
+      console.log(`No Issues found with issueId="${issueId}"`);
+      return;
+    } else if (nIssues === 1) {
+      console.log(`One Issue found with issueId="${issueId}"`);
+      const issue = issues[0];
+      console.log('issue: ', issue);
+    } else {
+      // GATOR: probably will get multiple returns;
+      //   Should probably just accept the first
+      console.log(`Multiple Issues found with issueId="${issueId}"`);
+      return;
+    }
+  } catch (error) {
+    console.error('Error querying for Issues:', error);
+    throw error;
+  }
+}
+
+// Query all comments for an issue (both PRO and CON)
 async function getAllComments(issueId: string) {
   try {
     const result = await dbClient.models.IssueP1.list({
@@ -117,7 +102,7 @@ async function updateComment(issueId: string, commentKey: string, newText: strin
       issueId: issueId,
       commentKey: commentKey,
       commentText: newText,
-      updatedAt: new Date().toISOString(),
+      updatedT: new Date().toISOString(),
     });
     
     console.log('Comment updated:', result);
@@ -145,12 +130,10 @@ async function deleteComment(issueId: string, commentKey: string) {
 }
 
 export {
-  createProComment,
-  createConComment,
+  getIssue,
   getProComments,
   getConComments,
   getAllComments,
   updateComment,
   deleteComment
 };
-*/

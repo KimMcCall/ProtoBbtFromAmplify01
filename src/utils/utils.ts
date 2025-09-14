@@ -34,6 +34,12 @@ type UserStatusAndUser = {
 
 export type UserStatusType = UserStatus;
 
+export function getRandomIntegerInRange(min: number, max: number) {
+  min = Math.ceil(min); // Ensure min is an integer
+  max = Math.floor(max); // Ensure max is an integer
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 export async function haveLoggedInUser(): Promise<boolean> {
     const showUserInfo = true;
     try {

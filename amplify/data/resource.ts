@@ -25,10 +25,11 @@ const schema = a.schema({
   IssueP1: a
     .model({
       issueId: a.string().required(),
+      priority: a.integer(),
       proUrl: a.string().required(),
       conUrl: a.string().required(),
-      proAuthorId: a.string(),
-      conAuthorId: a.string(),
+      proAuthorId: a.string().required(), // Who contributed the proUrl
+      conAuthorId: a.string().required(), // Who contributed the conUrl
       commentKey: a.string().required(), // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
       /* The 'required()' call in the following line is commented out because it
          generated an error Property 'required' does not exist on type 'EnumType<readonly
@@ -36,7 +37,7 @@ const schema = a.schema({
       commentType: a.enum(['PRO', 'CON'])/*.required()*/, // Helper field to identify comment type
       commentId: a.string().required(), // Unique identifier for the comment
       commentText: a.string().required(),
-      authorId: a.string().required(),
+      authorId: a.string().required(),  // author of comment
       createdT: a.datetime().required(),
       updatedT: a.datetime().required(),
     })

@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Flex, TextField } from "@aws-amplify/ui-react";
+import { Button, Flex, TextField } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
 import { selectIsLoggedIn, selectIsSuperAdmin, setAsSuperAdmin, setCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
-import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
+import { computeUserStatus, getRandomIntegerInRange, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
 import { sendEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
+import { createIssue } from "../utils/dynamodb_operations";
+import { getIssue } from "../utils/comment_operations";
 
 function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/donate");
@@ -184,6 +186,19 @@ function PlayPage02() {
     setShowToast(true);
   }
 
+  const handleCreateIssueClick = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    const priority = getRandomIntegerInRange(1, 1000000)
+    const proUrl = "https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY";
+    const conUrl = "https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview";
+    createIssue(priority, proUrl, conUrl, 'truthLover@example.com', 'denier@example.com');
+  }
+
+  const handleFetchIssueClick = (event: { stopPropagation: () => void; }) => {
+    event.stopPropagation();
+    getIssue("ISSUE#2025-09-14T14:27:17.611Z");
+  }
+
   const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
   const toastMessage = "This is a long enough text to stretch across multiple lines, I hope";
 
@@ -244,7 +259,11 @@ function PlayPage02() {
           <button onClick={() => testEmail()}>Test Email</button>
         </Flex>
         <ToastNotifier message={toastMessage} shouldShow={showToast} showF={setShowToast}/>
-        <button onClick={handleShowToastClick}>Show Toast</button>
+        <Flex>
+          <button onClick={handleShowToastClick}>Show Toast</button>
+          <Button onClick={handleCreateIssueClick}> Create Issue </Button>
+          <Button onClick={handleFetchIssueClick}> Fetch Issue </Button>
+        </Flex>
       </Flex>
     </PageWrapper>
   );

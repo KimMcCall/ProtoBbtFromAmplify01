@@ -1,22 +1,40 @@
-/*
 import { dbClient } from '../main';
 
 // CREATE Operation - Adding a new issue with first comment
-async function createIssueWithoutComment(proUrl: string, conUrl: string) {
+async function createIssue(
+    priority: number,
+    proUrl: string,
+    conUrl: string,
+    proAuthorId: string,
+    conAuthorId: string,
+  ) {
   const nowStr = new Date().toISOString();
   try {
     const result = await dbClient.models.IssueP1.create({
-      issueId: 'ISSUE-001',
+      issueId: 'ISSUE#' + nowStr,
+      priority: priority,
       proUrl: proUrl,
       conUrl: conUrl,
-      proComment: 'PRO-COMMENT-001', // This acts as a unique identifier for this comment
-      authorId: 'user-123',
+      proAuthorId: proAuthorId,
+      conAuthorId: conAuthorId,
+      // commentId: `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`, // This acts as a unique identifier for this comment
+      commentId: '',
+      commentKey: 'PRO#',
+      commentType: 'PRO',
+      authorId: '',
+      commentText: '',
       createdT: nowStr,
       updatedT: nowStr,
-      // Add any other fields you need
     });
-    
-    console.log('IssueP1 with comment created:', result);
+    const { data, errors } = result;
+    if (data === null) {
+      if (errors) {
+        const message = errors[0].message;
+        console.log(message);
+      }
+    } else {
+      console.log('Returned from createIssue: ', result);
+    }
     return result;
   } catch (error) {
     console.error('Error creating issue:', error);
@@ -24,13 +42,17 @@ async function createIssueWithoutComment(proUrl: string, conUrl: string) {
   }
 }
 
+// One or more parameter values are not valid. The AttributeValue for a key attribute cannot contain an empty string value. Key: commentKey (Service: DynamoDb, Status Code: 400, Request ID: 6GV7ABSRK00OJLJ8052D5K2KIRVV4KQNSO5AEMVJF66Q9ASUAAJG) (SDK Attempt Count: 1)
+
+/*
 // CREATE Operation - Adding a new issue with first comment
-async function createIssueWithComment() {
+async function createIssueWithComment(
+    isPro: boolean) {
   const nowStr = new Date().toISOString();
   try {
     const result = await dbClient.models.IssueP1.create({
       issueId: 'ISSUE-001',
-      proComment: 'PRO-COMMENT-001', // This acts as a unique identifier for this comment
+      commentId: `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`, // This acts as a unique identifier for this comment
       commentText: 'This is the first pro comment for this issue',
       authorId: 'user-123',
       createdT: nowStr,
@@ -45,22 +67,41 @@ async function createIssueWithComment() {
     throw error;
   }
 }
+*/
 
 // UPDATE Operation - Adding another proComment to the same issue
-async function addProCommentToIssue(issueId: string) {
+async function addCommentToIssue(
+    isPro: boolean,
+    coppiedPriority: number,
+    coppiedIssueId: string,
+    copiedProUrl: string,
+    copiedProAuthorId: string,
+    copiedConAuthorId: string,
+    copiedConUrl: string,
+    commentText: string,
+    authorId: string,
+  ) {
   try {
     // Since we're using a composite key (partition + sort), 
     // adding a new comment means creating a new item with the same issueId
     // but a different proComment value
     const nowStr = new Date().toISOString();
+    const commentId = `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`;
 
     const result = await dbClient.models.IssueP1.create({
-      issueId: issueId, // Same issue ID
-      proComment: `PRO-COMMENT-${Date.now()}`, // New unique sort key
-      commentText: 'This is another pro comment for the same issue',
-      authorId: 'user-456',
-      createdT: nowStr,
+      issueId: coppiedIssueId, // Same issue ID
+      priority: coppiedPriority,
+      proUrl: copiedProUrl,
+      conUrl: copiedConUrl,
+      proAuthorId: copiedProAuthorId,
+      conAuthorId: copiedConAuthorId,
+      commentId: commentId, // This acts as a unique identifier for this comment
+      commentText: commentText,
+      commentType: isPro ? 'PRO' : 'CON',
+      authorId: authorId,
+      commentKey: `${isPro ? 'PRO' : 'CON'}#` + commentId, // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
       updatedT: nowStr,
+      createdT: nowStr,
     });
     
     console.log('New pro comment added:', result);
@@ -72,14 +113,14 @@ async function addProCommentToIssue(issueId: string) {
 }
 
 // Another UPDATE - If you want to modify an existing comment
-async function updateExistingComment(issueId: string, proCommentId: string) {
+async function updateExistingComment(issueId: string, commentKey: string, newText: string) {
   try {
     const result = await dbClient.models.IssueP1.update({
       issueId: issueId,
-      proComment: proCommentId,
+      commentKey: commentKey,
       // Update specific fields
-      commentText: 'Updated comment text',
-      updatedAt: new Date().toISOString(),
+      commentText: newText,
+      updatedT: new Date().toISOString(),
     });
     
     console.log('Comment updated:', result);
@@ -109,10 +150,8 @@ async function getProCommentsForIssue(issueId: string) {
 
 // Example usage
 export {
-  createIssueWithComment,
-  createIssueWithoutComment,
-  addProCommentToIssue,
+  createIssue,
+  addCommentToIssue,
   updateExistingComment,
   getProCommentsForIssue
 };
-*/
