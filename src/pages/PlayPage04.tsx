@@ -12,10 +12,17 @@ function PlayPage04() {
           </div>
           <div id="pdf-container">
             <embed
-              src="https://drive.google.com/file/d/14YSO2JayELhphAY_1Nb-tHYTF5fqBCWT/view?usp=sharing"
+              src="https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview"
               type="application/pdf"
-              width="1000px"
-              height="560px" />
+              width="836"
+              height="640px" />
+              
+            {/*  If that doesn't work, maybe try this:
+            <iframe
+              src="https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview"
+              width="836"
+              height="640"
+              allow="autoplay" />*/}
           </div>
 
           <div>
