@@ -25,6 +25,8 @@ const schema = a.schema({
   IssueP1: a
     .model({
       issueId: a.string().required(),
+      proUrl: a.string().required(),
+      conUrl: a.string().required(),
       commentKey: a.string().required(), // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
       /* The 'required()' call in the following line is commented out because it
          generated an error Property 'required' does not exist on type 'EnumType<readonly
