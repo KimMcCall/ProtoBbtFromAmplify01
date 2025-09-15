@@ -1,5 +1,10 @@
 /* AdminIssuesPage.css */
 
-.urlsBlock {
-  margin-left: 60px;
+.formRoot {
+  border: 1px black solid;
+  padding: 6px;
+}
+
+.textFieldLabel {
+  margin-top: 12px;
 }
