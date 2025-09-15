@@ -186,12 +186,36 @@ function PlayPage02() {
     setShowToast(true);
   }
 
+  /*
+    priority: number,
+    claim: string,
+    proUrl: string,
+    conUrl: string,
+    proIsPdf: boolean,
+    conIsPdf: boolean,
+    proAuthorId: string,
+    conAuthorId: string,
+    makeAvailable: boolean,
+  */
+
+  const claim = 'Thinking honestly can change an opinion';
+
   const handleCreateIssueClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
-    const priority = getRandomIntegerInRange(1, 1000000)
+    const priority = getRandomIntegerInRange(1, 1000000);
     const proUrl = "https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY";
     const conUrl = "https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview";
-    createIssue(priority, proUrl, conUrl, 'truthLover@example.com', 'denier@example.com');
+    createIssue(
+      priority,
+      claim,
+      proUrl,
+      conUrl,
+      false, // proIsPdf
+      true, // conIsPdf
+      'truthLover@example.com', // proAuthorId
+      'denier@example.com', // conAuthorId
+      false, // makeAvailable
+    );
   }
 
   const handleFetchIssueClick = (event: { stopPropagation: () => void; }) => {

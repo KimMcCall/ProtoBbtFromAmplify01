@@ -26,10 +26,14 @@ const schema = a.schema({
     .model({
       issueId: a.string().required(),
       priority: a.integer(),
+      claim: a.string().required(),
       proUrl: a.string().required(),
       conUrl: a.string().required(),
+      proIsPdf: a.boolean().required().default(false),
+      conIsPdf: a.boolean().required().default(false),
       proAuthorId: a.string().required(), // Who contributed the proUrl
       conAuthorId: a.string().required(), // Who contributed the conUrl
+      makeAvailable: a.boolean().required().default(false),
       commentKey: a.string().required(), // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
       /* The 'required()' call in the following line is commented out because it
          generated an error Property 'required' does not exist on type 'EnumType<readonly

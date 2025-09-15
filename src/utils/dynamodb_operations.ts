@@ -3,20 +3,28 @@ import { dbClient } from '../main';
 // CREATE Operation - Adding a new issue with first comment
 async function createIssue(
     priority: number,
+    claim: string,
     proUrl: string,
     conUrl: string,
+    proIsPdf: boolean,
+    conIsPdf: boolean,
     proAuthorId: string,
     conAuthorId: string,
+    makeAvailable: boolean,
   ) {
   const nowStr = new Date().toISOString();
   try {
     const result = await dbClient.models.IssueP1.create({
       issueId: 'ISSUE#' + nowStr,
       priority: priority,
+      claim: claim,
       proUrl: proUrl,
       conUrl: conUrl,
+      proIsPdf: proIsPdf,
+      conIsPdf: conIsPdf,
       proAuthorId: proAuthorId,
       conAuthorId: conAuthorId,
+      makeAvailable: makeAvailable,
       // commentId: `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`, // This acts as a unique identifier for this comment
       commentId: '',
       commentKey: 'PRO#',
@@ -72,12 +80,16 @@ async function createIssueWithComment(
 // UPDATE Operation - Adding another proComment to the same issue
 async function addCommentToIssue(
     isPro: boolean,
-    coppiedPriority: number,
-    coppiedIssueId: string,
+    copiedIssueId: string,
+    copiedClaim: string,
+    copiedPriority: number,
     copiedProUrl: string,
     copiedProAuthorId: string,
     copiedConAuthorId: string,
     copiedConUrl: string,
+    copiedProIsPdf: boolean,
+    copiedConIsPdf: boolean,
+    copiedMakeAvailable: boolean,
     commentText: string,
     authorId: string,
   ) {
@@ -89,12 +101,16 @@ async function addCommentToIssue(
     const commentId = `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`;
 
     const result = await dbClient.models.IssueP1.create({
-      issueId: coppiedIssueId, // Same issue ID
-      priority: coppiedPriority,
+      issueId: copiedIssueId, // Same issue ID
+      priority: copiedPriority,
+      claim: copiedClaim,
       proUrl: copiedProUrl,
       conUrl: copiedConUrl,
+      proIsPdf: copiedProIsPdf,
+      conIsPdf: copiedConIsPdf,
       proAuthorId: copiedProAuthorId,
       conAuthorId: copiedConAuthorId,
+      makeAvailable: copiedMakeAvailable,
       commentId: commentId, // This acts as a unique identifier for this comment
       commentText: commentText,
       commentType: isPro ? 'PRO' : 'CON',
