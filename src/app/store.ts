@@ -7,7 +7,7 @@ import storage from 'redux-persist/lib/storage'; // defaults to localStorage for
 import navigationReducer from '../features/navigation/navigationSlice'
 import userInfoReducer from '../features/userInfo/userInfoSlice'
 import loginTrackingReducer from  '../features/loginTracking/loginTracking'
-
+import issuesReducer from  '../features/issues/issues'
 
 
 const persistConfig = {
@@ -19,6 +19,7 @@ const combinedReducer = combineReducers({
   userInfo: userInfoReducer,
   navigation: navigationReducer,
   loginTracking: loginTrackingReducer,
+  issues: issuesReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, combinedReducer);
