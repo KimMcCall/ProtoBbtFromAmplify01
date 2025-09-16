@@ -2,7 +2,9 @@ import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { useState } from "react";
 import './IssuePage.css'
-import { defaultConUrl, defaultProUrl } from "../utils/constants";
+import { defaultConIsPdf, defaultConUrl, defaultProIsPdf, defaultProUrl } from "../utils/constants";
+import { selectDisplayBlockForCurrentIssue } from "../features/issues/issues";
+import { useAppSelector } from "../app/hooks";
 
 function IssuePage() {
   const [showPro, setShowPro] = useState(true);
@@ -11,6 +13,12 @@ function IssuePage() {
     event.stopPropagation();
     setShowPro(!showPro);
   }
+
+  const block = useAppSelector(selectDisplayBlockForCurrentIssue);
+  const proUrl = block?.proUrl || defaultProUrl;
+  const conUrl = block?.conUrl || defaultConUrl;
+  const proIsPdf = proUrl === defaultProUrl ? defaultProIsPdf : block?.proIsPdf;
+  const conIsPdf = conUrl === defaultConUrl ? defaultConIsPdf : block?.proIsPdf;
 
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
@@ -25,16 +33,29 @@ function IssuePage() {
         (
           <Flex direction='row'>
             <Flex direction='column'>
-              <iframe
-                width="1026"
-                height="581"
-                src={defaultProUrl}
-                title="YouTube video player"
-                // frameborder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                //referrerpolicy="strict-origin-when-cross-origin"
-                //allowfullscreen
-                />
+              {
+                proIsPdf ?
+                (
+                  <embed
+                    src={proUrl}
+                    type="application/pdf"
+                    width="832px"
+                    height="642px" />
+                )
+                :
+                (
+                  <iframe
+                    width="1026"
+                    height="581"
+                    src={proUrl}
+                    title="YouTube video player"
+                    // frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    //referrerpolicy="strict-origin-when-cross-origin"
+                    //allowfullscreen
+                    />
+                )
+              }
             </Flex>
           </Flex>
         )
@@ -42,11 +63,29 @@ function IssuePage() {
         (
           <Flex direction='row'>
             <Flex direction='column'>
-              <embed
-                src={defaultConUrl}
-                type="application/pdf"
-                width="832px"
-                height="642px" />
+              {
+                conIsPdf ?
+                (
+                  <embed
+                    src={conUrl}
+                    type="application/pdf"
+                    width="832px"
+                    height="642px" />
+                )
+                :
+                (
+                  <iframe
+                    width="1026"
+                    height="581"
+                    src={conUrl}
+                    title="YouTube video player"
+                    // frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    //referrerpolicy="strict-origin-when-cross-origin"
+                    //allowfullscreen
+                    />
+                )
+              }
             </Flex>
           </Flex>
         )
