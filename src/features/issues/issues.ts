@@ -27,6 +27,8 @@ export interface IssueType {
 
 export interface CommentBlockType {
   commentKey: string
+  authorEmail: string
+  time: string
   text: string
 }
 
@@ -49,6 +51,7 @@ export interface IssuesSliceType {
   issues: IssueType[]
   displayBlocks: IssueBlockForRenderingType[]
   currentIssueId: string
+  proOrCon: string
 }
 
 /*
@@ -111,7 +114,8 @@ const initialDisplayBlockInstance: IssueBlockForRenderingType = {
 const initialState: IssuesSliceType = {
   issues: [initialIssueInstance],
   displayBlocks: [initialDisplayBlockInstance],
-  currentIssueId: ''
+  currentIssueId: '',
+  proOrCon: 'pro',
 };
 
 export const issuesSlice = createSlice({
@@ -139,6 +143,9 @@ export const issuesSlice = createSlice({
     setCurrentIssueId: (state, action: PayloadAction<string>) => {
       state.currentIssueId = action.payload;
     },
+    setProOrCon: (state, action: PayloadAction<string>) => {
+      state.proOrCon = action.payload;
+    },
   },
 })
 
@@ -147,6 +154,7 @@ export const {
   resetIssues,
   setDisplayBlocks,
   setCurrentIssueId,
+  setProOrCon,
 } = issuesSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
@@ -158,5 +166,6 @@ export const selectDisplayBlockForCurrentIssue =  (state: RootState) => {
   const foundBlock = allBlocks.find((block) => block.issueId === issueId);
   return foundBlock;
 }
+export const selectProOrCon =  (state: RootState) => state.persistedReducer.issues.proOrCon;
 
 export default issuesSlice.reducer

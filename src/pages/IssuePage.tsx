@@ -3,11 +3,15 @@ import PageWrapper from "../components/PageWrapper";
 import { useState } from "react";
 import './IssuePage.css'
 import { defaultConIsPdf, defaultConUrl, defaultProIsPdf, defaultProUrl } from "../utils/constants";
-import { selectDisplayBlockForCurrentIssue } from "../features/issues/issues";
-import { useAppSelector } from "../app/hooks";
+import { selectDisplayBlockForCurrentIssue, setProOrCon } from "../features/issues/issues";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { useNavigate } from "react-router-dom";
 
 function IssuePage() {
   const [showPro, setShowPro] = useState(true);
+
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleShowContrastingViewClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
@@ -22,7 +26,9 @@ function IssuePage() {
 
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    console.log('Should now bring up the comments UI.')
+    const proOrCon = showPro ? 'pro' : 'con';
+    dispatch(setProOrCon(proOrCon))
+    navigate('/comments')
   }
 
   return (

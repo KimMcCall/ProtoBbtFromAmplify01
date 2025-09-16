@@ -24,6 +24,7 @@ import AdminIssuesPage from './pages/AdminIssuesPage';
 import AdminSubmissions from './pages/AdminSubmissionsPage';
 import IssuePage from './pages/IssuePage';
 import HomePageNext from './pages/HomePageNext';
+import CommentsPage from './pages/CommentsPage';
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/issue" element={<IssuePage />} />
+        <Route path="/comments" element={<CommentsPage />} />
         <Route
           path="/suggest"
           element={

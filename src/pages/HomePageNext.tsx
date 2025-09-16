@@ -84,6 +84,8 @@ const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) =>
     }
     const commentStruct: CommentBlockType = {
       commentKey: issue.commentKey,
+      authorEmail: issue.authorId,
+      time: issue.updatedT,
       text: issue.commentText,
     };
     const proOrCon = issue.commentType;
@@ -160,8 +162,16 @@ const basicStruct: IssueBlockForRenderingType = {
   conUrl: '',
   proIsPdf: true,
   conIsPdf: true,
-  proComments: [{commentKey: 'lksffksdll', text: 'PRO commentText'}],
-  conComments: [{commentKey: 'afl;dskr0r', text: 'CON commentText'}],
+  proComments: [{
+    commentKey: 'lksffksdll',
+    authorEmail: '',
+    time: '',
+    text: 'PRO commentText'}],
+  conComments: [{
+    commentKey: 'afl;dskr0r',
+    authorEmail: '',
+    time: '',
+    text: 'CON commentText'}],
 }
 const arryOfStucts = [basicStruct];
 
