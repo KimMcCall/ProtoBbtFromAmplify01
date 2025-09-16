@@ -12,6 +12,7 @@ import { sendEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
 import { createIssue } from "../utils/dynamodb_operations";
 import { getIssue } from "../utils/comment_operations";
+import { defaultConAuthor, defaultConUrl, defaultProAuthor, defaultProUrl } from "../utils/constants";
 
 function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/donate");
@@ -203,8 +204,8 @@ function PlayPage02() {
   const handleCreateIssueClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
     const priority = getRandomIntegerInRange(1, 1000000);
-    const proUrl = "https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY";
-    const conUrl = "https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview";
+    const proUrl = defaultProUrl;
+    const conUrl = defaultConUrl;
     createIssue(
       priority,
       claim,
@@ -212,8 +213,8 @@ function PlayPage02() {
       conUrl,
       false, // proIsPdf
       true, // conIsPdf
-      'truthLover@example.com', // proAuthorId
-      'denier@example.com', // conAuthorId
+      defaultProAuthor, // proAuthorId
+      defaultConAuthor, // conAuthorId
       false, // makeAvailable
     );
   }

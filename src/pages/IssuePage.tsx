@@ -2,6 +2,7 @@ import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { useState } from "react";
 import './IssuePage.css'
+import { defaultConUrl, defaultProUrl } from "../utils/constants";
 
 function IssuePage() {
   const [showPro, setShowPro] = useState(true);
@@ -27,7 +28,7 @@ function IssuePage() {
               <iframe
                 width="1026"
                 height="581"
-                src="https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY"
+                src={defaultProUrl}
                 title="YouTube video player"
                 // frameborder="0"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
@@ -43,7 +44,7 @@ function IssuePage() {
           <Flex direction='row'>
             <Flex direction='column'>
               <embed
-                src="https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview"
+                src={defaultConUrl}
                 type="application/pdf"
                 width="832px"
                 height="642px" />

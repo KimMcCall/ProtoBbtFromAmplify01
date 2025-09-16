@@ -7,11 +7,12 @@ import { getRandomIntegerInRange } from "../utils/utils";
 import ToastNotifier from "../components/ToastNotifier";
 import { useAppDispatch } from "../app/hooks";
 import { IssueType, setIssues } from "../features/issues/issues";
+import { defaultClaim, defaultConAuthor, defaultConUrl, defaultIssueId, defaultPriority, defaultProAuthor, defaultProUrl } from "../utils/constants";
 
 // Claim: There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive.
 // Priority: 999000
-// ProURL: https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY
-// ConURL: https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview
+// ProURL: {defaultProUrl}
+// ConURL: {defaultConUrl}
   
 const innerHandleSubmit = async (
   event: React.SyntheticEvent<HTMLFormElement>,
@@ -64,15 +65,15 @@ commentText: ""
 commentType: "PRO"
 conAuthorId: "denier@example.com"
 conIsPdf: true
-conUrl: "https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview"
+conUrl: defaultConUrl
 createdAt: "2025-09-15T06:01:27.289Z"
 createdT: "2025-09-15T06:01:26.304Z"
 issueId: "ISSUE#2025-09-15T06:01:26.304Z"
 makeAvailable: false
-priority: 999500
-proAuthorId: "truthLover@example.com"
+priority: defaultPriority
+proAuthorId: defaultProAuthor
 proIsPdf: false
-proUrl: "https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY"
+proUrl: {defaultProUrl}
 updatedAt: "2025-09-15T06:01:27.289Z"
 updatedT: "2025-09-15T06:01:26.304Z"
   */
@@ -95,15 +96,14 @@ updatedT: "2025-09-15T06:01:26.304Z"
     convertedConUrl,
     proIsPdf,
     conIsPdf,
-    'truthLover@example.com',
-    'denier@example.com',
+    defaultProAuthor,
+    defaultConAuthor,
     false, // makeAvailable.  We'll set this later.
   );
   toastSetter('Your issue has been received');
   toastShower(true);
 };
 
-const defaultIssueId = 'ISSUE#2025-09-15T06:01:26.304Z';
 const defaultComment = 'Here\'s a simple comment';
 const maxCommentLength = 500;
 
@@ -158,12 +158,12 @@ function AdminIssuesPage() {
 
     const isPro = proConValue === 'pro';
     const copiedIssueId = issueIdForComment;
-    const copiedClaim = "There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive.";
-    const copiedPriority = 999500;
-    const copiedProUrl = "https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY";
-    const copiedConUrl = "https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview";
-    const copiedProAuthorId = "truthLover@example.com";
-    const copiedConAuthorId = "denier@example.com";
+    const copiedClaim = defaultClaim;
+    const copiedPriority = defaultPriority;
+    const copiedProUrl = defaultProUrl;
+    const copiedConUrl = defaultConUrl;
+    const copiedProAuthorId = defaultProAuthor;
+    const copiedConAuthorId = defaultConAuthor;
     const copiedProIsPdf = false;
     const copiedConIsPdf = true;
     const copiedMakeAvailable = false;
@@ -195,10 +195,8 @@ function AdminIssuesPage() {
     dispatch(setIssues(allIssues));
   }
 
-  const defaultClaim = 'There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive.';
-  const defaultPriority = '999500'
-  const defaultProUrl = 'https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY';
-  const defaultConUrl = 'https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview';
+  const proUrl = defaultProUrl;
+  const conUrl = defaultConUrl;
 
   return (
     <PageWrapper>
@@ -220,7 +218,7 @@ function AdminIssuesPage() {
                 <div className="textFieldLabel">
                   Pro URL: 
                 </div>
-                <TextField label='' name='proUrl' defaultValue={defaultProUrl} width='800px'/>
+                <TextField label='' name='proUrl' defaultValue={proUrl} width='800px'/>
                 <CheckboxField
                   label="isPdf"
                   name="proIsPdf"
@@ -230,7 +228,7 @@ function AdminIssuesPage() {
                 <div className="textFieldLabel">
                   Con URL: 
                 </div>
-                <TextField label='' name='conUrl' defaultValue={defaultConUrl} width='800px'/>
+                <TextField label='' name='conUrl' defaultValue={conUrl} width='800px'/>
                 <CheckboxField
                   label="isPdf"
                   name="conIsPdf"
