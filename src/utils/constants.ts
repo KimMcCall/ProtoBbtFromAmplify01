@@ -9,17 +9,31 @@ const defaultPriority1 = 999500;
 const defaultPriority2 = 500000;
 export const defaultPriority = constantSet === 1 ? defaultPriority1 : defaultPriority2;
 
-const defaultProUrl1 = 'https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY';
-const defaultProUrl2 = 'https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY';
+// AsBreadIsBroken: https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview
+// MyStdProUrl: https://drive.google.com/file/d/1-e4lznWJuyg8j72VSSi51vn9ZAKkEC2z/preview
+// MyStdConUrl: https://drive.google.com/file/d/1yUPJuEEeTwLZbzqSzDU0RK-oZ9Nm-I7m/preview
+// NiecesSing: https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY
+
+const stdProUrl = 'https://drive.google.com/file/d/1-e4lznWJuyg8j72VSSi51vn9ZAKkEC2z/preview';
+const stdConUrl = 'https://drive.google.com/file/d/1yUPJuEEeTwLZbzqSzDU0RK-oZ9Nm-I7m/preview';
+const niecesSingUrl = 'https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY';
+const breadBrokenUrl = 'https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview';
+
+const defaultProUrl1 = niecesSingUrl;
+const defaultProUrl2 = stdProUrl;
 export const defaultProUrl = constantSet === 1 ? defaultProUrl1 : defaultProUrl2;
 
-const defaultConUrl1 = 'https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview';
-const defaultConUrl2 = 'https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview';
+const defaultConUrl1 = breadBrokenUrl;
+const defaultConUrl2 = stdConUrl;
 export const defaultConUrl = constantSet === 1 ? defaultConUrl1 : defaultConUrl2;
 
-export const defaultProIsPdf = true;
-export const defaultConIsPdf = true;
+const defaultProIsPdf1 = false;
+const defaultProIsPdf2 = true;
+export const defaultProIsPdf = constantSet === 1 ? defaultProIsPdf1 : defaultProIsPdf2;
 
+const defaultConIsPdf1 = false;
+const defaultConIsPdf2 = true;
+export const defaultConIsPdf = constantSet === 1 ? defaultConIsPdf1 : defaultConIsPdf2;
 
 const proAuthorId1 = "truthLover1@example.com";
 const proAuthorId2 = "truthLover2@example.com";
