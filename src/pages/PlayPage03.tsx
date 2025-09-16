@@ -1,6 +1,7 @@
 // PlayPage03.tsx
 import { Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
+import { defaultProUrl } from "../utils/constants";
 
 function PlayPage03() {
   return (
@@ -13,7 +14,7 @@ function PlayPage03() {
           <iframe
             width="1026"
             height="581"
-            src="https://www.youtube.com/embed/H3g_kpQHr4M?si=dBR-FdfIJ1NuXryY"
+            src={defaultProUrl}
             title="YouTube video player"
             // frameborder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"

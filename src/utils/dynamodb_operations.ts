@@ -77,16 +77,16 @@ async function createIssueWithComment(
 }
 */
 
-// UPDATE Operation - Adding another proComment to the same issue
+// UPDATE Operation - Adding a Comment to a given issue
 async function addCommentToIssue(
     isPro: boolean,
     copiedIssueId: string,
     copiedClaim: string,
     copiedPriority: number,
     copiedProUrl: string,
+    copiedConUrl: string,
     copiedProAuthorId: string,
     copiedConAuthorId: string,
-    copiedConUrl: string,
     copiedProIsPdf: boolean,
     copiedConIsPdf: boolean,
     copiedMakeAvailable: boolean,
@@ -115,15 +115,15 @@ async function addCommentToIssue(
       commentText: commentText,
       commentType: isPro ? 'PRO' : 'CON',
       authorId: authorId,
-      commentKey: `${isPro ? 'PRO' : 'CON'}#` + commentId, // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
+      commentKey: 'ISSUE#' + commentId, // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
       updatedT: nowStr,
       createdT: nowStr,
     });
     
-    console.log('New pro comment added:', result);
+    console.log(`New ${isPro ? 'PRO' : 'CON'} comment added:`, result);
     return result;
   } catch (error) {
-    console.error('Error adding pro comment:', error);
+    console.error(`Error adding ${isPro ? 'PRO' : 'CON'} comment:`, error);
     throw error;
   }
 }
@@ -147,8 +147,8 @@ async function updateExistingComment(issueId: string, commentKey: string, newTex
   }
 }
 
-// QUERY Operation - Get all pro comments for a specific issue
-async function getProCommentsForIssue(issueId: string) {
+// QUERY Operation - Get all records for a specific issue
+async function getAllRecordsForIssue(issueId: string) {
   try {
     const result = await dbClient.models.IssueP1.list({
       filter: {
@@ -156,8 +156,16 @@ async function getProCommentsForIssue(issueId: string) {
       }
     });
     
-    console.log('Pro comments for issue:', result);
-    return result;
+    const issuesWithPossibleNullPriority = result.data;
+    const healthyIssues = issuesWithPossibleNullPriority.map((issue)=> {
+      if (issue.priority == null) {
+        issue.priority = 0;
+      }
+      return issue;
+    });
+
+    console.log('Comments for issue:', healthyIssues);
+    return healthyIssues;
   } catch (error) {
     console.error('Error querying comments:', error);
     throw error;
@@ -169,5 +177,5 @@ export {
   createIssue,
   addCommentToIssue,
   updateExistingComment,
-  getProCommentsForIssue
+  getAllRecordsForIssue,
 };

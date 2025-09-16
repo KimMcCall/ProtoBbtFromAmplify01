@@ -1,6 +1,7 @@
 // PlayPage03.tsx
 import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
+import { defaultConUrl } from "../utils/constants";
 
 function PlayPage04() {
   return (
@@ -12,14 +13,14 @@ function PlayPage04() {
           </div>
           <div id="pdf-container">
             <embed
-              src="https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview"
+              src={defaultConUrl}
               type="application/pdf"
               width="832px"
               height="642px" />
               
             {/*  If that doesn't work, maybe try this:
             <iframe
-              src="https://drive.google.com/file/d/1CFM6-2h3vrdqx4TVkRZWh7RUTNU3bsMb/preview"
+              src={defaultConUrl}
               width="836"
               height="640"
               allow="autoplay" />
