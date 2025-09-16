@@ -4,7 +4,7 @@ import PageWrapper from "../components/PageWrapper";
 import { useEffect, SyntheticEvent, useState } from 'react';
 import { getAllIssueRecords } from '../utils/dynamodb_operations';
 // import { useAppDispatch } from '../app/hooks';
-import { IssueType, CommentBlockType, IssueBlockForRenderingType, setDisplayBlocks, setCurrentIssueId } from '../features/issues/issues';
+import { IssueType, CommentBlockType, IssueBlockForRenderingType, setDisplayBlocks, setCurrentIssueId, setIssues } from '../features/issues/issues';
 import './HomePage.css'
 import { useAppDispatch } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
@@ -40,6 +40,25 @@ const sortByIncreasingPriority = (issues: IssueType[]) => {
     else { return 1; }
   })
   return retVal;
+}
+
+const keyUrlString = 'NONE';
+const keyCommentString = 'No Comment';
+
+const repairKeyStrings = (issues: IssueType[]) => {
+  const repairedIssues = issues.map((issue) => {
+    if (issue.proUrl === keyUrlString) {
+      issue.proUrl = '';
+    }
+    if (issue.conUrl === keyUrlString) {
+      issue.conUrl = '';
+    }
+    if (issue.commentText === keyCommentString) {
+      issue.commentText = '';
+    }
+    return issue;
+  });
+  return repairedIssues;
 }
 
 const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) => {
@@ -158,11 +177,12 @@ function HomePageNext() {
         // @ts-expect-error This is, indeed, a type mismatch, but I'm hoping it'll be OK
         const iterable: Iterable<IssueType> = result.values();
         const issues = Array.from(iterable);
-        // GATOR: make this work
-        // dispatch(setIssues(issues));
         const sortedByUpdate = sortByUpdateT(issues);
         const sortedByIssueId = sortByIssueId(sortedByUpdate);
         const sortedByPriority = sortByIncreasingPriority(sortedByIssueId);
+        const repairedIssues = repairKeyStrings(sortedByPriority);
+        console.log(`# repairedIssues: ${repairedIssues.length}`)
+        dispatch(setIssues(repairedIssues));
         const structured = structurePerIssue(sortedByPriority);
         console.log(`# structured: ${structured.length}`)
         console.log(structured);
