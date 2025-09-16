@@ -30,11 +30,25 @@ export interface CommentBlockType {
   text: string
 }
 
+export interface IssuesType {
+  issues: IssueType[]
+}
+
 export interface IssueBlockForRenderingType {
   issueId: string
   claim: string
+  proUrl: string
+  conUrl: string
+  proIsPdf: boolean,
+  conIsPdf: boolean,
   proComments: CommentBlockType[]
   conComments: CommentBlockType[]
+}
+
+export interface IssuesSliceType {
+  issues: IssueType[]
+  displayBlocks: IssueBlockForRenderingType[]
+  currentIssueId: string
 }
 
 /*
@@ -60,7 +74,7 @@ export interface IssueBlockForRenderingType {
 */
 
 // Define the initial state using that type
-const initialInstance: IssueType = {
+const initialIssueInstance: IssueType = {
   issueId: '',
   claim: '',
   proUrl: '',
@@ -82,11 +96,23 @@ const initialInstance: IssueType = {
   updatedAt: '',
 }
 
-export interface IssuesType {
-  issues: IssueType[]
+// Define the initial state using that type
+const initialDisplayBlockInstance: IssueBlockForRenderingType = {
+  issueId: '',
+  claim: '',
+  proUrl: '',
+  conUrl: '',
+  proIsPdf: false,
+  conIsPdf: false,
+  proComments: [],
+  conComments: [],
 }
 
-const initialState: IssuesType = { issues: [initialInstance] };
+const initialState: IssuesSliceType = {
+  issues: [initialIssueInstance],
+  displayBlocks: [initialDisplayBlockInstance],
+  currentIssueId: ''
+};
 
 export const issuesSlice = createSlice({
   name: 'issues',
@@ -94,15 +120,24 @@ export const issuesSlice = createSlice({
   initialState,
   reducers: {
     setIssues: (state, action: PayloadAction<IssueType[]>) => {
-      const issues = action.payload;
-      const nIssues = issues.length;
+      const newIssues = action.payload;
+      const nIssues = newIssues.length;
       console.log(`In setIssues, nIssues: ${nIssues}`);
-      state.issues = issues;
+      state.issues = newIssues;
     },
     resetIssues: (state) => {
       console.log(`state BEFORE: `, state.issues);
-      state.issues = [initialInstance];
+      state.issues = [initialIssueInstance];
       console.log(`state AFTER: `, state.issues);
+    },
+    setDisplayBlocks: (state, action: PayloadAction<IssueBlockForRenderingType[]>) => {
+      const newBlocks = action.payload;
+      const nBlocks = newBlocks.length;
+      console.log(`In setDisplayBlocks, nBlocks: ${nBlocks}`);
+      state.displayBlocks = newBlocks;
+    },
+    setCurrentIssueId: (state, action: PayloadAction<string>) => {
+      state.currentIssueId = action.payload;
     },
   },
 })
@@ -110,9 +145,18 @@ export const issuesSlice = createSlice({
 export const {
   setIssues,
   resetIssues,
+  setDisplayBlocks,
+  setCurrentIssueId,
 } = issuesSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectFullState =  (state: RootState) => state.persistedReducer.issues;
+export const selectAllIssues =  (state: RootState) => state.persistedReducer.issues.issues;
+export const selectAllDisplayBlocks =  (state: RootState) => state.persistedReducer.issues.displayBlocks;
+export const selectDisplayBlocksForCurrentIssue=  (state: RootState) => {
+  const issueId = state.persistedReducer.issues.currentIssueId;
+  const allBlocks = state.persistedReducer.issues.displayBlocks;
+  const foundBlock = allBlocks.find((block) => block.issueId === issueId);
+  return foundBlock;
+}
 
 export default issuesSlice.reducer

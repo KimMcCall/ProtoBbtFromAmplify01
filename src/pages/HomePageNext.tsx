@@ -4,8 +4,10 @@ import PageWrapper from "../components/PageWrapper";
 import { useEffect, SyntheticEvent, useState } from 'react';
 import { getAllIssueRecords } from '../utils/dynamodb_operations';
 // import { useAppDispatch } from '../app/hooks';
-import { IssueType, CommentBlockType, IssueBlockForRenderingType } from '../features/issues/issues';
+import { IssueType, CommentBlockType, IssueBlockForRenderingType, setDisplayBlocks, setCurrentIssueId } from '../features/issues/issues';
 import './HomePage.css'
+import { useAppDispatch } from "../app/hooks";
+import { useNavigate } from "react-router-dom";
 
 const sortByUpdateT = (issues: IssueType[]) => {
   const retVal = issues.sort((a, b) => {
@@ -42,12 +44,21 @@ const sortByIncreasingPriority = (issues: IssueType[]) => {
 
 const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) => {
   const issuesForThisId = issues.filter((issue) => issue.issueId === issueId);
+  // since we want the value of the latest one, we'll just override these each time through
   let claim = '';
+  let proUrl = '';
+  let conUrl = '';
+  let proIsPdf = false;
+  let conIsPdf = false;
   let proComments: CommentBlockType[] = [];
   let conComments: CommentBlockType[] = [];
 
   issuesForThisId.forEach((issue) => {
     claim = issue.claim;
+    proUrl = issue.proUrl;
+    conUrl = issue.conUrl;
+    proIsPdf = issue.proIsPdf;
+    conIsPdf = issue.conIsPdf;
     const isEmpty = issue.commentText.length <= 0;
     if (isEmpty) {
       return;
@@ -66,6 +77,10 @@ const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) =>
   const retVal: IssueBlockForRenderingType = {
     issueId: issueId,
     claim: claim,
+    proUrl: proUrl,
+    conUrl: conUrl,
+    proIsPdf: proIsPdf,
+    conIsPdf: conIsPdf,
     proComments: proComments,
     conComments: conComments,
   }
@@ -98,14 +113,15 @@ interface ClaimCardProps {
 
 function ClaimCard(props: ClaimCardProps) {
   const { struct } = props;
-
-  // const navigate = useNavigate();
-  // const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const handleCardClick = (event: SyntheticEvent<HTMLDivElement>) => {
     event.stopPropagation();
     console.log(`Should now save state for comments and navigate to the IssuePage`)
     // navigate(`/issue`); // GATOR: possibly add queryString to URL
+    dispatch(setCurrentIssueId(struct.issueId));
+    navigate('/issue')
   }
 
   const claim = struct.claim;
@@ -121,6 +137,10 @@ function ClaimCard(props: ClaimCardProps) {
 const basicStruct: IssueBlockForRenderingType = {
   issueId: '',
   claim: '',
+  proUrl: '',
+  conUrl: '',
+  proIsPdf: true,
+  conIsPdf: true,
   proComments: [{commentKey: 'lksffksdll', text: 'PRO commentText'}],
   conComments: [{commentKey: 'afl;dskr0r', text: 'CON commentText'}],
 }
@@ -128,6 +148,7 @@ const arryOfStucts = [basicStruct];
 
 function HomePageNext() {
   const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
+  const dispatch = useAppDispatch();
   
   useEffect(() => {
     const fetchIssues = async () => {
@@ -137,7 +158,6 @@ function HomePageNext() {
         // @ts-expect-error This is, indeed, a type mismatch, but I'm hoping it'll be OK
         const iterable: Iterable<IssueType> = result.values();
         const issues = Array.from(iterable);
-        console.log(`# issues: ${issues.length}`);
         // GATOR: make this work
         // dispatch(setIssues(issues));
         const sortedByUpdate = sortByUpdateT(issues);
@@ -148,12 +168,13 @@ function HomePageNext() {
         console.log(structured);
         // GATOR: in issueSlice, make a place to store this
         setStructuredForRendering(structured);
+        dispatch(setDisplayBlocks(structured));
       }
     )
     };
 
     fetchIssues(); // Call the async function
-  }, []);
+  }, [dispatch]);
 
 
   return (
