@@ -1,0 +1,15 @@
+/* HomePage.css */
+
+.claimCardRoot {
+  margin-top: 10px;
+  border: 3px black solid;
+  border-radius: 8px;
+  height: 100px;
+  width: 900px;
+  background-color: yellow;
+  padding: 6px;
+  font-size: 150%;
+  font-weight: bold;
+  display: flex;
+  align-items: center; /* Vertically centers items along the cross-axis */
+}

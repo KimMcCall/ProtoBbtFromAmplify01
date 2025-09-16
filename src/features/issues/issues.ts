@@ -25,6 +25,18 @@ export interface IssueType {
   updatedAt: string
 }
 
+export interface CommentBlockType {
+  commentKey: string
+  text: string
+}
+
+export interface IssueBlockForRenderingType {
+  issueId: string
+  claim: string
+  proComments: CommentBlockType[]
+  conComments: CommentBlockType[]
+}
+
 /*
   issueId: string;
   claim: string;

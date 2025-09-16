@@ -147,6 +147,30 @@ async function updateExistingComment(issueId: string, commentKey: string, newTex
   }
 }
 
+// QUERY Operation - Get all Issue records
+async function getAllIssueRecords() {
+  try {
+    const result = await dbClient.models.IssueP1.list();
+    const returnedIssues = result.data;
+    console.log(`# returnedIssues: ${returnedIssues.length}`)
+    const nonNullIssues = returnedIssues.filter((issue) => issue !== null);
+    console.log(`# nonNullIssues: ${nonNullIssues.length}`)
+    
+    const issuesWithPossibleNullPriority = nonNullIssues;
+    const healthyIssues = issuesWithPossibleNullPriority.map((issue)=> {
+      if (issue.priority == null) {
+        issue.priority = 0;
+      }
+      return issue;
+    });
+    console.log(`# healthyIssues: ${healthyIssues.length}`)
+    return healthyIssues;
+  } catch (error) {
+    console.error('Error in getAllIssueRecords():', error);
+    throw error;
+  }
+}
+
 // QUERY Operation - Get all records for a specific issue
 async function getAllRecordsForIssue(issueId: string) {
   try {
@@ -164,7 +188,6 @@ async function getAllRecordsForIssue(issueId: string) {
       return issue;
     });
 
-    console.log('Comments for issue:', healthyIssues);
     return healthyIssues;
   } catch (error) {
     console.error('Error querying comments:', error);
@@ -177,5 +200,6 @@ export {
   createIssue,
   addCommentToIssue,
   updateExistingComment,
+  getAllIssueRecords,
   getAllRecordsForIssue,
 };
