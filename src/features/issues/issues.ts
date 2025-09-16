@@ -152,7 +152,7 @@ export const {
 // Other code such as selectors can use the imported `RootState` type
 export const selectAllIssues =  (state: RootState) => state.persistedReducer.issues.issues;
 export const selectAllDisplayBlocks =  (state: RootState) => state.persistedReducer.issues.displayBlocks;
-export const selectDisplayBlocksForCurrentIssue=  (state: RootState) => {
+export const selectDisplayBlockForCurrentIssue =  (state: RootState) => {
   const issueId = state.persistedReducer.issues.currentIssueId;
   const allBlocks = state.persistedReducer.issues.displayBlocks;
   const foundBlock = allBlocks.find((block) => block.issueId === issueId);
