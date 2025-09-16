@@ -44,7 +44,7 @@ function CommentsPage() {
           <div className="commentsAreaDiv">
           {
           commentBlocks.map(block => (
-          <CommentTile block={block} />
+          <CommentTile key={block.commentKey} block={block} />
         ))}
           </div>
           <Button onClick={handleCommentButtonClick}>
