@@ -152,10 +152,7 @@ async function getAllIssueRecords() {
   try {
     const result = await dbClient.models.IssueP1.list();
     const returnedIssues = result.data;
-    console.log(`# returnedIssues: ${returnedIssues.length}`)
-    const nonNullIssues = returnedIssues.filter((issue) => issue !== null);
-    console.log(`# nonNullIssues: ${nonNullIssues.length}`)
-    
+    const nonNullIssues = returnedIssues.filter((issue) => issue !== null);    
     const issuesWithPossibleNullPriority = nonNullIssues;
     const healthyIssues = issuesWithPossibleNullPriority.map((issue)=> {
       if (issue.priority == null) {
