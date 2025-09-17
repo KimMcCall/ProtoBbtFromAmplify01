@@ -125,19 +125,12 @@ export const issuesSlice = createSlice({
   reducers: {
     setIssues: (state, action: PayloadAction<IssueType[]>) => {
       const newIssues = action.payload;
-      const nIssues = newIssues.length;
-      console.log(`In setIssues, nIssues: ${nIssues}`);
+      console.log(`In issuesSlice.setIssues, nIssues: ${newIssues.length}`);
       state.issues = newIssues;
-    },
-    resetIssues: (state) => {
-      console.log(`state BEFORE: `, state.issues);
-      state.issues = [initialIssueInstance];
-      console.log(`state AFTER: `, state.issues);
     },
     setDisplayBlocks: (state, action: PayloadAction<IssueBlockForRenderingType[]>) => {
       const newBlocks = action.payload;
-      const nBlocks = newBlocks.length;
-      console.log(`In setDisplayBlocks, nBlocks: ${nBlocks}`);
+      console.log(`In issuesSlice.setDisplayBlocks, nBlocks: ${newBlocks.length}`);
       state.displayBlocks = newBlocks;
     },
     setCurrentIssueId: (state, action: PayloadAction<string>) => {
@@ -151,7 +144,6 @@ export const issuesSlice = createSlice({
 
 export const {
   setIssues,
-  resetIssues,
   setDisplayBlocks,
   setCurrentIssueId,
   setProOrCon,
@@ -165,6 +157,12 @@ export const selectDisplayBlockForCurrentIssue =  (state: RootState) => {
   const allBlocks = state.persistedReducer.issues.displayBlocks;
   const foundBlock = allBlocks.find((block) => block.issueId === issueId);
   return foundBlock;
+}
+export const selectSomeRecordForCurrentIssue =  (state: RootState) => {
+  const issueId = state.persistedReducer.issues.currentIssueId;
+  const allIssues = state.persistedReducer.issues.issues;
+  const foundIssue = allIssues.find((issue) => issue.issueId === issueId);
+  return foundIssue;
 }
 export const selectProOrCon =  (state: RootState) => state.persistedReducer.issues.proOrCon;
 

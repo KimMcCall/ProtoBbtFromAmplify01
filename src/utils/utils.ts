@@ -1,6 +1,8 @@
 // utils.ts
 import { getCurrentUser } from "aws-amplify/auth";
 import { dbClient } from "../main";
+import { CommentBlockType, IssueBlockForRenderingType, IssueType } from "../features/issues/issues";
+import { keyCommentString, keyUrlString } from "./constants";
 
 type UserStatus =
 "returningRegistrant" |
@@ -233,5 +235,123 @@ const innerComputeStatus = async (email: string): Promise<UserStatus>  => {
     }
   )
   console.log(`returning ${retVal} from end of innerComputeStatus`)
+  return retVal;
+}
+
+export const sortAndRepairIssues = (issues: IssueType[]) => {
+  const sortedByUpdate = sortByUpdateT(issues);
+  const sortedByIssueId = sortByIssueId(sortedByUpdate);
+  const sortedByPriority = sortByIncreasingPriority(sortedByIssueId);
+  const repairedIssues = repairKeyStrings(sortedByPriority);
+  return repairedIssues;
+}
+
+const sortByUpdateT = (issues: IssueType[]) => {
+  const nIssues = issues.length;
+  let dupedIssues: IssueType[] = [];
+  for (let i = 0; i < nIssues; i++) {
+    dupedIssues = dupedIssues.concat(issues[i])
+  }
+
+  const retVal = dupedIssues.sort((a, b) => a.updatedT.localeCompare(b.updatedT));
+  return retVal;
+}
+
+const sortByIssueId = (issues: IssueType[]) => {
+  const retVal = issues.sort((a, b) => {
+    const aIssueId = a.issueId;
+    const bIssueId = b.issueId;
+    if (aIssueId < bIssueId) { return -1; }
+    else if (aIssueId === bIssueId) { return 0; }
+    else { return 1; }
+  })
+  return retVal;
+}
+
+const sortByIncreasingPriority = (issues: IssueType[]) => {
+  const retVal = issues.sort((a, b) => {
+    const aPriority = a.priority;
+    const bPriority = b.priority;
+    if (aPriority > bPriority) { return -1; }
+    else if (aPriority === bPriority) { return 0; }
+    else { return 1; }
+  })
+  return retVal;
+}
+
+const repairKeyStrings = (issues: IssueType[]) => {
+  // console.log('before repairKeyStrings: ', issues);
+  const repairedIssues = issues.map((issue) => {
+    if (issue.proUrl === keyUrlString) {
+      issue.proUrl = '';
+    }
+    if (issue.conUrl === keyUrlString) {
+      issue.conUrl = '';
+    }
+    if (issue.commentText === keyCommentString) {
+      issue.commentText = '';
+    }
+    return issue;
+  });
+  // console.log('after repairKeyStrings: ', repairedIssues);
+  return repairedIssues;
+}
+
+export const structurePerIssue = (listOfIssues: IssueType[]) => {
+  const mySet = new Set();
+  listOfIssues.forEach((issue) => { mySet.add(issue.issueId)});
+  let myStructs: IssueBlockForRenderingType[]  = [];
+  // @ts-expect-error I only put strings into the Set, so that's all I'll get out
+  mySet.forEach((issueId: string) => {
+    const struct: IssueBlockForRenderingType = createRenderingStuctForIssueId(issueId, listOfIssues)
+    myStructs = myStructs.concat(struct);
+  });
+  return myStructs;
+}
+
+const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) => {
+  const issuesForThisId = issues.filter((issue) => issue.issueId === issueId);
+  // since we want the value of the latest one, we'll just override these each time through
+  let claim = '';
+  let proUrl = '';
+  let conUrl = '';
+  let proIsPdf = false;
+  let conIsPdf = false;
+  let proComments: CommentBlockType[] = [];
+  let conComments: CommentBlockType[] = [];
+
+  issuesForThisId.forEach((issue) => {
+    claim = issue.claim;
+    proUrl = issue.proUrl;
+    conUrl = issue.conUrl;
+    proIsPdf = issue.proIsPdf;
+    conIsPdf = issue.conIsPdf;
+    const isEmpty = issue.commentText.length <= 0;
+    if (isEmpty) {
+      return;
+    }
+    const commentStruct: CommentBlockType = {
+      commentKey: issue.commentKey,
+      authorEmail: issue.authorId,
+      time: issue.updatedT,
+      text: issue.commentText,
+    };
+    const proOrCon = issue.commentType;
+    if (proOrCon === 'PRO') {
+      proComments = proComments.concat(commentStruct);
+    } else {
+      conComments = conComments.concat(commentStruct);
+    }
+  });
+  const retVal: IssueBlockForRenderingType = {
+    issueId: issueId,
+    claim: claim,
+    proUrl: proUrl,
+    conUrl: conUrl,
+    proIsPdf: proIsPdf,
+    conIsPdf: conIsPdf,
+    proComments: proComments,
+    conComments: conComments,
+  }
   return retVal;
 }
