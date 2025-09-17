@@ -2,7 +2,7 @@
 
 .commentsAreaDiv {
   height: 676px;
-  /*background-color: chocolate;*/
+  overflow-y: auto; 
   margin-bottom: 8px;
 }
 
