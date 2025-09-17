@@ -6,6 +6,7 @@ import './CommentsPage.css';
 import { SyntheticEvent } from "react";
 import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 import { selectFullUser } from "../features/userInfo/userInfoSlice";
+import { addCommentToIssue } from "../utils/dynamodb_operations";
 
 interface CommentTileProps {
   block: CommentBlockType;
@@ -45,14 +46,14 @@ function CommentsPage() {
   const proOrCon = useAppSelector(selectProOrCon);
   const commentBlocks = proOrCon === 'pro' ? issueBlock?.proComments : issueBlock?.conComments;
   
-  const handleAutoCommentButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+  const handleAutoCommentButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     const isPro = proOrCon === 'pro';
     const nowStr = new Date().toISOString();
     const commentId = `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`;
     const commenntKey = `ISSUE#${commentId}`;
     const commentType = isPro ? 'PRO' : 'CON';
-    const commentText = `This is an auto-generated ${commentType} comment`;
+    const commentText = `This is an auto-generated ${commentType} comment that should show up in the dB.`;
     // @ts-expect-error I'm pretty sure there are no fields here with 'undefined' content
     const clonedRecord: IssueType = { ...aRecord };
     clonedRecord.commentType = commentType;
@@ -68,7 +69,42 @@ function CommentsPage() {
     const structured = structurePerIssue(sortedAndRepairedIssus);
     dispatch(setIssues(sortedAndRepairedIssus));
     dispatch(setDisplayBlocks(structured));
+
+    const copiedIssueId = clonedRecord.issueId;
+    const copiedClaim = clonedRecord.claim;
+    const copiedPriority = clonedRecord.priority;
+    const copiedProUrl = clonedRecord.proUrl;
+    const copiedConUrl = clonedRecord.conUrl;
+    const copiedProAuthorId = clonedRecord.proAuthorId;
+    const copiedConAuthorId = clonedRecord.conAuthorId;
+    const copiedProIsPdf = clonedRecord.proIsPdf;
+    const copiedConIsPdf = clonedRecord.conIsPdf;
+    const copiedMakeAvailable = clonedRecord.makeAvailable;
+    const authorId = clonedRecord.authorId;
+
+    await addCommentToIssue(
+      isPro,
+      copiedIssueId,
+      copiedClaim,
+      copiedPriority,
+      copiedProUrl,
+      copiedConUrl,
+      copiedProAuthorId,
+      copiedConAuthorId,
+      copiedProIsPdf,
+      copiedConIsPdf,
+      copiedMakeAvailable,
+      commentText,
+      authorId,
+    );
   }
+
+  /*
+async function addCommentToIssue(,
+    commentText: string,
+    authorId: string,
+  )
+*/
 
   if (commentBlocks) {
     return (

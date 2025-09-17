@@ -115,7 +115,7 @@ async function addCommentToIssue(
       commentText: commentText,
       commentType: isPro ? 'PRO' : 'CON',
       authorId: authorId,
-      commentKey: 'ISSUE#' + commentId, // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
+      commentKey: 'ISSUE#' + commentId, // Composite sort key: "ISSUE#PRO#{commentId}" or "ISSUE#CON#{commentId}"
       updatedT: nowStr,
       createdT: nowStr,
     });
