@@ -15,7 +15,7 @@ import { defaultClaim, defaultConAuthor, defaultConUrl, defaultIssueId, defaultP
 // ConURL: {defaultConUrl}
   
 const innerHandleSubmit = async (
-  event: React.SyntheticEvent<HTMLFormElement>,
+  event: SyntheticEvent<HTMLFormElement>,
   toastSetter: { (value: SetStateAction<string>): void; (arg0: string): void; },
   toastShower: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; }) => {
   event.preventDefault(); // Prevent default form submission behavior

@@ -19,7 +19,7 @@ import BannedPage from './pages/BannedPage';
 import BannedAliasPage from './pages/BannedAliasPage';
 import CorruptedDbPage from './pages/CorruptedDbPage';
 import UninitializedUserStatusPage from './pages/UninitializedUserStatusPage';
-import AdminUsers from './pages/AdminUsers';
+import AdminUsersPage from './pages/AdminUsersPage';
 import AdminIssuesPage from './pages/AdminIssuesPage';
 import AdminSubmissions from './pages/AdminSubmissionsPage';
 import IssuePage from './pages/IssuePage';
@@ -52,7 +52,7 @@ function App() {
           path="/adminUsers"
           element={
             <ProtectedRoute>
-              <AdminUsers />
+              <AdminUsersPage />
             </ProtectedRoute>
           }
         />

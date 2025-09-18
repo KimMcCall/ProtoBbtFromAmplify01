@@ -1,2 +1,97 @@
 /* AdminUsersPage.css */
 
+.userAdminPageFlex {
+  padding-top: 48px;
+  padding-left: 40px;
+}
+
+.adminOnlyHolderDiv {
+  margin-top: 8px;
+}
+
+.userAdminListDiv {
+  border: 1px black solid;
+  padding: 6px;
+  height: 600px;
+  width: 500px;
+}
+
+.userAdminTileDiv {
+  border-bottom: 1px black solid;
+  padding: 4px;
+}
+
+.normalUserTileEmailDiv {
+  width: 240px;
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+}
+
+.adminUserTileEmailDiv {
+  width: 240px;
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+  font-weight: bold;
+}
+
+.bannedUserTileEmailDiv {
+  width: 240px;
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+  text-decoration: line-through;
+  font-style: italic;
+}
+
+.normalUserTileNameDiv {
+  width: 200px;
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+}
+
+.adminUserTileNameDiv {
+  width: 200px;
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+  font-weight: bold;
+}
+
+.bannedUserTileNameDiv {
+  width: 200px;
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+  text-decoration: line-through;
+  font-style: italic;
+}
+
+/* Styles for enabled buttons */
+button:enabled {
+  background-color: #4CAF50; /* Green */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Styles for disabled buttons */
+button:disabled {
+  background-color: #cccccc; /* Grey */
+  color: #666666;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: not-allowed; /* Indicates non-interactiveness */
+  opacity: 0.7; /* Optional: reduce opacity for visual emphasis */
+}
+
+/* Optional: Styles for hover state on enabled buttons */
+button:enabled:hover {
+  background-color: #45a049;
+}
+
