@@ -120,8 +120,8 @@ function AdminUsersPage() {
       const email = user.canonicalEmail;
       const name = user.name;
       console.log(` searching for '${filterString}' in '${email}' or '${name}'`)
-      const haveEmailMatch = email && email.includes(filterString);
-      const haveNameMatch = name && name.includes(filterString);
+      const haveEmailMatch = email && email.toLowerCase().includes(filterString.toLowerCase());
+      const haveNameMatch = name && name.toLowerCase().includes(filterString.toLowerCase());
       return haveEmailMatch || haveNameMatch;
     })
   }
