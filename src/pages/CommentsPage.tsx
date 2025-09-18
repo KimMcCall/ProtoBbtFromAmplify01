@@ -3,10 +3,11 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
 import { CommentBlockType, IssueType, selectAllIssues, selectDisplayBlockForCurrentIssue, selectProOrCon, selectSomeRecordForCurrentIssue, setDisplayBlocks, setIssues } from "../features/issues/issues";
 import './CommentsPage.css';
-import { SyntheticEvent } from "react";
+import { SyntheticEvent, useState } from "react";
 import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 import { selectFullUser } from "../features/userInfo/userInfoSlice";
 import { addCommentToIssue } from "../utils/dynamodb_operations";
+import CommentSubmissionForm from "../components/CommentSubmissionForm";
 
 interface CommentTileProps {
   block: CommentBlockType;
@@ -30,12 +31,6 @@ function CommentTile(props: CommentTileProps) {
   );
 }
 
-const handleCommentButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
-  event.stopPropagation();
-  console.log('should show a comment input form');
-  // GATOR: show a comment input form
-}
-
 function CommentsPage() {
   const dispatch = useAppDispatch();
 
@@ -45,15 +40,31 @@ function CommentsPage() {
   const issueBlock = useAppSelector(selectDisplayBlockForCurrentIssue);
   const proOrCon = useAppSelector(selectProOrCon);
   const commentBlocks = proOrCon === 'pro' ? issueBlock?.proComments : issueBlock?.conComments;
+
+  const [shouldShowForm, setShouldShowForm] = useState(false);
+
+  const handleCommentButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setShouldShowForm(true);
+  }
+
+  const createCommentFromSubmission = async (text: string) => {
+    createCommentWithText(text);
+  }
   
   const handleAutoCommentButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    const commentText = `This is an auto-generated ${proOrCon === 'pro' ? 'PRO' : 'CON'} comment that should show up in the dB.`;
+    createCommentWithText(commentText);
+  }
+
+  const createCommentWithText = async (text: string) => {
     const isPro = proOrCon === 'pro';
     const nowStr = new Date().toISOString();
     const commentId = `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`;
     const commenntKey = `ISSUE#${commentId}`;
     const commentType = isPro ? 'PRO' : 'CON';
-    const commentText = `This is an auto-generated ${commentType} comment that should show up in the dB.`;
+    const commentText = text;
     // @ts-expect-error I'm pretty sure there are no fields here with 'undefined' content
     const clonedRecord: IssueType = { ...aRecord };
     clonedRecord.commentType = commentType;
@@ -97,14 +108,20 @@ function CommentsPage() {
       commentText,
       authorId,
     );
+
   }
 
-  /*
-async function addCommentToIssue(,
-    commentText: string,
-    authorId: string,
-  )
-*/
+  const handleCancelSubmissionForm = () => {
+    setShouldShowForm(false);
+  }
+
+  const handleSubmitSubmissionForm = (text: string) => {
+    setShouldShowForm(false);
+    if (text.length == 0) {
+      return;
+    }
+    createCommentFromSubmission(text);
+  }
 
   if (commentBlocks) {
     return (
@@ -120,11 +137,24 @@ async function addCommentToIssue(,
             <Button onClick={handleCommentButtonClick}>
               Make your own Comment
             </Button>
-            <Button onClick={handleAutoCommentButtonClick}>
-              Test AutoComment
-            </Button>
+            {
+              false && 
+              (
+                <Button onClick={handleAutoCommentButtonClick}>
+                  Test AutoComment
+                </Button>
+              )
+            }
           </Flex>
         </div>
+        {
+          shouldShowForm &&
+          (
+            // UI to display if myConstant is true
+            <CommentSubmissionForm cancelF={handleCancelSubmissionForm} submitF={handleSubmitSubmissionForm}/>
+          )
+        }
+
       </PageWrapper>
     );
   } else {
@@ -133,6 +163,13 @@ async function addCommentToIssue(,
         <div>
           No comments found!
         </div>
+        {
+          shouldShowForm &&
+          (
+            // UI to display if myConstant is true
+            <CommentSubmissionForm cancelF={handleCancelSubmissionForm} submitF={handleSubmitSubmissionForm}/>
+          )
+        }
       </PageWrapper>
     )
   }

@@ -125,12 +125,10 @@ export const issuesSlice = createSlice({
   reducers: {
     setIssues: (state, action: PayloadAction<IssueType[]>) => {
       const newIssues = action.payload;
-      console.log(`In issuesSlice.setIssues, nIssues: ${newIssues.length}`);
       state.issues = newIssues;
     },
     setDisplayBlocks: (state, action: PayloadAction<IssueBlockForRenderingType[]>) => {
       const newBlocks = action.payload;
-      console.log(`In issuesSlice.setDisplayBlocks, nBlocks: ${newBlocks.length}`);
       state.displayBlocks = newBlocks;
     },
     setCurrentIssueId: (state, action: PayloadAction<string>) => {
