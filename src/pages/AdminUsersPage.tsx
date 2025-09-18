@@ -67,8 +67,8 @@ function AdminUsersPage() {
     console.log(`calling setSearchBarText('${newText}')`)
     setSearchBarTextAndFilterString(newText);
     console.log(` after call to setSearchBarText(), filterString:'${filterString}'`)
-    runDelayedSearch();
-    console.log(` after runDelayedSearch(), filterString:'${filterString}'`)
+    runSearch();
+    console.log(` after runSearch(), filterString:'${filterString}'`)
   }
 
   const setSearchBarTextAndFilterString = (text: string) => {
@@ -76,13 +76,9 @@ function AdminUsersPage() {
     filterString = text;
   }
 
-  const runDelayedSearch = () => [
-    setTimeout(() => {runSearch()}, 1)
-  ]
-
   const handleSearchBarClear = () => {
     setSearchBarTextAndFilterString('');
-    runDelayedSearch();
+    runSearch();
   }
 
   const handleTileCheckboxChosen = (userId: string, chosen: boolean) => {
