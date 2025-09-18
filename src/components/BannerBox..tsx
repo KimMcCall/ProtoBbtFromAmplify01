@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { Flex, Menu, MenuItem, Avatar } from '@aws-amplify/ui-react';
-import { selectIsLoggedIn } from '../features/userInfo/userInfoSlice';
+import { selectCurrentUserIsLoggedIn } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 
 const box: React.CSSProperties = {
@@ -43,7 +43,7 @@ function BannerBox() {
     navigate("/login");
   };
   
-  const isLoggeddIn = useAppSelector(selectIsLoggedIn);
+  const isLoggeddIn = useAppSelector(selectCurrentUserIsLoggedIn);
 
   return (
     <div id="banner-box" style={box}>

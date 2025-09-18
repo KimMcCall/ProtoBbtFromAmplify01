@@ -5,7 +5,7 @@ import { CommentBlockType, IssueType, selectAllIssues, selectDisplayBlockForCurr
 import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
 import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
-import { selectFullUser } from "../features/userInfo/userInfoSlice";
+import { selectCurrentUser } from "../features/userInfo/userInfoSlice";
 import { addCommentToIssue } from "../utils/dynamodb_operations";
 import CommentSubmissionForm from "../components/CommentSubmissionForm";
 
@@ -36,7 +36,7 @@ function CommentsPage() {
 
   const allIssues = useAppSelector(selectAllIssues);
   const aRecord = useAppSelector(selectSomeRecordForCurrentIssue);
-  const authorEmail = useAppSelector(selectFullUser).canonicalEmail;
+  const authorEmail = useAppSelector(selectCurrentUser).canonicalEmail;
   const issueBlock = useAppSelector(selectDisplayBlockForCurrentIssue);
   const proOrCon = useAppSelector(selectProOrCon);
   const commentBlocks = proOrCon === 'pro' ? issueBlock?.proComments : issueBlock?.conComments;

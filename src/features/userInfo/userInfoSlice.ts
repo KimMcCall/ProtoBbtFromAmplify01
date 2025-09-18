@@ -1,9 +1,11 @@
+// userInfoSlice.ts
+ 
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store'
 
 // Define a type for the slice state
-export interface UserInfoState {
+export interface SingleUserInfoType {
   id: string
   authId: string
   canonicalEmail: string
@@ -14,8 +16,13 @@ export interface UserInfoState {
   isBanned: boolean
 }
 
+export interface UserSliceType {
+  currentUser: SingleUserInfoType
+  allUsers: SingleUserInfoType[]
+}
+
 // Define the initial state using that type
-const initialState: UserInfoState = {
+const basicInitialUser: SingleUserInfoType = {
   id: '',
   authId: '',
   canonicalEmail: '',
@@ -26,23 +33,24 @@ const initialState: UserInfoState = {
   isBanned: false,
 }
 
+const basicInitialState: UserSliceType = {
+  currentUser: basicInitialUser,
+  allUsers: [],
+}
+
 export const userInfoSlice = createSlice({
   name: 'userInfo',
   // `createSlice` will infer the state type from the `initialState` argument
-  initialState,
+  initialState: basicInitialState,
   reducers: {
-    setUserInfo: (state, action: PayloadAction<UserInfoState>) => {
+    setCurrentUserInfo: (state, action: PayloadAction<SingleUserInfoType>) => {
       const newUser = action.payload;
-      state.id = newUser.id;
-      state.authId = newUser.authId;
-      state.canonicalEmail = newUser.canonicalEmail;
-      state.initialEmail = newUser.initialEmail;
-      state.name = newUser.name;
-      state.isAdmin = newUser.isAdmin;
-      state.isSuperAdmin = newUser.isSuperAdmin;
-      state.isBanned = newUser.isBanned;
+      const shallowCopy = { ...newUser };
+      state.currentUser = shallowCopy;
     },
-    clearUserInfo: (state) => {
+    clearCurrentUserInfo: (state) => {
+      state.currentUser = { ...basicInitialUser }
+      /*
       state.id = '';
       state.authId = '';
       state.canonicalEmail = '';
@@ -51,41 +59,67 @@ export const userInfoSlice = createSlice({
       state.isAdmin = false;
       state.isSuperAdmin = false;
       state.isBanned = false;
+      */
     },
-    setAsAdmin: (state, action: PayloadAction<boolean>) => {
-      state.isAdmin = action.payload;
+    setCurrentUserAsAdmin: (state, action: PayloadAction<boolean>) => {
+      state.currentUser.isAdmin = action.payload;
     },
-    setId: (state, action: PayloadAction<string>) => {
-      state.id = action.payload;
+    setCurrentUserId: (state, action: PayloadAction<string>) => {
+      state.currentUser.id = action.payload;
     },
-    setCanonicalEmail: (state, action: PayloadAction<string>) => {
-      state.canonicalEmail = action.payload;
+    setCurrentUserCanonicalEmail: (state, action: PayloadAction<string>) => {
+      state.currentUser.canonicalEmail = action.payload;
     },
-    setAsSuperAdmin: (state, action: PayloadAction<boolean>) => {
-      state.isSuperAdmin = action.payload;
+    setCurrentUserAsSuperAdmin: (state, action: PayloadAction<boolean>) => {
+      state.currentUser.isSuperAdmin = action.payload;
     },
+    setAllUsers: (state, action: PayloadAction<SingleUserInfoType[]>) => {
+      const submittedArray = action.payload;
+      const copiedArray = submittedArray.map(user => { return { ...user }});
+      state.allUsers = copiedArray;
+    }
   },
 })
 
 export const {
-  setUserInfo,
-  clearUserInfo,
-  setId,
-  setCanonicalEmail,
-  setAsAdmin,
-  setAsSuperAdmin
+  setCurrentUserInfo,
+  clearCurrentUserInfo,
+  setCurrentUserId,
+  setCurrentUserCanonicalEmail,
+  setCurrentUserAsAdmin,
+  setCurrentUserAsSuperAdmin
 } = userInfoSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectUserId = (state: RootState) => state.persistedReducer.userInfo.id
-export const selectAuthId = (state: RootState) => state.persistedReducer.userInfo.authId
-export const selectUserName = (state: RootState) => state.persistedReducer.userInfo.name
-export const selectCanonicalEmail = (state: RootState) => state.persistedReducer.userInfo.canonicalEmail
-export const selectInitialEmail = (state: RootState) => state.persistedReducer.userInfo.initialEmail
-export const selectIsAdmin = (state: RootState) => state.persistedReducer.userInfo.isAdmin
-export const selectIsSuperAdmin = (state: RootState) => state.persistedReducer.userInfo.isSuperAdmin
-export const selectIsBanned = (state: RootState) => state.persistedReducer.userInfo.isBanned
-export const selectFullUser =  (state: RootState) => state.persistedReducer.userInfo
-export const selectIsLoggedIn =  (state: RootState) => state.persistedReducer.userInfo.canonicalEmail.length > 0
+export const selectCurrentUserId = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser ? state.persistedReducer.userInfo.currentUser.id : ''
+
+export const selectCurrentUserAuthId = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser ? state.persistedReducer.userInfo.currentUser.authId : ''
+
+export const selectCurrentUserName = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser ? state.persistedReducer.userInfo.currentUser.name : 'Unnkown User'
+
+export const selectCurrentUserCanonicalEmail = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser ? state.persistedReducer.userInfo.currentUser.canonicalEmail : ''
+
+export const selectCurrentUserInitialEmail = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser ? state.persistedReducer.userInfo.currentUser.initialEmail : ''
+
+export const selectCurrentUserIsAdmin = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.isAdmin
+
+export const selectCurrentUserIsSuperAdmin = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.isSuperAdmin
+
+export const selectCurrentUserIsBanned = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.isBanned
+
+export const selectCurrentUserIsLoggedIn =  (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.canonicalEmail.length > 0
+
+export const selectCurrentUser =  (state: RootState) => state.persistedReducer.userInfo.currentUser
+
+export const selectAllUsers = (state: RootState) => state.persistedReducer.userInfo.allUsers
 
 export default userInfoSlice.reducer

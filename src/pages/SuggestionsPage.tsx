@@ -1,7 +1,7 @@
 import { Button, Flex, Tabs, TextAreaField, TextField } from '@aws-amplify/ui-react';
 import PageWrapper from '../components/PageWrapper';
 import SuggestionsPanel from '../components/SuggestionsPanel';
-import { selectUserId } from '../features/userInfo/userInfoSlice';
+import { selectCurrentUserId } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
 import { useState } from 'react';
@@ -25,7 +25,7 @@ function SuggestionsPage() {
   const [toastMessage, setToastMessage] = useState('Your suggestion has been received');
 
 
-  const userId =  useAppSelector(selectUserId);
+  const userId =  useAppSelector(selectCurrentUserId);
 
   const handleSiteSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     handleSubmit(event, 'Site Suggestion');

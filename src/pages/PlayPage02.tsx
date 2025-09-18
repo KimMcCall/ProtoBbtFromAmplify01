@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Flex, TextField } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
-import { selectIsLoggedIn, selectIsSuperAdmin, setAsSuperAdmin, setCanonicalEmail } from "../features/userInfo/userInfoSlice";
+import { selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin, setCurrentUserAsSuperAdmin, setCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
 import { computeUserStatus, getRandomIntegerInRange, toCanonicalEmail, UserStatusType } from "../utils/utils";
@@ -21,12 +21,12 @@ function PlayPage02() {
   const [simpleTestResult, setSimpleTestResult] = useState(42)
   const [showToast, setShowToast] = useState(false);
   const dispatch = useAppDispatch();
-  const isNowSuperAdmin = useAppSelector(selectIsSuperAdmin);
+  const isNowSuperAdmin = useAppSelector(selectCurrentUserIsSuperAdmin);
   const newPath = useAppSelector(selecNext);
   const navigateTo = useNavigate();
 
   const toggleIsAdmin = () => {
-    dispatch(setAsSuperAdmin(!isNowSuperAdmin))
+    dispatch(setCurrentUserAsSuperAdmin(!isNowSuperAdmin))
   }
 
   const goThere = () => { navigateTo(newPath); }
@@ -172,14 +172,14 @@ function PlayPage02() {
     sendEmail({toAddresses, subject, body } );
   }
 
-  const isLoggedIn = useAppSelector(selectIsLoggedIn)
+  const isLoggedIn = useAppSelector(selectCurrentUserIsLoggedIn)
 
   const toggleCEmail = () => {
     let newValue = '';
     if (!isLoggedIn) {
       newValue = 'random@example.com';
     }
-    dispatch(setCanonicalEmail(newValue))
+    dispatch(setCurrentUserCanonicalEmail(newValue))
   }
 
   const handleShowToastClick = (event: { stopPropagation: () => void; }) => {

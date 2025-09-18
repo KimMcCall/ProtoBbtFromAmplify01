@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
-import { clearUserInfo, setUserInfo, UserInfoState } from "../features/userInfo/userInfoSlice";
+import { clearCurrentUserInfo, setCurrentUserInfo, SingleUserInfoType } from "../features/userInfo/userInfoSlice";
 import { AuthUser } from "aws-amplify/auth";
 import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { dbClient } from "../main";
@@ -46,21 +46,21 @@ function LoggedInPage(user: AuthUser) {
       const returning = status === 'returningRegistrant' || status === 'superAdmin' || status === 'admin';
 
       if (status === 'alias') {
-        dispatch(clearUserInfo());
+        dispatch(clearCurrentUserInfo());
         dispatch(setNextPath('/alias'));
         navigate('/logout', { replace: true });
       } else if (status === 'banned') {
-        dispatch(clearUserInfo());
+        dispatch(clearCurrentUserInfo());
         dispatch(setNextPath('/banned'));
         navigate('/logout', { replace: true });
       } else  if (status === 'bannedAlias') {
-        dispatch(clearUserInfo());
+        dispatch(clearCurrentUserInfo());
         dispatch(setNextPath('/bannedAlias'));
         navigate('/logout', { replace: true });
       } else if (returning) {
         // Don't need to do anything more than let them in and set the redux state
         const initialEmail = signInDetails?.loginId || '';
-        const reduxUser: UserInfoState = {
+        const reduxUser: SingleUserInfoType = {
           id: user.id,
           authId: userId,
           name: user.name || '',
@@ -70,7 +70,7 @@ function LoggedInPage(user: AuthUser) {
           isAdmin: status === 'admin' || status === 'superAdmin',
           isBanned: false,
         };
-        dispatch(setUserInfo(reduxUser));
+        dispatch(setCurrentUserInfo(reduxUser));
         navigate(newPath, { replace: true });
     } else if (status === 'repeatedCall') {
       // Don't need to do anything except get them back on the right page
@@ -122,7 +122,7 @@ function LoggedInPage(user: AuthUser) {
             isAdmin: false,
             isBanned: false,
           };
-          dispatch(setUserInfo(newReduxUser));
+          dispatch(setCurrentUserInfo(newReduxUser));
         }
       })
       navigate(newPath, { replace: true });

@@ -6,7 +6,7 @@ import '@aws-amplify/ui-react/styles.css'; // Import default styles
 import PageWrapper from "../components/PageWrapper";
 import { selecNext } from "../features/navigation/navigationSlice";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { clearUserInfo } from "../features/userInfo/userInfoSlice";
+import { clearCurrentUserInfo } from "../features/userInfo/userInfoSlice";
 
 let logoutSucceded = false;
 
@@ -29,7 +29,7 @@ function LogoutPage() {
 
   handleSignOut(setSignedOut);
   if (logoutSucceded) {
-    dispatch(clearUserInfo());
+    dispatch(clearCurrentUserInfo());
   }
   const newPath = useAppSelector(selecNext);
 

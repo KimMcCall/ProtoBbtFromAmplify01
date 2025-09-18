@@ -1,10 +1,10 @@
 import { Flex } from '@aws-amplify/ui-react';
 import PageWrapper from "../components/PageWrapper";
-import { selectFullUser } from '../features/userInfo/userInfoSlice';
+import { selectCurrentUser } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 
 function ProfilePage() {
-  const reduxUser =  useAppSelector(selectFullUser);
+  const reduxUser =  useAppSelector(selectCurrentUser);
   const {id, authId, canonicalEmail, initialEmail, name, isSuperAdmin, isAdmin, isBanned} = reduxUser;
   return (
     <PageWrapper>

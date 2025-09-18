@@ -5,7 +5,7 @@ import SuggestionTile from './SuggestionTile';
 import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissionsPage'
 import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
-import { selectUserId } from '../features/userInfo/userInfoSlice';
+import { selectCurrentUserId } from '../features/userInfo/userInfoSlice';
 import './SuggestionsPanel.css';
 
 function SuggestionsPanel() {
@@ -32,7 +32,7 @@ function SuggestionsPanel() {
 
   };
 
-  const userId = useAppSelector(selectUserId) || 'fsda;lkjf-sdafhh_BOGUS';
+  const userId = useAppSelector(selectCurrentUserId) || 'fsda;lkjf-sdafhh_BOGUS';
 
   useEffect(() => {
     const fetchSubmissions = async () => {
