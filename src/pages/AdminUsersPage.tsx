@@ -1,6 +1,7 @@
 // AdminUsers.tsx
 
 import PageWrapper from "../components/PageWrapper";
+import './AdminUsersPage.css'
 
 function AdminUsersPage() {
   return (
