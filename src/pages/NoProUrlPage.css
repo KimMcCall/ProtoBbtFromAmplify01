@@ -1,0 +1,35 @@
+/* NoProUrlPage.css */
+
+.noProUrlRoot {
+  padding-left: 20px;
+  width: 1060px;
+}
+
+.noProUrlTextsDiv {
+  height: 664px;
+  padding: 8px 120px 20px 20px;
+  font-family: fantasy;
+  font-size: 130%;
+}
+
+.noProUrlTextDiv {
+  margin-bottom: 20px;
+}
+
+.noProUrlButtonRow {
+  padding-left: 20px;
+}
+
+/*
+.noProUrlRoot {
+  
+}
+
+.noProUrlRoot {
+  
+}
+
+.noProUrlRoot {
+  
+}
+*/

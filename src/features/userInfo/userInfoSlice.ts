@@ -16,9 +16,15 @@ export interface SingleUserInfoType {
   isBanned: boolean
 }
 
+export interface UserBooleanPropertySettinPairType  {
+  userId: string
+  value: boolean
+}
+
 export interface UserSliceType {
   currentUser: SingleUserInfoType
   allUsers: SingleUserInfoType[]
+  designatedUserId: string
 }
 
 // Define the initial state using that type
@@ -36,6 +42,12 @@ const basicInitialUser: SingleUserInfoType = {
 const basicInitialState: UserSliceType = {
   currentUser: basicInitialUser,
   allUsers: [],
+  designatedUserId: '',
+}
+
+const getUserWithId = (allUsers: SingleUserInfoType[], userId: string) => {
+  const foundUser = allUsers.find(user => user.id === userId);
+  return foundUser || basicInitialUser;
 }
 
 export const userInfoSlice = createSlice({
@@ -73,10 +85,23 @@ export const userInfoSlice = createSlice({
     setCurrentUserAsSuperAdmin: (state, action: PayloadAction<boolean>) => {
       state.currentUser.isSuperAdmin = action.payload;
     },
+    setUserIsBanned: (state, action: PayloadAction<UserBooleanPropertySettinPairType>) => {
+      const { userId, value } = action.payload;
+      const designatedUser: SingleUserInfoType = getUserWithId(state.allUsers, userId);
+      designatedUser.isBanned = value;
+    },
+    setUserIsAdmin: (state, action: PayloadAction<UserBooleanPropertySettinPairType>) => {
+      const { userId, value } = action.payload;
+      const designatedUser: SingleUserInfoType = getUserWithId(state.allUsers, userId);
+      designatedUser.isAdmin = value;
+    },
     setAllUsers: (state, action: PayloadAction<SingleUserInfoType[]>) => {
       const submittedArray = action.payload;
       const copiedArray = submittedArray.map(user => { return { ...user }});
       state.allUsers = copiedArray;
+    },
+    setDesignatedUserId: (state, action: PayloadAction<string>) => {
+      state.designatedUserId = action.payload
     }
   },
 })
@@ -88,7 +113,10 @@ export const {
   setCurrentUserCanonicalEmail,
   setCurrentUserAsAdmin,
   setCurrentUserAsSuperAdmin,
+  setUserIsBanned,
+  setUserIsAdmin,
   setAllUsers,
+  setDesignatedUserId,
 } = userInfoSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
@@ -122,5 +150,12 @@ export const selectCurrentUserIsLoggedIn =  (state: RootState) =>
 export const selectCurrentUser =  (state: RootState) => state.persistedReducer.userInfo.currentUser
 
 export const selectAllUsers = (state: RootState) => state.persistedReducer.userInfo.allUsers
+
+export const selectDesgnatedUser = (state: RootState) => {
+  const allUsers = state.persistedReducer.userInfo.allUsers;
+  const userId = state.persistedReducer.userInfo.designatedUserId;
+  const user = getUserWithId(allUsers, userId);
+  return user;
+}
 
 export default userInfoSlice.reducer

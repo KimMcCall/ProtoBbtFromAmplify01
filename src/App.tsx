@@ -25,6 +25,8 @@ import AdminSubmissions from './pages/AdminSubmissionsPage';
 import IssuePage from './pages/IssuePage';
 import HomePageNext from './pages/HomePageNext';
 import CommentsPage from './pages/CommentsPage';
+import NoProUrlPage from './pages/NoProUrlPage';
+import NoConUrlPage from './pages/NoConUrlPage';
 
 function App() {
   return (
@@ -48,6 +50,8 @@ function App() {
         <Route path="/mission" element={<MissionPage />} />
         <Route path="/finances" element={<FinancesPage />} />
         <Route path="/donate" element={<DonatePage />} />
+        <Route path="/noProUrl" element={<NoProUrlPage />} />
+        <Route path="/noConUrl" element={<NoConUrlPage />} />
         <Route
           path="/adminUsers"
           element={

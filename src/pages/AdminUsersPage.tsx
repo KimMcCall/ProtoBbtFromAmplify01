@@ -3,34 +3,35 @@
 import { Button, CheckboxField, Flex, SearchField } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import './AdminUsersPage.css'
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { selectAllUsers, setAllUsers, SingleUserInfoType } from "../features/userInfo/userInfoSlice";
+import { selectAllUsers, selectCurrentUserId, selectDesgnatedUser, setAllUsers, setDesignatedUserId, setUserIsBanned, SingleUserInfoType, UserBooleanPropertySettinPairType } from "../features/userInfo/userInfoSlice";
 import { dbClient } from "../main";
 
 interface UserTileProps {
   userId: string
   email: string
   name: string
+  checked: boolean
   isBanned: boolean
   isAdmin: boolean
   onSelect: (id: string, b: boolean) => void
 }
 
 function UserTile(props: UserTileProps) {
-  const { userId, email, name, isBanned, isAdmin, onSelect } = props;
-  const [isChecked, setIsChecked] = useState(false);
+  const { userId, email, name, checked,  isBanned, isAdmin, onSelect } = props;
+  const [isChecked, setIsChecked] = useState(checked);
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newState = event.target.checked;
-    console.log(`new button state: ${newState}`)
     setIsChecked(newState); // Update the state when the checkbox changes
     onSelect(userId, newState);
   }
+
   return(
     <div key={userId} className="userAdminTileDiv">
       <Flex className="UserTileFlex" direction="row">
-        <CheckboxField label="" name="pointlessName" checked={isChecked} onChange={handleCheckboxChange}/>
+        <CheckboxField className="userTileCheckbox" label="" name="pointlessName" checked={isChecked} onChange={handleCheckboxChange}/>
         <div className={isAdmin ? "adminUserTileEmailDiv" : isBanned ? "bannedUserTileEmailDiv" : "normalUserTileEmailDiv"}>
           {email}
         </div>
@@ -44,20 +45,27 @@ function UserTile(props: UserTileProps) {
 
 function AdminUsersPage() {
   const [searchBarText, setSearchBarText] = useState('');
+  // const [adminOnlyIsChecked, setAdminOnlyIsChecked] = useState(false);
   const emptyUserArray: SingleUserInfoType[] = [];
   const [filteredUsers, setFilteredUsers] = useState(emptyUserArray);
+  // const [checkedUserId, setCheckedUserId] = useState("");
   
   const dispatch = useAppDispatch();
+
+  let designatedUserId = useAppSelector(selectCurrentUserId); // just to have something reasonable
+  console.log(`Initialized designatedUserId as ${designatedUserId}`);
+  let designatedUser = useAppSelector(selectDesgnatedUser); // currentUser, which is SuperAdmin
   
     useEffect(() => {
+      console.log('calling list()');
       dbClient.models.RegisteredUser.list().then(
-        (result) => {
-          const allUsers = result.data;
-          console.log(`# allUsers: ${allUsers.length}`)
+        (result) => { 
           // @ts-expect-error Maybe some fields are missing, but I think it'll be alright
+          const allUsers = sortByEmail(result.data);
           dispatch(setAllUsers(allUsers));
-          // @ts-expect-error Maybe some fields are missing, but I think it'll be alright
           setFilteredUsers(allUsers);
+          enableButtons(false);
+          filterString = searchBarText;
         }
       );
     }, [dispatch]);
@@ -66,9 +74,7 @@ function AdminUsersPage() {
     const newText = event.target.value;
     console.log(`calling setSearchBarText('${newText}')`)
     setSearchBarTextAndFilterString(newText);
-    console.log(` after call to setSearchBarText(), filterString:'${filterString}'`)
     runSearch();
-    console.log(` after runSearch(), filterString:'${filterString}'`)
   }
 
   const setSearchBarTextAndFilterString = (text: string) => {
@@ -81,16 +87,46 @@ function AdminUsersPage() {
     runSearch();
   }
 
-  const handleTileCheckboxChosen = (userId: string, chosen: boolean) => {
+  const handleTileCheckboxClicked = (userId: string, chosen: boolean) => {
     console.log(`checkbox for user ${userId} was ${chosen ? '' : 'un-'}chosen`);
-    turnOffOtherCheckboxes(userId);
+    if (chosen) {
+      // setCheckedUserId(userId);
+      console.log(`setting designatedUserId to ${userId}`);
+      designatedUserId = userId;
+      // @ts-expect-error We have to find a match!
+      designatedUser =  getUserWithId(userId);
+      console.log(`set designatedUser to user with email ${designatedUser.canonicalEmail}`)
+      dispatch(setDesignatedUserId(userId));
+      turnOffOtherCheckboxes(userId);
+      setButtonTextsForUser(designatedUser);
+    }
     enableButtons(chosen);
+  }
+
+  const getUserWithId = (userId:  string) => {
+    const foundUser = allUsers.find((user) => user.id === userId);
+    return foundUser;
+  }
+
+  const setButtonTextsForUser = (user: SingleUserInfoType) => {
+    const isBanned = user.isBanned;
+    const isAdmin = user.isAdmin;
+    if (window && window.document) {
+      const d = window.document;
+      // @ts-expect-error I know it's a button!
+      const banButton: HTMLButtonElement = d.getElementById("banButton");
+      banButton.textContent = isBanned ? 'Unban User' : 'BanUser';
+      // @ts-expect-error I know it's a button!
+      const adminButton: HTMLButtonElement = d.getElementById("adminButton");
+      adminButton.textContent = isAdmin ? 'Unset as Admin' : 'Set as Admin';
+    } else {
+      console.log('couldn\'t find document')
+    }
   }
 
   const enableButtons = (enable: boolean) => {
     if (window && window.document) {
-      const w = window;
-      const d = w.document;
+      const d = window.document;
       // @ts-expect-error I know it's a button!
       const b1: HTMLButtonElement = d.getElementById("banButton");
       b1.disabled = !enable;
@@ -107,31 +143,105 @@ function AdminUsersPage() {
 
   const turnOffOtherCheckboxes = (idOfUserToLeaveChecked: string) => {
     console.log(`should now turn off all checkboxes besides ${idOfUserToLeaveChecked}`);
+    /*
+    if (window && window.document) {
+      const w = window;
+      const d = w.document;
+      const tileBoxes: HTMLCollectionOf<Element> = d.getElementsByClassName("userTileCheckbox");
+      const nBoxes = tileBoxes.length;
+      console.log(`# boxes: ${nBoxes}`)
+    }
+    */
   }
 
   const filterUsers = () => {
-    console.log(`in filterUsers() for filterString: '${filterString}'`);
-    console.log(`In filterUsers(); #unfiltered: ${allUsers.length}; searchText: '${filterString}'`);
-    if (filterString.length == 0) {
-      console.log("skipping search because filterString is empty string")
+    const haveFilterString = filterString.length > 0;
+    console.log(`In filterUsers(); #unfiltered: ${allUsers.length}; filterString: '${filterString}'; adminOnlly: ${adminsOnly}`);
+    if (haveFilterString && adminsOnly) {
+      return allUsers.filter((user) => {
+        if (!user.isAdmin) {
+          return false;
+        }
+        const email = user.canonicalEmail;
+        const name = user.name;
+        const haveEmailMatch = email && email.toLowerCase().includes(filterString.toLowerCase());
+        const haveNameMatch = name && name.toLowerCase().includes(filterString.toLowerCase());
+        return haveEmailMatch || haveNameMatch;
+      })
+    } else if (haveFilterString && !adminsOnly) {
+      return allUsers.filter((user) => {
+        const email = user.canonicalEmail;
+        const name = user.name;
+        const haveEmailMatch = email && email.toLowerCase().includes(filterString.toLowerCase());
+        const haveNameMatch = name && name.toLowerCase().includes(filterString.toLowerCase());
+        return haveEmailMatch || haveNameMatch;
+      })
+    } else if (!haveFilterString && adminsOnly) {
+      return allUsers.filter((user) => user.isAdmin)
+    } else /* (!haveFilterString && !adminsOnly) */ {
+      console.log("skipping search because filterString is empty string and we're not asking for Admins Only")
       return allUsers;
     }
-    return allUsers.filter((user) => {
-      const email = user.canonicalEmail;
-      const name = user.name;
-      console.log(` searching for '${filterString}' in '${email}' or '${name}'`)
-      const haveEmailMatch = email && email.toLowerCase().includes(filterString.toLowerCase());
-      const haveNameMatch = name && name.toLowerCase().includes(filterString.toLowerCase());
-      return haveEmailMatch || haveNameMatch;
-    })
   }
 
-  const allUsers = useAppSelector(selectAllUsers);
+  const sortByEmail = (users: SingleUserInfoType[]) => {
+    let clonedList: SingleUserInfoType[] = [];
+    for (let i = 0; i < users.length; i++) {
+      clonedList = clonedList.concat(users[i]);
+    }
+    clonedList.sort((uA, uB) => uA.canonicalEmail.localeCompare(uB.canonicalEmail))
+    return clonedList;
+  }
+
+  const allUsers = sortByEmail(useAppSelector(selectAllUsers));
   let filterString = '';
+  let adminsOnly = false;
 
   const runSearch = () => {
-    console.log(`in Search handler for filterString: '${filterString}'`);
     setFilteredUsers(filterUsers());
+  }
+
+  const handleBanButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    console.log('should now toggle the isBanned field of the user with id: ' + designatedUserId);
+    /*
+    console.log('should now toggle the isBanned field of the user with id: ' + checkedUserId);
+    const userId = checkedUserId;
+    */
+    dispatch(setDesignatedUserId(designatedUserId));
+    // const designatedUser = useAppSelector(selectDesgnatedUser);
+    const prevValue = designatedUser.isBanned;
+    const struct: UserBooleanPropertySettinPairType = {
+      userId: designatedUserId,
+      value: !prevValue,
+    }
+    dispatch(setUserIsBanned(struct));
+    /*
+    // @ts-expect-error We have to find a match!
+    const user: SingleUserInfoType = getUserWithId(checkedUserId);
+    const wasBanned = user.isBanned;
+    user.isBanned = !wasBanned;
+    */
+    // GATOR: his will still have old values, since designatedUser is readonly
+    setButtonTextsForUser(designatedUser);
+  }
+
+  const handleAdminButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    console.log('should now toggle the isAdmin field of the object');
+  }
+
+  const handleEmailButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    console.log('should now send an Email to the user');
+  }
+
+  const handleAdminOnlyCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const newState = event.target.checked;
+    console.log(`new checkbox state: ${newState}`);
+    // setAdminOnlyIsChecked(newState); // Update the state when the checkbox changes 
+    adminsOnly = newState;
+    runSearch();
   }
 
   return (
@@ -149,7 +259,7 @@ function AdminUsersPage() {
               />
             </div>
             <div className="adminOnlyHolderDiv">
-              <CheckboxField label="Admins Only" name="adminsOnly" />
+              <CheckboxField label="Admins Only" name="adminsOnly" onChange={handleAdminOnlyCheckboxChange} />
             </div>
           </Flex>
           <Flex className="listAndButtonsFlex" direction="row">
@@ -161,22 +271,23 @@ function AdminUsersPage() {
                     userId={user.id}
                     email={user.canonicalEmail}
                     name={user.name}
+                    checked={false}
                     isBanned={user.isBanned}
                     isAdmin={user.isAdmin || user.isSuperAdmin}
-                    onSelect={handleTileCheckboxChosen}
+                    onSelect={handleTileCheckboxClicked}
                   />
               ))}
               </div>
             </div>
             <div className="userAdminButtonHolderDiv">
               <Flex className="userAdminButtonHolderFlex" direction="column">
-                <Button id="banButton" className="userAdminActionButton"  disabled>
+                <Button id="banButton" className="userAdminActionButton" onClick={handleBanButtonClick} >
                   Ban User
                 </Button>
-                <Button id="adminButton" className="userAdminActionButton"  disabled>
+                <Button id="adminButton" className="userAdminActionButton" onClick={handleAdminButtonClick} >
                   Set as Admin
                 </Button>
-                <Button id="emailButton" className="userAdminActionButton"  disabled>
+                <Button id="emailButton" className="userAdminActionButton" onClick={handleEmailButtonClick}  >
                   Send Email
                 </Button>
               </Flex>

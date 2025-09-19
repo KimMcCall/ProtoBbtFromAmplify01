@@ -1,0 +1,32 @@
+/* NoConUrlPage.css */
+
+.noConUrlRoot {
+  padding-left: 20px;
+  width: 1060px;
+}
+
+.noConUrlTextsDiv {
+  height: 664px;
+  padding: 8px 120px 20px 20px;
+  font-family: fantasy;
+  font-size: 130%;
+}
+
+.noConUrlTextDiv {
+  margin-bottom: 20px;
+}
+
+.noConUrlButtonRow {
+  /*background-color: aquamarine;*/
+  padding-left: 20px;
+}
+
+/*
+.noConUrlRoot {
+  
+}
+
+.noConUrlRoot {
+  
+}
+*/
