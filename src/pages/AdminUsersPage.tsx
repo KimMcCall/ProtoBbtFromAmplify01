@@ -5,7 +5,7 @@ import PageWrapper from "../components/PageWrapper";
 import './AdminUsersPage.css'
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { selectAllUsers, selectCurrentUserId, selectDesgnatedUser, setAllUsers, setDesignatedUserId, setUserIsBanned, SingleUserInfoType, UserBooleanPropertySettinPairType } from "../features/userInfo/userInfoSlice";
+import { selectAllUsers, selectCurrentUserId, selectDesgnatedUser, setAllUsers, setDesignatedUserId, setUserIsAdmin, setUserIsBanned, SingleUserInfoType, UserBooleanPropertySettinPairType } from "../features/userInfo/userInfoSlice";
 import { dbClient } from "../main";
 
 interface UserTileProps {
@@ -85,6 +85,61 @@ function AdminUsersPage() {
   const handleSearchBarClear = () => {
     setSearchBarTextAndFilterString('');
     runSearch();
+  }
+
+  const toggleBanned = async () => {
+    if (designatedUser.id === '0e5de473-b488-4ede-a3da-c1b79e7a9eb0') {
+      console.log('Have Kim as desgnatedUser, so aborting update()');
+      return;
+    }
+    const oldState = designatedUser.isBanned;
+    const newState = !oldState;
+    const myUpdate =  {
+      id: designatedUserId,
+      isBanned: newState,
+    };
+    console.log(`setting isBanned: ${newState}`);
+    await dbClient.models.RegisteredUser.update(myUpdate).then(
+      (response) => {
+        console.log(' back from update()');
+        // @ts-expect-error It will not be undefined if the .update() succeeded!
+        const modifiedUser: SingleUserInfoType = response.data;
+        const { id, isBanned } = modifiedUser;
+        console.log(` new value of isBanned: ${isBanned}`)
+        dispatch(setDesignatedUserId(id));
+        const pair: UserBooleanPropertySettinPairType = { userId: id, value: isBanned}
+        dispatch(setUserIsBanned(pair));
+
+        setButtonTextsForUser(modifiedUser);
+      }
+    );
+  }
+
+  const toggleAdmin = async () => {
+    if (designatedUser.id === '0e5de473-b488-4ede-a3da-c1b79e7a9eb0') {
+      console.log('Have Kim as desgnatedUser, so aborting update()');
+      return;
+    }
+    const oldState = designatedUser.isAdmin;
+    const newState = !oldState;
+    const myUpdate =  {
+      id: designatedUserId,
+      isAdmin: newState,
+    };
+    console.log(`setting isAdmin: ${newState}`);
+    await dbClient.models.RegisteredUser.update(myUpdate).then(
+      (response) => {
+        console.log(' back from update()');
+        // @ts-expect-error It will not be undefined if the .update() succeeded!
+        const modifiedUser: SingleUserInfoType = response.data;
+        const { id, isAdmin } = modifiedUser;
+        console.log(` new value of isAdmin: ${isAdmin}`)
+        dispatch(setDesignatedUserId(id));
+        const pair: UserBooleanPropertySettinPairType = { userId: id, value: isAdmin}
+        dispatch(setUserIsAdmin(pair));
+        setButtonTextsForUser(modifiedUser);
+      }
+    );
   }
 
   const handleTileCheckboxClicked = (userId: string, chosen: boolean) => {
@@ -204,31 +259,13 @@ function AdminUsersPage() {
   const handleBanButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     console.log('should now toggle the isBanned field of the user with id: ' + designatedUserId);
-    /*
-    console.log('should now toggle the isBanned field of the user with id: ' + checkedUserId);
-    const userId = checkedUserId;
-    */
-    dispatch(setDesignatedUserId(designatedUserId));
-    // const designatedUser = useAppSelector(selectDesgnatedUser);
-    const prevValue = designatedUser.isBanned;
-    const struct: UserBooleanPropertySettinPairType = {
-      userId: designatedUserId,
-      value: !prevValue,
-    }
-    dispatch(setUserIsBanned(struct));
-    /*
-    // @ts-expect-error We have to find a match!
-    const user: SingleUserInfoType = getUserWithId(checkedUserId);
-    const wasBanned = user.isBanned;
-    user.isBanned = !wasBanned;
-    */
-    // GATOR: his will still have old values, since designatedUser is readonly
-    setButtonTextsForUser(designatedUser);
+    toggleBanned();
   }
 
   const handleAdminButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     console.log('should now toggle the isAdmin field of the object');
+    toggleAdmin();
   }
 
   const handleEmailButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
