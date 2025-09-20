@@ -33,9 +33,6 @@ function UserTile(props: UserTileProps) {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [userIdToTimerIdMap, setUserIdToTimerIdMap] = useState(new Map());
 
-  // Just to remove the compiler's complaing tht setUserIdToTimerIdMap was never used
-  // setUserIdToTimerIdMap(userIdToTimerIdMap);
-
   // This is the function that's repeatedly run by the setInterval() timer.
   const checkAndPossiblyUnmark = () => {
     console.log(`comparing my userId '${userId}' with designatedUserId '${designatedUserId}`);
@@ -88,21 +85,14 @@ function UserTile(props: UserTileProps) {
   );
 }
 
-// let filteredUsers2: SingleUserInfoType[] = [];
-let searchBarText2 = '';
+let searchBarText = '';
 
 function AdminUsersPage() {
-  // const [searchBarText, setSearchBarText] = useState('');
   const emptyUserArray: SingleUserInfoType[] = [];
-  // const [filteredUsers, setFilteredUsers] = useState(emptyUserArray);
-  const [filteredUsers2, setFilteredUsers2] = useState(emptyUserArray);
+  const [filteredUsers, setFilteredUsers] = useState(emptyUserArray);
   
   const dispatch = useAppDispatch();
 
-  /*
-  designatedUserId = useAppSelector(selectCurrentUserId); // just to have something vaguely reasonable
-  console.log(`Initialized designatedUserId as ${designatedUserId}`);
-  */
   designatedUser = useAppSelector(selectDesgnatedUser); // currentUser, which is SuperAdmin
   
     useEffect(() => {
@@ -112,10 +102,9 @@ function AdminUsersPage() {
           // @ts-expect-error Maybe some fields are missing, but I think it'll be alright
           const allUsers = sortByEmail(result.data);
           dispatch(setAllUsers(allUsers));
-          /* setFilteredUsers(allUsers); */
-          setFilteredUsers2(allUsers);
+          setFilteredUsers(allUsers);
           enableButtons(false);
-          filterString = searchBarText2;
+          filterString = searchBarText;
         }
       );
     }, [dispatch]);
@@ -127,10 +116,8 @@ function AdminUsersPage() {
   }
 
   const setSearchBarTextAndFilterString = (text: string) => {
-    // console.log(`calling setSearchBarText('${text}')`)
-    // setSearchBarText(text);
-    console.log(`setting searchBarText2 to '${text}'`)
-    searchBarText2 = text;
+    console.log(`setting searchBarText to '${text}'`)
+    searchBarText = text;
     filterString = text;
   }
 
@@ -197,14 +184,12 @@ function AdminUsersPage() {
   const handleTileCheckboxClicked = (userId: string, chosen: boolean) => {
     console.log(`checkbox for user ${userId} was ${chosen ? '' : 'un-'}chosen`);
     if (chosen) {
-      // setCheckedUserId(userId);
       console.log(`setting designatedUserId to ${userId}`);
       designatedUserId = userId;
       // @ts-expect-error There has to be a match!
       designatedUser =  getUserWithId(userId);
       console.log(`set designatedUser to user with email ${designatedUser.canonicalEmail}`)
       dispatch(setDesignatedUserId(userId));
-      turnOffOtherCheckboxes(userId);
       setButtonTextsForUser(designatedUser);
     }
     enableButtons(chosen);
@@ -246,19 +231,6 @@ function AdminUsersPage() {
     } else {
       console.log('couldn\'t find document')
     }
-  }
-
-  const turnOffOtherCheckboxes = (idOfUserToLeaveChecked: string) => {
-    console.log(`should now turn off all checkboxes besides ${idOfUserToLeaveChecked}`);
-    /*
-    if (window && window.document) {
-      const w = window;
-      const d = w.document;
-      const tileBoxes: HTMLCollectionOf<Element> = d.getElementsByClassName("userTileCheckbox");
-      const nBoxes = tileBoxes.length;
-      console.log(`# boxes: ${nBoxes}`)
-    }
-    */
   }
 
   const filterUsers = () => {
@@ -306,8 +278,7 @@ function AdminUsersPage() {
   allUsers = sortByEmail(useAppSelector(selectAllUsers));
 
   const runSearch = () => {
-    /*setFilteredUsers(filterUsers());*/
-    setFilteredUsers2(filterUsers());
+    setFilteredUsers(filterUsers());
   }
 
   const handleBanButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
@@ -330,7 +301,6 @@ function AdminUsersPage() {
   const handleAdminOnlyCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newState = event.target.checked;
     console.log(`new checkbox state: ${newState}`);
-    // setAdminOnlyIsChecked(newState); // Update the state when the checkbox changes 
     adminsOnly = newState;
     runSearch();
   }
@@ -344,7 +314,7 @@ function AdminUsersPage() {
               <SearchField
                 className="searchInput"
                 label="Search"
-                value={searchBarText2}
+                value={searchBarText}
                 onChange={handleSearchBarChange}
                 onClear={handleSearchBarClear}
               />
@@ -357,7 +327,7 @@ function AdminUsersPage() {
             <div className="userAdminListHolderDiv">
               <div className="userAdminListDiv">
                 {
-                filteredUsers2.map(user => (
+                filteredUsers.map(user => (
                   <UserTile key={user.id}
                     userId={user.id}
                     email={user.canonicalEmail}
