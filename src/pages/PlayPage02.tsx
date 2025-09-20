@@ -12,7 +12,7 @@ import { sendEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
 import { createIssue } from "../utils/dynamodb_operations";
 import { getIssue } from "../utils/comment_operations";
-import { defaultConAuthor, defaultConUrl, defaultProAuthor, defaultProUrl } from "../utils/constants";
+import { defaultConAuthor, defaultProAuthor, ProxyForNoUrl } from "../utils/constants";
 
 function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/donate");
@@ -204,18 +204,21 @@ function PlayPage02() {
   const handleCreateIssueClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
     const priority = getRandomIntegerInRange(1, 1000000);
-    const proUrl = defaultProUrl;
-    const conUrl = defaultConUrl;
+    const proUrl = ProxyForNoUrl;
+    const conUrl = ProxyForNoUrl;
+    const proIsPdf = false;
+    const conIsPdf = false;
+    const makeAvailable = false;
     createIssue(
       priority,
       claim,
       proUrl,
       conUrl,
-      false, // proIsPdf
-      true, // conIsPdf
+      proIsPdf,
+      conIsPdf,
       defaultProAuthor, // proAuthorId
       defaultConAuthor, // conAuthorId
-      false, // makeAvailable
+      makeAvailable,
     );
   }
 

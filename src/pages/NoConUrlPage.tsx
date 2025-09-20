@@ -3,8 +3,29 @@
 import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import './NoConUrlPage.css'
+import { useAppDispatch } from "../app/hooks";
+import { useNavigate } from "react-router-dom";
+import { setProOrCon } from "../features/issues/issues";
+import { SyntheticEvent } from "react";
 
 function NoConUrlPage() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  
+    const handleShowContrastingViewClick = (event: SyntheticEvent<HTMLButtonElement>) =>{
+      event.stopPropagation();
+      dispatch(setProOrCon('pro'));
+      // console.log(` calling navigate('/issue?pro=yes'`)
+      navigate('/issue?pro=yes')
+    }
+  
+  const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
+    event.stopPropagation();
+    const proOrCon = 'con';
+    dispatch(setProOrCon(proOrCon))
+    navigate('/comments')
+  }
+
   return (
     <PageWrapper>
       <div className="noConUrlRoot">
@@ -22,6 +43,12 @@ below for an explanation of the procedure
 
           </div>
           <Flex className="noConUrlButtonRow" direction="row">
+            <Button onClick={handleShowContrastingViewClick}>
+              Show Our View
+            </Button>
+            <Button onClick={handleShowCommentsClick}>
+              Show Comments
+            </Button>
             <Button>
               Let Me Try To Do Better!
             </Button>

@@ -1,8 +1,8 @@
 import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import './IssuePage.css'
-import { defaultConIsPdf, defaultConUrl, defaultProIsPdf, defaultProUrl } from "../utils/constants";
+import { ProxyForNoUrl } from "../utils/constants";
 import { selectDisplayBlockForCurrentIssue, setProOrCon } from "../features/issues/issues";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
@@ -13,16 +13,36 @@ function IssuePage() {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryStringPro = urlParams.get('pro'); // Should return "no", "yes", or null
+  const explicitlyAskedForCon = queryStringPro ==='no';
+  const shouldShowPro = showPro || !explicitlyAskedForCon;
+  const shouldShowCon = !shouldShowPro
+  console.log(`With queryStringPro='${queryStringPro}' and showPro: ${showPro}, we have shouldShowPro: ${shouldShowPro}`);
+  /*
+  if (shouldShowPro !== showPro) {
+    setShowPro(shouldShowPro);
+  }
+  */
+  if (shouldShowCon) {
+    navigate(`/issue?pro=no`);
+  } else {
+    navigate(`/issue?pro=yes`);
+  }
+
   const handleShowContrastingViewClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
+    console.log(`BEFORE: showPro: ${showPro}`)
     setShowPro(!showPro);
   }
 
   const block = useAppSelector(selectDisplayBlockForCurrentIssue);
-  const proUrl = block?.proUrl || defaultProUrl;
-  const conUrl = block?.conUrl || defaultConUrl;
-  const proIsPdf = proUrl === defaultProUrl ? defaultProIsPdf : block?.proIsPdf;
-  const conIsPdf = conUrl === defaultConUrl ? defaultConIsPdf : block?.proIsPdf;
+  const proUrl = block?.proUrl || ProxyForNoUrl;
+  const conUrl = block?.conUrl || ProxyForNoUrl;
+  const proIsBlank = proUrl === ProxyForNoUrl;
+  const conIsBlank = conUrl === ProxyForNoUrl;
+  const proIsPdf = proIsBlank ? false : block?.proIsPdf;
+  const conIsPdf = conIsBlank ? false : block?.proIsPdf;
 
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
@@ -30,6 +50,14 @@ function IssuePage() {
     dispatch(setProOrCon(proOrCon))
     navigate('/comments')
   }
+
+  useEffect(() => {
+  if (showPro && proIsBlank) {
+    navigate('/noProUrl', {replace: true})
+  } else if (!showPro && conIsBlank) {
+    navigate('/noConUrl', {replace: true})
+  }
+  })
 
   return (
     <PageWrapper>

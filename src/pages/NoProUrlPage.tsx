@@ -3,8 +3,29 @@
 import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import './NoProUrlPage.css'
+import { SyntheticEvent } from "react";
+import { setProOrCon } from "../features/issues/issues";
+import { useAppDispatch } from "../app/hooks";
+import { useNavigate } from "react-router-dom";
 
 function NoProUrlPage() {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const handleShowContrastingViewClick = (event: SyntheticEvent<HTMLButtonElement>) =>{
+    event.stopPropagation();
+    dispatch(setProOrCon('con'));
+    // console.log(` calling navigate('/issue?pro=no')`)
+    navigate('/issue?pro=no')    
+  }
+  
+  const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
+    event.stopPropagation();
+    const proOrCon = 'pro';
+    dispatch(setProOrCon(proOrCon))
+    navigate('/comments')
+  }
+
   return (
     <PageWrapper>
       <div className="noProUrlRoot">
@@ -20,8 +41,18 @@ claim made on the home page.
 “Let Me Try To Do Better!” button below for an explanation of the procedure.
             </div>
 
+          <div className="showContrastingViewButtonDiv">
+            <Flex>
+            </Flex>
+          </div>
           </div>
           <Flex className="noProUrlButtonRow" direction="row">
+            <Button onClick={handleShowContrastingViewClick}>
+              Show Dissenting View
+            </Button>
+            <Button onClick={handleShowCommentsClick}>
+              Show Comments
+            </Button>
             <Button>
               Let Me Try To Do Better!
             </Button>

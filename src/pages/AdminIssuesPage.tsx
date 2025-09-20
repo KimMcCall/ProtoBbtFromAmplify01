@@ -1,18 +1,18 @@
-import { Button, CheckboxField, Flex, Radio, RadioGroupField, TextAreaField, TextField } from "@aws-amplify/ui-react";
+import { Button, CheckboxField, Flex, TextAreaField, TextField } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import './AdminIssuesPage.css'
 import { ChangeEvent, SetStateAction, SyntheticEvent, useState } from "react";
-import { addCommentToIssue, createIssue, getAllRecordsForIssue } from "../utils/dynamodb_operations";
+import { createIssue, getAllRecordsForIssue } from "../utils/dynamodb_operations";
 import { getRandomIntegerInRange } from "../utils/utils";
 import ToastNotifier from "../components/ToastNotifier";
 import { useAppDispatch } from "../app/hooks";
 import { IssueType, setIssues } from "../features/issues/issues";
-import { defaultClaim, defaultConAuthor, defaultConUrl, defaultIssueId, defaultPriority, defaultProAuthor, defaultProUrl } from "../utils/constants";
+import { defaultConAuthor, defaultIssueId, defaultPriority, defaultProAuthor } from "../utils/constants";
 
 // Claim: There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive.
 // Priority: 999000
-// ProURL: {defaultProUrl}
-// ConURL: {defaultConUrl}
+// ProURL: {ProxyForNoUrl}
+// ConURL: {ProxyForNoUrl}
   
 const innerHandleSubmit = async (
   event: SyntheticEvent<HTMLFormElement>,
@@ -73,7 +73,7 @@ makeAvailable: false
 priority: defaultPriority
 proAuthorId: defaultProAuthor
 proIsPdf: false
-proUrl: {defaultProUrl}
+proUrl: {ProxyForNoUrl}
 updatedAt: "2025-09-15T06:01:27.289Z"
 updatedT: "2025-09-15T06:01:26.304Z"
   */
@@ -104,85 +104,16 @@ updatedT: "2025-09-15T06:01:26.304Z"
   toastShower(true);
 };
 
-const defaultComment = 'Here\'s a simple comment';
-const maxCommentLength = 500;
-
-
 function AdminIssuesPage() {
+  const [claimForNewIssue, setClaimForNewIssue] = useState('');
   const [toastMessage, setToastMessage] = useState('Sorry! You need to fill in at least one URL');
   const [shouldShowAcceptanceToast, setShouldShowAcceptanceToast] = useState(false);
-  const [issueIdForComment, setIssueIdForComment] = useState(defaultIssueId);
-  const [proConValue, setProConValue] = useState('pro');
-  const [commentText, setCommentText] = useState(defaultComment);
   const [issueIdForRetrieval, setIssueIdForRetrival] = useState(defaultIssueId);
 
   const dispatch = useAppDispatch();
 
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     innerHandleSubmit(event, setToastMessage, setShouldShowAcceptanceToast)
-  };
-
-  const handleCommentTextChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
-    event.stopPropagation();
-    const newText = event.target.value;
-    if (newText.length <= maxCommentLength) {
-      setCommentText(newText);
-    } else {
-      alert('You\'ve reached the maximum length of a comment');
-    }
-  };
-
-  /*
-    isPro: boolean,
-    copiedIssueId: string,
-    copiedClaim: string,
-    copiedPriority: number,
-    copiedProUrl: string,
-    copiedConUrl: string,
-    copiedProAuthorId: string,
-    copiedConAuthorId: string,
-    copiedProIsPdf: boolean,
-    copiedConIsPdf: boolean,
-    copiedMakeAvailable: boolean,
-    commentText: string,
-    authorId: string,
-  */
-
-  const handleAddCommentButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    console.log('Hit handler');
-    console.log(`should now add a comment with:`)
-    console.log(`  issueId: ${issueIdForComment}`);
-    console.log(`  isPro: ${proConValue === 'pro'}`);
-    console.log(`  content: ${commentText}`);
-
-    const isPro = proConValue === 'pro';
-    const copiedIssueId = issueIdForComment;
-    const copiedClaim = defaultClaim;
-    const copiedPriority = defaultPriority;
-    const copiedProUrl = defaultProUrl;
-    const copiedConUrl = defaultConUrl;
-    const copiedProAuthorId = defaultProAuthor;
-    const copiedConAuthorId = defaultConAuthor;
-    const copiedProIsPdf = false;
-    const copiedConIsPdf = true;
-    const copiedMakeAvailable = false;
-    const authorId = "commentor@example.com";
-    addCommentToIssue(
-      isPro,
-      copiedIssueId,
-      copiedClaim,
-      copiedPriority,
-      copiedProUrl,
-      copiedConUrl,
-      copiedProAuthorId,
-      copiedConAuthorId,
-      copiedProIsPdf,
-      copiedConIsPdf,
-      copiedMakeAvailable,
-      commentText,
-      authorId
-    );
   };
 
   const handleGetIssuesButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
@@ -195,8 +126,10 @@ function AdminIssuesPage() {
     dispatch(setIssues(allIssues));
   }
 
-  const proUrl = defaultProUrl;
-  const conUrl = defaultConUrl;
+  const handleClaimChange = (error: ChangeEvent<HTMLTextAreaElement>) => {
+    error.stopPropagation();
+    setClaimForNewIssue(error.target.value);
+  }
 
   return (
     <PageWrapper>
@@ -208,7 +141,12 @@ function AdminIssuesPage() {
                 <div className="textFieldLabel">
                   Claim: 
                 </div>
-                <TextAreaField label='' name='claim' defaultValue={defaultClaim} cols={40} rows={4}/>
+                <TextAreaField
+                  label=''
+                  name='claim'
+                  value={claimForNewIssue} cols={40} rows={4}
+                  onChange={handleClaimChange}
+                  />
                 <div className="textFieldLabel">
                   Priority:
                 </div>
@@ -218,7 +156,7 @@ function AdminIssuesPage() {
                 <div className="textFieldLabel">
                   Pro URL: 
                 </div>
-                <TextField label='' name='proUrl' defaultValue={proUrl} width='800px'/>
+                <TextField label='' name='proUrl' defaultValue="" width='800px'/>
                 <CheckboxField
                   label="isPdf"
                   name="proIsPdf"
@@ -228,7 +166,7 @@ function AdminIssuesPage() {
                 <div className="textFieldLabel">
                   Con URL: 
                 </div>
-                <TextField label='' name='conUrl' defaultValue={conUrl} width='800px'/>
+                <TextField label='' name='conUrl' defaultValue="" width='800px'/>
                 <CheckboxField
                   label="isPdf"
                   name="conIsPdf"
@@ -237,42 +175,6 @@ function AdminIssuesPage() {
             </Flex>
             <Button type="submit" width='200px'>
               Create New Issue
-            </Button>
-          </Flex>
-        </div>
-        <div className='formRoot2'>
-          <Flex direction='column'>
-            <Flex>
-              <div className="textFieldLabel">
-                issueId: 
-              </div>
-              <TextField
-                className="issueIdInput"
-                label=''
-                name='issueId'
-                value={issueIdForComment}
-                onChange={(e: ChangeEvent<HTMLInputElement>) => setIssueIdForComment(e.target.value)}
-                direction="row"
-                width="500px" />
-            </Flex>
-            <RadioGroupField
-              legend="Pro or Con:"
-              name="proConRadioGroup"
-              value={proConValue}
-              onChange={(e) => setProConValue(e.target.value)}
-              direction="row">
-              <Radio value="pro">Pro</Radio>
-              <Radio value="con">Con</Radio>
-            </RadioGroupField>
-            <TextAreaField
-              label='Comment:'
-              name='commentText'
-              value={commentText}
-              onChange={(e: ChangeEvent<HTMLTextAreaElement>) => handleCommentTextChange(e)}
-              direction="row"
-              rows={5}/>
-            <Button onClick={(e) => handleAddCommentButtonClick(e)} width='200px'>
-              Add New Comment
             </Button>
           </Flex>
         </div>

@@ -2,7 +2,7 @@
 import { getCurrentUser } from "aws-amplify/auth";
 import { dbClient } from "../main";
 import { CommentBlockType, IssueBlockForRenderingType, IssueType } from "../features/issues/issues";
-import { keyCommentString, keyUrlString } from "./constants";
+import { ProxyForNoComment, ProxyForNoUrl } from "./constants";
 
 type UserStatus =
 "returningRegistrant" |
@@ -280,20 +280,18 @@ const sortByIncreasingPriority = (issues: IssueType[]) => {
 }
 
 const repairKeyStrings = (issues: IssueType[]) => {
-  // console.log('before repairKeyStrings: ', issues);
   const repairedIssues = issues.map((issue) => {
-    if (issue.proUrl === keyUrlString) {
+    if (issue.proUrl === ProxyForNoUrl) {
       issue.proUrl = '';
     }
-    if (issue.conUrl === keyUrlString) {
+    if (issue.conUrl === ProxyForNoUrl) {
       issue.conUrl = '';
     }
-    if (issue.commentText === keyCommentString) {
+    if (issue.commentText === ProxyForNoComment) {
       issue.commentText = '';
     }
     return issue;
   });
-  // console.log('after repairKeyStrings: ', repairedIssues);
   return repairedIssues;
 }
 
