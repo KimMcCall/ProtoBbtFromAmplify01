@@ -3,26 +3,19 @@
 import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import './NoConUrlPage.css'
-import { useAppDispatch } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
-import { setProOrCon } from "../features/issues/issues";
 import { SyntheticEvent } from "react";
 
 function NoConUrlPage() {
-  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   
     const handleShowContrastingViewClick = (event: SyntheticEvent<HTMLButtonElement>) =>{
       event.stopPropagation();
-      dispatch(setProOrCon('pro'));
-      // console.log(` calling navigate('/issue?stance=pro'`)
       navigate('/issue?stance=pro')
     }
   
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    const proOrCon = 'con';
-    dispatch(setProOrCon(proOrCon))
     navigate('/comments?stance=con')
   }
 

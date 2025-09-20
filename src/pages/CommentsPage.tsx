@@ -1,13 +1,14 @@
 import { Button, Flex } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
-import { CommentBlockType, IssueType, selectAllIssues, selectDisplayBlockForCurrentIssue, selectProOrCon, selectSomeRecordForCurrentIssue, setDisplayBlocks, setIssues } from "../features/issues/issues";
+import { CommentBlockType, IssueType, selectAllIssues, selectDisplayBlockForCurrentIssue, selectSomeRecordForCurrentIssue, setDisplayBlocks, setIssues } from "../features/issues/issues";
 import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
 import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 import { selectCurrentUser } from "../features/userInfo/userInfoSlice";
 import { addCommentToIssue } from "../utils/dynamodb_operations";
 import CommentSubmissionForm from "../components/CommentSubmissionForm";
+import { useNavigate } from "react-router-dom";
 
 interface CommentTileProps {
   block: CommentBlockType;
@@ -32,16 +33,32 @@ function CommentTile(props: CommentTileProps) {
 }
 
 function CommentsPage() {
+
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
+  const [shouldShowForm, setShouldShowForm] = useState(false);
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const queryStringStance = urlParams.get('stance'); // Should return "pro", "con", or null (which we hope to avoid)
+  const explicitlyAskedForPro = queryStringStance === 'pro';
+  const stance = explicitlyAskedForPro ? 'pro' : 'con';
+  console.log(`With queryStringStance='${queryStringStance}' we have stance: '${stance}'`);
+
+  const showPro = stance === 'pro';
 
   const allIssues = useAppSelector(selectAllIssues);
   const aRecord = useAppSelector(selectSomeRecordForCurrentIssue);
   const authorEmail = useAppSelector(selectCurrentUser).canonicalEmail;
   const issueBlock = useAppSelector(selectDisplayBlockForCurrentIssue);
-  const proOrCon = useAppSelector(selectProOrCon);
-  const commentBlocks = proOrCon === 'pro' ? issueBlock?.proComments : issueBlock?.conComments;
+  const commentBlocks = showPro ? issueBlock?.proComments : issueBlock?.conComments; 
 
-  const [shouldShowForm, setShouldShowForm] = useState(false);
+  const handleBackToViewButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    const newUrl = `/issue?stance=${stance}`;
+    console.log(`Calling navigate('${newUrl}')`)
+    navigate(newUrl, {replace: true});
+  }
 
   const handleCommentButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -54,12 +71,12 @@ function CommentsPage() {
   
   const handleAutoCommentButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    const commentText = `This is an auto-generated ${proOrCon === 'pro' ? 'PRO' : 'CON'} comment that should show up in the dB.`;
+    const commentText = `This is an auto-generated ${showPro ? 'PRO' : 'CON'} comment that should show up in the dB.`;
     createCommentWithText(commentText);
   }
 
   const createCommentWithText = async (text: string) => {
-    const isPro = proOrCon === 'pro';
+    const isPro = showPro;
     const nowStr = new Date().toISOString();
     const commentId = `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`;
     const commenntKey = `ISSUE#${commentId}`;
@@ -134,6 +151,9 @@ function CommentsPage() {
         ))}
           </div>
           <Flex>
+            <Button onClick={handleBackToViewButtonClick}>
+              Back to {showPro ? 'Our View': 'Dissenting View'}
+            </Button>
             <Button onClick={handleCommentButtonClick}>
               Make your own Comment
             </Button>

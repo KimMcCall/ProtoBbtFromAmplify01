@@ -1,29 +1,28 @@
 import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import './IssuePage.css'
 import { ProxyForNoUrl } from "../utils/constants";
-import { selectDisplayBlockForCurrentIssue, setProOrCon } from "../features/issues/issues";
-import { useAppDispatch, useAppSelector } from "../app/hooks";
+import { selectDisplayBlockForCurrentIssue } from "../features/issues/issues";
+import { useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
 
 function IssuePage() {
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   const urlParams = new URLSearchParams(window.location.search);
   const queryStringStance = urlParams.get('stance'); // Should return "pro", "con", or null (which we hope to avoid)
   const explicitlyAskedForPro = queryStringStance === 'pro';
   const shouldShowPro = explicitlyAskedForPro;
-  const whatStanceShouldBe = shouldShowPro ? 'pro' : 'con';
-  console.log(`With queryStringStance='${queryStringStance}' we have whatStanceShouldBe: '${whatStanceShouldBe}'`);
+  const stance = shouldShowPro ? 'pro' : 'con';
+  console.log(`With queryStringStance='${queryStringStance}' we have whatStanceShouldBe: '${stance}'`);
 
-  const showPro = whatStanceShouldBe === 'pro';
+  const showPro = stance === 'pro';
   const showCon = !showPro;
 
   const handleShowContrastingViewClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    console.log(`At top of handleShowContrastingViewClick: whatStanceShouldBe: '${whatStanceShouldBe}'`)
+    console.log(`At top of handleShowContrastingViewClick: stance: '${stance}'`)
     const newStance = showPro ? 'con' : 'pro';
     const fullNewUrl = `/issue?stance=${newStance}`
     console.log(`Navigating to ${fullNewUrl}`);
@@ -40,8 +39,7 @@ function IssuePage() {
 
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    dispatch(setProOrCon(whatStanceShouldBe))
-    const commentsUrl = `/comments?stance=${whatStanceShouldBe}`;
+    const commentsUrl = `/comments?stance=${stance}`;
     console.log(`Calling navigate('${commentsUrl}')`)
     navigate(commentsUrl)
   }
