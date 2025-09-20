@@ -15,15 +15,15 @@ function NoProUrlPage() {
   const handleShowContrastingViewClick = (event: SyntheticEvent<HTMLButtonElement>) =>{
     event.stopPropagation();
     dispatch(setProOrCon('con'));
-    // console.log(` calling navigate('/issue?pro=no')`)
-    navigate('/issue?pro=no')    
+    // console.log(` calling navigate('/issue?stance=con')`)
+    navigate('/issue?stance=con')    
   }
   
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
     const proOrCon = 'pro';
     dispatch(setProOrCon(proOrCon))
-    navigate('/comments')
+    navigate('/comments?stance=pro')
   }
 
   return (

@@ -22,9 +22,8 @@ function ClaimCard(props: ClaimCardProps) {
   const handleCardClick = (event: SyntheticEvent<HTMLDivElement>) => {
     event.stopPropagation();
     console.log(`Now saving state and navigating to the IssuePage`)
-    // navigate(`/issue`); // GATOR: possibly add queryString to URL
     dispatch(setCurrentIssueId(struct.issueId));
-    navigate('/issue')
+    navigate('/issue?stance=pro');
   }
 
   const claim = struct.claim;

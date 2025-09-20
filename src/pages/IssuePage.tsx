@@ -8,32 +8,26 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
 
 function IssuePage() {
-  const [showPro, setShowPro] = useState(true);
-
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
   const urlParams = new URLSearchParams(window.location.search);
-  const queryStringPro = urlParams.get('pro'); // Should return "no", "yes", or null
-  const explicitlyAskedForCon = queryStringPro ==='no';
-  const shouldShowPro = showPro || !explicitlyAskedForCon;
-  const shouldShowCon = !shouldShowPro
-  console.log(`With queryStringPro='${queryStringPro}' and showPro: ${showPro}, we have shouldShowPro: ${shouldShowPro}`);
-  /*
-  if (shouldShowPro !== showPro) {
-    setShowPro(shouldShowPro);
-  }
-  */
-  if (shouldShowCon) {
-    navigate(`/issue?pro=no`);
-  } else {
-    navigate(`/issue?pro=yes`);
-  }
+  const queryStringStance = urlParams.get('stance'); // Should return "pro", "con", or null (which we hope to avoid)
+  const explicitlyAskedForPro = queryStringStance === 'pro';
+  const shouldShowPro = explicitlyAskedForPro;
+  const whatStanceShouldBe = shouldShowPro ? 'pro' : 'con';
+  console.log(`With queryStringStance='${queryStringStance}' we have whatStanceShouldBe: '${whatStanceShouldBe}'`);
+
+  const showPro = whatStanceShouldBe === 'pro';
+  const showCon = !showPro;
 
   const handleShowContrastingViewClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    console.log(`BEFORE: showPro: ${showPro}`)
-    setShowPro(!showPro);
+    console.log(`At top of handleShowContrastingViewClick: whatStanceShouldBe: '${whatStanceShouldBe}'`)
+    const newStance = showPro ? 'con' : 'pro';
+    const fullNewUrl = `/issue?stance=${newStance}`
+    console.log(`Navigating to ${fullNewUrl}`);
+    navigate(fullNewUrl, { replace: true})
   }
 
   const block = useAppSelector(selectDisplayBlockForCurrentIssue);
@@ -46,15 +40,16 @@ function IssuePage() {
 
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    const proOrCon = showPro ? 'pro' : 'con';
-    dispatch(setProOrCon(proOrCon))
-    navigate('/comments')
+    dispatch(setProOrCon(whatStanceShouldBe))
+    const commentsUrl = `/comments?stance=${whatStanceShouldBe}`;
+    console.log(`Calling navigate('${commentsUrl}')`)
+    navigate(commentsUrl)
   }
 
   useEffect(() => {
   if (showPro && proIsBlank) {
     navigate('/noProUrl', {replace: true})
-  } else if (!showPro && conIsBlank) {
+  } else if (showCon && conIsBlank) {
     navigate('/noConUrl', {replace: true})
   }
   })
