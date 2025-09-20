@@ -5,8 +5,17 @@ import PageWrapper from "../components/PageWrapper";
 import './AdminUsersPage.css'
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
-import { selectAllUsers, selectCurrentUserId, selectDesgnatedUser, setAllUsers, setDesignatedUserId, setUserIsAdmin, setUserIsBanned, SingleUserInfoType, UserBooleanPropertySettinPairType } from "../features/userInfo/userInfoSlice";
+import { selectAllUsers, selectDesgnatedUser, setAllUsers, setDesignatedUserId, setUserIsAdmin, setUserIsBanned, SingleUserInfoType, UserBooleanPropertySettinPairType } from "../features/userInfo/userInfoSlice";
 import { dbClient } from "../main";
+
+const superAdminUserId = '0e5de473-b488-4ede-a3da-c1b79e7a9eb0';
+let  allUsers: SingleUserInfoType[] = [];
+let filterString = '';
+let adminsOnly = false;
+let designatedUserId = superAdminUserId;
+console.log(`Initialized designatedUserId as ${designatedUserId}`);
+// @ts-expect-error We'll add a real object soon enough.
+let designatedUser: SingleUserInfoType = null;
 
 interface UserTileProps {
   userId: string
@@ -21,9 +30,39 @@ interface UserTileProps {
 function UserTile(props: UserTileProps) {
   const { userId, email, name, checked,  isBanned, isAdmin, onSelect } = props;
   const [isChecked, setIsChecked] = useState(checked);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [userIdToTimerIdMap, setUserIdToTimerIdMap] = useState(new Map());
+
+  // Just to remove the compiler's complaing tht setUserIdToTimerIdMap was never used
+  // setUserIdToTimerIdMap(userIdToTimerIdMap);
+
+  // This is the function that's repeatedly run by the setInterval() timer.
+  const checkAndPossiblyUnmark = () => {
+    console.log(`comparing my userId '${userId}' with designatedUserId '${designatedUserId}`);
+    const imNotTheLatestOneSelected = userId !== designatedUserId
+    if (imNotTheLatestOneSelected) {
+      setIsChecked(false);
+      const intervalId = userIdToTimerIdMap.get(userId)
+      clearInterval(intervalId);
+    }
+  }
 
   const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
+    if (userId === superAdminUserId) {
+      console.log('userId === superAdminUserId, so aborting')
+      return;
+    }
     const newState = event.target.checked;
+    console.log(`newState: ${newState}`);
+    if (newState) {
+      const intervalId = setInterval(checkAndPossiblyUnmark, 1000)
+      userIdToTimerIdMap.set(userId, intervalId);
+      console.log(`created timer with intervalId: ${intervalId} (might be out of date value)`);
+    } else {
+      const timerId = userIdToTimerIdMap.get(userId)
+      console.log(`calling clearInterval(${timerId})`);
+      clearInterval(timerId);
+    }
     setIsChecked(newState); // Update the state when the checkbox changes
     onSelect(userId, newState);
   }
@@ -31,7 +70,13 @@ function UserTile(props: UserTileProps) {
   return(
     <div key={userId} className="userAdminTileDiv">
       <Flex className="UserTileFlex" direction="row">
-        <CheckboxField className="userTileCheckbox" label="" name="pointlessName" checked={isChecked} onChange={handleCheckboxChange}/>
+        <CheckboxField
+          className="userTileCheckbox"
+          label=""
+          name="pointlessName"
+          disabled={userId === superAdminUserId}
+          checked={isChecked}
+          onChange={handleCheckboxChange}/>
         <div className={isAdmin ? "adminUserTileEmailDiv" : isBanned ? "bannedUserTileEmailDiv" : "normalUserTileEmailDiv"}>
           {email}
         </div>
@@ -43,18 +88,22 @@ function UserTile(props: UserTileProps) {
   );
 }
 
+// let filteredUsers2: SingleUserInfoType[] = [];
+let searchBarText2 = '';
+
 function AdminUsersPage() {
-  const [searchBarText, setSearchBarText] = useState('');
-  // const [adminOnlyIsChecked, setAdminOnlyIsChecked] = useState(false);
+  // const [searchBarText, setSearchBarText] = useState('');
   const emptyUserArray: SingleUserInfoType[] = [];
-  const [filteredUsers, setFilteredUsers] = useState(emptyUserArray);
-  // const [checkedUserId, setCheckedUserId] = useState("");
+  // const [filteredUsers, setFilteredUsers] = useState(emptyUserArray);
+  const [filteredUsers2, setFilteredUsers2] = useState(emptyUserArray);
   
   const dispatch = useAppDispatch();
 
-  let designatedUserId = useAppSelector(selectCurrentUserId); // just to have something reasonable
+  /*
+  designatedUserId = useAppSelector(selectCurrentUserId); // just to have something vaguely reasonable
   console.log(`Initialized designatedUserId as ${designatedUserId}`);
-  let designatedUser = useAppSelector(selectDesgnatedUser); // currentUser, which is SuperAdmin
+  */
+  designatedUser = useAppSelector(selectDesgnatedUser); // currentUser, which is SuperAdmin
   
     useEffect(() => {
       console.log('calling list()');
@@ -63,22 +112,25 @@ function AdminUsersPage() {
           // @ts-expect-error Maybe some fields are missing, but I think it'll be alright
           const allUsers = sortByEmail(result.data);
           dispatch(setAllUsers(allUsers));
-          setFilteredUsers(allUsers);
+          /* setFilteredUsers(allUsers); */
+          setFilteredUsers2(allUsers);
           enableButtons(false);
-          filterString = searchBarText;
+          filterString = searchBarText2;
         }
       );
     }, [dispatch]);
 
   const handleSearchBarChange = (event: ChangeEvent<HTMLInputElement>) => {
     const newText = event.target.value;
-    console.log(`calling setSearchBarText('${newText}')`)
     setSearchBarTextAndFilterString(newText);
     runSearch();
   }
 
   const setSearchBarTextAndFilterString = (text: string) => {
-    setSearchBarText(text);
+    // console.log(`calling setSearchBarText('${text}')`)
+    // setSearchBarText(text);
+    console.log(`setting searchBarText2 to '${text}'`)
+    searchBarText2 = text;
     filterString = text;
   }
 
@@ -88,7 +140,7 @@ function AdminUsersPage() {
   }
 
   const toggleBanned = async () => {
-    if (designatedUser.id === '0e5de473-b488-4ede-a3da-c1b79e7a9eb0') {
+    if (designatedUser.id === superAdminUserId) {
       console.log('Have Kim as desgnatedUser, so aborting update()');
       return;
     }
@@ -116,7 +168,7 @@ function AdminUsersPage() {
   }
 
   const toggleAdmin = async () => {
-    if (designatedUser.id === '0e5de473-b488-4ede-a3da-c1b79e7a9eb0') {
+    if (designatedUser.id === superAdminUserId) {
       console.log('Have Kim as desgnatedUser, so aborting update()');
       return;
     }
@@ -148,7 +200,7 @@ function AdminUsersPage() {
       // setCheckedUserId(userId);
       console.log(`setting designatedUserId to ${userId}`);
       designatedUserId = userId;
-      // @ts-expect-error We have to find a match!
+      // @ts-expect-error There has to be a match!
       designatedUser =  getUserWithId(userId);
       console.log(`set designatedUser to user with email ${designatedUser.canonicalEmail}`)
       dispatch(setDesignatedUserId(userId));
@@ -211,9 +263,10 @@ function AdminUsersPage() {
 
   const filterUsers = () => {
     const haveFilterString = filterString.length > 0;
-    console.log(`In filterUsers(); #unfiltered: ${allUsers.length}; filterString: '${filterString}'; adminOnlly: ${adminsOnly}`);
+    console.log(`Entering filterUsers(); #unfiltered: ${allUsers.length}; filterString: '${filterString}'; adminOnly: ${adminsOnly}`);
+    let retVal = allUsers;
     if (haveFilterString && adminsOnly) {
-      return allUsers.filter((user) => {
+      retVal = allUsers.filter((user) => {
         if (!user.isAdmin) {
           return false;
         }
@@ -224,7 +277,7 @@ function AdminUsersPage() {
         return haveEmailMatch || haveNameMatch;
       })
     } else if (haveFilterString && !adminsOnly) {
-      return allUsers.filter((user) => {
+      retVal = allUsers.filter((user) => {
         const email = user.canonicalEmail;
         const name = user.name;
         const haveEmailMatch = email && email.toLowerCase().includes(filterString.toLowerCase());
@@ -232,11 +285,13 @@ function AdminUsersPage() {
         return haveEmailMatch || haveNameMatch;
       })
     } else if (!haveFilterString && adminsOnly) {
-      return allUsers.filter((user) => user.isAdmin)
+      retVal = allUsers.filter((user) => user.isAdmin)
     } else /* (!haveFilterString && !adminsOnly) */ {
       console.log("skipping search because filterString is empty string and we're not asking for Admins Only")
-      return allUsers;
+      retVal = allUsers;
     }
+    console.log(`Exiting filterUsers(); #filtered: ${retVal.length}`);
+    return retVal;
   }
 
   const sortByEmail = (users: SingleUserInfoType[]) => {
@@ -248,12 +303,11 @@ function AdminUsersPage() {
     return clonedList;
   }
 
-  const allUsers = sortByEmail(useAppSelector(selectAllUsers));
-  let filterString = '';
-  let adminsOnly = false;
+  allUsers = sortByEmail(useAppSelector(selectAllUsers));
 
   const runSearch = () => {
-    setFilteredUsers(filterUsers());
+    /*setFilteredUsers(filterUsers());*/
+    setFilteredUsers2(filterUsers());
   }
 
   const handleBanButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
@@ -290,7 +344,7 @@ function AdminUsersPage() {
               <SearchField
                 className="searchInput"
                 label="Search"
-                value={searchBarText}
+                value={searchBarText2}
                 onChange={handleSearchBarChange}
                 onClear={handleSearchBarClear}
               />
@@ -303,7 +357,7 @@ function AdminUsersPage() {
             <div className="userAdminListHolderDiv">
               <div className="userAdminListDiv">
                 {
-                filteredUsers.map(user => (
+                filteredUsers2.map(user => (
                   <UserTile key={user.id}
                     userId={user.id}
                     email={user.canonicalEmail}
