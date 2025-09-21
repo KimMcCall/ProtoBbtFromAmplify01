@@ -275,23 +275,126 @@ function PlayPage02() {
     getIssue("ISSUE#2025-09-14T14:27:17.611Z");
   }
 
-   const handleMigrateDbClick= async (event: SyntheticEvent<HTMLButtonElement>) => {
+  const handleMigrateDbClick= async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    // As a first step I'll just see how many old records we have
     await dbClient.models.IssueP1.list().then(
       (response) => {
         const allIssues = response.data;
         const nIssues = allIssues.length;
         console.log(`nIssues: ${nIssues}`);
-        console.log(allIssues);
+        // console.log(allIssues);
         // expected either 13 or 17, but got 14.  One of them is null, so let's filter that out
         const nonNullIssues = allIssues.filter(issue => issue !== null);
         const nNonNullIssues = nonNullIssues.length;
         console.log(`nNonNullIssues: ${nNonNullIssues}`);
+        // @ts-expect-error Given current state of DB, the prioority value will never be null
+        const xp2Issues = nonNullIssues.map((issue) => convertToXp2(issue));
+        if (xp2Issues.length > 0) {
+          console.log(xp2Issues[0]);
+        }
+        xp2Issues.forEach(async issue => {
+          const before = Date.now();
+          await dbClient.models.IssueP2.create(issue).then(
+            (result) => {
+              const issueXP2 = result.data;
+              console.log(`start of claim: '${issueXP2?.claim.substring(0, 12)}'`)
+            }
+          );
+          const after = Date.now();
+          const delta = after - before;
+          console.log('delta: ', delta);
+        }); 
       }
-    );
+    ).catch(
+      (error) => console.log(error)
+    )
+  }
 
-   }
+  const convertToXp2 = (p1Issue: IssueType) => {
+    /*
+    BEFORE:
+    {
+      issueId: string;
+      claim: string;
+      proUrl: string;
+      conUrl: string;
+      proIsPdf: boolean;
+      conIsPdf: boolean;
+      proAuthorId: string;
+      conAuthorId: string;
+      makeAvailable: boolean;
+      commentKey: string;
+      commentId: string;
+      commentText: string;
+      authorId: string;
+      createdT: string;
+      updatedT: string;
+      priority: Nullable<number>;
+      commentType: "PRO" | "CON" | null;
+      readonly createdAt: string;
+      readonly updatedAt: string;
+    }
+
+    AFTER:
+    {
+      issueId: string;
+      priority: number;
+      claim: string;
+      proUrl: string;
+      conUrl: string;
+      proDocType: string;
+      conDocType: string;
+      proAuthorEmail: string;
+      conAuthorEmail: string;
+      isAvailable: boolean;
+      commentKey: string;
+      commentText: string;
+      commentAuthorEmail: string;
+      createdT: string;
+      updatedT: string;
+      readonly createdAt: string;
+      readonly updatedAt: string;
+    }
+    */
+    const issueId = p1Issue.issueId;
+    const priority = p1Issue.priority || 3000000
+    const claim = p1Issue.claim;
+    const proUrl = p1Issue.proUrl;
+    const conUrl = p1Issue.conUrl;
+    const proDocType = p1Issue.proIsPdf ? 'Pdf' : 'YouTube';
+    const conDocType = p1Issue.conIsPdf ? 'Pdf' : 'YouTube';
+    const proAuthorEmail = p1Issue.proAuthorId;
+    const conAuthorEmail = p1Issue.conAuthorId;
+    const isAvailable = p1Issue.makeAvailable;
+    const tempText = p1Issue.commentText;
+    const commentText = (!tempText || tempText === 'No Comment') ? 'NoComment' : tempText;
+    const commentAuthorEmail = p1Issue.authorId;
+    const createdT = p1Issue.createdT;
+    const updatedT = p1Issue.updatedT;
+    const commentKey = 'ISSUE#COMMENT#' + createdT;
+
+    const xp2IssueStruct = {
+      issueId,
+      priority,
+      claim,
+      proUrl,
+      conUrl,
+      proDocType,
+      conDocType,
+      proAuthorEmail,
+      conAuthorEmail,
+      isAvailable,
+      commentKey,
+      commentText,
+      commentAuthorEmail,
+      createdT,
+      updatedT,
+    };
+
+    return xp2IssueStruct
+  }
+
+
 
   const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
   const toastMessage = "This is a long enough text to stretch across multiple lines, I hope";
@@ -581,7 +684,7 @@ function PlayPage02() {
                 <button onClick={handleShowToastClick}>Show Toast</button>
                 <Button onClick={handleCreateIssueClick}> Create Issue </Button>
                 <Button onClick={handleFetchIssueClick}> Fetch Issue </Button>
-                <Button onClick={handleMigrateDbClick}> Migrate DB </Button>
+                <Button onClick={handleMigrateDbClick} disabled> Migrate DB </Button>
               </Flex>
             </Flex>
           )
