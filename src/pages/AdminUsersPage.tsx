@@ -30,9 +30,8 @@ interface UserTileProps {
 function UserTile(props: UserTileProps) {
   const { userId, email, name, checked,  isBanned, isAdmin, onSelect } = props;
   const [isChecked, setIsChecked] = useState(checked);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [userIdToTimerIdMap, setUserIdToTimerIdMap] = useState(new Map());
 
+  const userIdToTimerIdMap = new Map();
   // This is the function that's repeatedly run by the setInterval() timer.
   const checkAndPossiblyUnmark = () => {
     console.log(`comparing my userId '${userId}' with designatedUserId '${designatedUserId}`);
