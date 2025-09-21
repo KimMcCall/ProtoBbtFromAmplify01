@@ -74,8 +74,11 @@ function PlayPage03() {
         {
           showGoogle &&
           (
-            // UI to display if showOtherFieldsUi is true
-            <p>We haven't yet implemented showing Gooogle docs here.</p>
+          <iframe
+            height="680px"
+            width="800px"
+            src="https://docs.google.com/document/d/e/2PACX-1vTg6xAjojulAXh49sfu6l0uwlGq8yGLjIIvN9vLA15sSCTZ_UjsJBPp5R560j1dGdK-gDYp5-LKemLT/pub?embedded=true"
+            ></iframe>
           )
         }
         {
