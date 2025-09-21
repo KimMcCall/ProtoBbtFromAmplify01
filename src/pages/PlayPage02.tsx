@@ -307,10 +307,51 @@ function PlayPage02() {
     setAvailabilityChoice('unavailable')
   }
 
-  const handleOtherFieldsSubmitButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+  const handleOtherFieldsSubmitButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     console.log("Should now update the DB")
+    /*
+    // GATOR: Commenting this out so it will compile. Lots to fix here.
+    const issueId = issueIdText;
+    if (!issueId) {
+      alert('You can\'t submit without selecting an issue');
+      return;
+    }
+
+    const claim = claimText;
+    const priorityString = priorityText;
+    const availability = availabilityChoice; // 'available' or 'unavailable'
+    const haveClaim = claim.length > 0;
+    const havePriorityString = priorityString.length > 0;
+    const priority = parseInt(priorityString);
+    const shouldBeAvailable = availability === 'available';
+    let myUpdate =  {
+      issueId: issueId,
+      isAvailable: shouldBeAvailable,
+    };
+    if (haveClaim) {
+      const addition = {claim: claim};
+      myUpdate = { ...myUpdate, ...addition }
+    }
+    if (havePriorityString) {
+      const addition = { priority: priority};
+      myUpdate = { ...myUpdate, ...addition}
+    }
+    await dbClient.models.IssueP1.update(myUpdate).then(
+          (response) => {
+            console.log(' back from update()');
+            // @ts-expect-error It will not be undefined if the .update() succeeded!
+            const modifiedUser: SingleUserInfoType = response.data;
+            const { id, isAdmin } = modifiedUser;
+            console.log(` new value of isAdmin: ${isAdmin}`)
+            dispatch(setDesignatedUserId(id));
+            const pair: UserBooleanPropertySettinPairType = { userId: id, value: isAdmin}
+            dispatch(setUserIsAdmin(pair));
+            setButtonTextsForUser(modifiedUser);
+          }
+        );
   }
+  */
 
   const handleIssueTileClick = (event: SyntheticEvent<HTMLDivElement>, issueId: string) => {
     event.stopPropagation();
