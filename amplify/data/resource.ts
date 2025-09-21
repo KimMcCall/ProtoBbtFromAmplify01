@@ -47,6 +47,26 @@ const schema = a.schema({
     })
     .identifier(['issueId', 'commentKey']) // Composite primary key
     .authorization((allow) => [allow.publicApiKey()]),
+  IssueP2: a
+    .model({
+      issueId: a.string().required(),
+      priority: a.integer().required().default(10000),
+      claim: a.string().required(),
+      proUrl: a.string().required(),
+      conUrl: a.string().required(),
+      proDocType: a.string().required().default('NONE'), // Other possible values: Pdf, YouTube, GoogleDoc, Unknown
+      conDocType: a.string().required().default('NONE'), // Other possible values: Pdf, YouTube, GoogleDoc, Unknown
+      proAuthorEmail: a.string().required(), // Who contributed the proUrl
+      conAuthorEmail: a.string().required(), // Who contributed the conUrl
+      isAvailable: a.boolean().required().default(false),
+      commentKey: a.string().required(), // Second half of composite sort key: "ISSUE#COMMENT#{timeStamp}"
+      commentText: a.string().required(),
+      commentAuthorEmail: a.string().required(),  // author of comment
+      createdT: a.datetime().required(),
+      updatedT: a.datetime().required(),
+    })
+    .identifier(['issueId', 'commentKey']) // Composite primary key
+    .authorization((allow) => [allow.publicApiKey()]),
   Submission: a
     .model({
       userId: a.string(),
