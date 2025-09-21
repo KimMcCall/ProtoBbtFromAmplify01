@@ -1,6 +1,5 @@
 import { BrowserRouter as Router , Routes, Route } from 'react-router-dom';
 import ProtectedRoute from "./components/ProtectedRoute";
-// import HomePage from "./pages/HomePage";
 import LoginPage from "./pages/LoginPage";
 import LogoutPage from "./pages/LogoutPage";
 import ProfilePage from "./pages/ProfilePage";
@@ -23,7 +22,7 @@ import AdminUsersPage from './pages/AdminUsersPage';
 import AdminIssuesPage from './pages/AdminIssuesPage';
 import AdminSubmissions from './pages/AdminSubmissionsPage';
 import IssuePage from './pages/IssuePage';
-import HomePageNext from './pages/HomePageNext';
+import HomePage from './pages/HomePage';
 import CommentsPage from './pages/CommentsPage';
 import NoProUrlPage from './pages/NoProUrlPage';
 import NoConUrlPage from './pages/NoConUrlPage';
@@ -32,8 +31,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/*<Route path="/" element={<HomePage />} /> */}
-        <Route path="/" element={<HomePageNext />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />

@@ -56,7 +56,7 @@ const basicStruct: IssueBlockForRenderingType = {
 }
 const arryOfStucts = [basicStruct];
 
-function HomePageNext() {
+function HomePage() {
   const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
   const dispatch = useAppDispatch();
   
@@ -113,4 +113,4 @@ function HomePageNext() {
   */
 }
 
-export default HomePageNext;
+export default HomePage;
