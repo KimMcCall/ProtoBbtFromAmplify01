@@ -275,6 +275,24 @@ function PlayPage02() {
     getIssue("ISSUE#2025-09-14T14:27:17.611Z");
   }
 
+   const handleMigrateDbClick= async (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    // As a first step I'll just see how many old records we have
+    await dbClient.models.IssueP1.list().then(
+      (response) => {
+        const allIssues = response.data;
+        const nIssues = allIssues.length;
+        console.log(`nIssues: ${nIssues}`);
+        console.log(allIssues);
+        // expected either 13 or 17, but got 14.  One of them is null, so let's filter that out
+        const nonNullIssues = allIssues.filter(issue => issue !== null);
+        const nNonNullIssues = nonNullIssues.length;
+        console.log(`nNonNullIssues: ${nNonNullIssues}`);
+      }
+    );
+
+   }
+
   const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
   const toastMessage = "This is a long enough text to stretch across multiple lines, I hope";
 
@@ -563,6 +581,7 @@ function PlayPage02() {
                 <button onClick={handleShowToastClick}>Show Toast</button>
                 <Button onClick={handleCreateIssueClick}> Create Issue </Button>
                 <Button onClick={handleFetchIssueClick}> Fetch Issue </Button>
+                <Button onClick={handleMigrateDbClick}> Migrate DB </Button>
               </Flex>
             </Flex>
           )
