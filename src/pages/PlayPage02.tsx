@@ -350,8 +350,8 @@ function PlayPage02() {
             setButtonTextsForUser(modifiedUser);
           }
         );
-  }
   */
+  }
 
   const handleIssueTileClick = (event: SyntheticEvent<HTMLDivElement>, issueId: string) => {
     event.stopPropagation();
