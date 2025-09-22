@@ -24,6 +24,7 @@ import AdminSubmissions from './pages/AdminSubmissionsPage';
 import IssuePage from './pages/IssuePage';
 import HomePage from './pages/HomePage';
 import CommentsPage from './pages/CommentsPage';
+import MergedCommentsPage from './pages/MergedCommentsPage';
 import NoProUrlPage from './pages/NoProUrlPage';
 import NoConUrlPage from './pages/NoConUrlPage';
 
@@ -37,6 +38,7 @@ function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/issue" element={<IssuePage />} />
         <Route path="/comments" element={<CommentsPage />} />
+        <Route path="/commentsXP2" element={<MergedCommentsPage />} />
         <Route
           path="/suggest"
           element={

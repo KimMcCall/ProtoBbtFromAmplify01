@@ -5,6 +5,7 @@ import PageWrapper from "../components/PageWrapper";
 import './NoConUrlPage.css'
 import { useNavigate } from "react-router-dom";
 import { SyntheticEvent } from "react";
+import { ShowMergedComments } from "../utils/constants";
 
 function NoConUrlPage() {
   const navigate = useNavigate();
@@ -16,7 +17,8 @@ function NoConUrlPage() {
   
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    navigate('/comments?stance=con')
+    const baseUrl = ShowMergedComments ? '/commentsXP2' : '/comments'
+    navigate(`${baseUrl}?stance=con`)
   }
 
   return (

@@ -6,13 +6,13 @@ import { CommentBlockTypeXP2,
   selectAllIssuesXP2,
   selectDisplayBlockForCurrentIssueXP2,
   selectSomeRecordForCurrentIssueXP2,
-  selectAllDisplayBlocksXP2,
+  setDisplayBlocksXP2,
   setIssuesXP2 } from "../features/issues/issues";
 import './MergedCommentsPage.css';
 import { SyntheticEvent, useState } from "react";
-import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
+import { sortAndRepairIssuesXP2, structurePerIssueXP2 } from "../utils/utils";
 import { selectCurrentUser } from "../features/userInfo/userInfoSlice";
-import { addCommentToIssue } from "../utils/dynamodb_operations";
+import { addCommentToIssueXP2 } from "../utils/dynamodb_operations";
 import CommentSubmissionForm from "../components/CommentSubmissionForm";
 import { useNavigate } from "react-router-dom";
 
@@ -78,59 +78,52 @@ function CommentsPage() {
   
   const handleAutoCommentButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    const commentText = `This is an auto-generated ${showPro ? 'PRO' : 'CON'} comment that should show up in the dB.`;
+    const commentText = `This is an auto-generated comment that should show up in the dB.`;
     createCommentWithText(commentText);
   }
 
   const createCommentWithText = async (text: string) => {
-    const isPro = showPro;
     const nowStr = new Date().toISOString();
-    const commentId = `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`;
-    const commenntKey = `ISSUE#${commentId}`;
-    const commentType = isPro ? 'PRO' : 'CON';
+    const commenntKey = `ISSUE#COMMENT#${nowStr}`;
     const commentText = text;
     // @ts-expect-error I'm pretty sure there are no fields here with 'undefined' content
     const clonedRecord: IssueTypeXP2 = { ...aRecord };
-    clonedRecord.commentType = commentType;
-    clonedRecord.commentId = commentId;
     clonedRecord.commentKey = commenntKey;
     clonedRecord.commentText = commentText;
     clonedRecord.createdT = nowStr;
     clonedRecord.updatedT = nowStr;
-    clonedRecord.authorId = authorEmail;
+    clonedRecord.commentAuthorEmail = authorEmail;
     const augmentedIssues = allIssues.concat(clonedRecord);
-    // const augmentedIssues = allIssues;
-    const sortedAndRepairedIssus = sortAndRepairIssues(augmentedIssues);
-    const structured = structurePerIssue(sortedAndRepairedIssus);
-    dispatch(setIssuesXP2(sortedAndRepairedIssus));
+    const sortedAndRepairedIssues = sortAndRepairIssuesXP2(augmentedIssues);
+    const structured = structurePerIssueXP2(sortedAndRepairedIssues);
+    dispatch(setIssuesXP2(sortedAndRepairedIssues));
     dispatch(setDisplayBlocksXP2(structured));
 
     const copiedIssueId = clonedRecord.issueId;
-    const copiedClaim = clonedRecord.claim;
     const copiedPriority = clonedRecord.priority;
+    const copiedClaim = clonedRecord.claim;
     const copiedProUrl = clonedRecord.proUrl;
     const copiedConUrl = clonedRecord.conUrl;
-    const copiedProAuthorId = clonedRecord.proAuthorId;
-    const copiedConAuthorId = clonedRecord.conAuthorId;
-    const copiedProIsPdf = clonedRecord.proIsPdf;
-    const copiedConIsPdf = clonedRecord.conIsPdf;
-    const copiedMakeAvailable = clonedRecord.makeAvailable;
-    const authorId = clonedRecord.authorId;
+    const copiedProAuthorEmail = clonedRecord.proAuthorEmail;
+    const copiedConAuthorEmail = clonedRecord.conAuthorEmail;
+    const copiedProDocType = clonedRecord.proDocType;
+    const copiedConDocType = clonedRecord.conDocType;
+    const copiedIsAvailable = clonedRecord.isAvailable;
+    const copiedAuthorEmail = clonedRecord.commentAuthorEmail;
 
-    await addCommentToIssue(
-      isPro,
+    await addCommentToIssueXP2(
       copiedIssueId,
-      copiedClaim,
       copiedPriority,
+      copiedClaim,
       copiedProUrl,
       copiedConUrl,
-      copiedProAuthorId,
-      copiedConAuthorId,
-      copiedProIsPdf,
-      copiedConIsPdf,
-      copiedMakeAvailable,
+      copiedProDocType,
+      copiedConDocType,
+      copiedProAuthorEmail,
+      copiedConAuthorEmail,
+      copiedIsAvailable,
       commentText,
-      authorId,
+      copiedAuthorEmail,
     );
 
   }

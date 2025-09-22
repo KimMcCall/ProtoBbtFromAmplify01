@@ -5,6 +5,7 @@ import PageWrapper from "../components/PageWrapper";
 import './NoProUrlPage.css'
 import { SyntheticEvent } from "react";
 import { useNavigate } from "react-router-dom";
+import { ShowMergedComments } from "../utils/constants";
 
 function NoProUrlPage() {
   const navigate = useNavigate();
@@ -16,7 +17,8 @@ function NoProUrlPage() {
   
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    navigate('/comments?stance=pro')
+        const baseUrl = ShowMergedComments ? '/commentsXP2' : '/comments'
+        navigate(`${baseUrl}?stance=pro`)
   }
 
   return (

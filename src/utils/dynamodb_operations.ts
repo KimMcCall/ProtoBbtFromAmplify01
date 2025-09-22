@@ -128,6 +128,54 @@ async function addCommentToIssue(
   }
 }
 
+// UPDATE Operation - Adding a Comment to a given issue
+async function addCommentToIssueXP2(
+    issueId: string,
+    priority: number,
+    claim: string,
+    proUrl: string,
+    conUrl: string,
+    proDocType: string,
+    conDocType: string,
+    proAuthorEmail: string,
+    conAuthorEmail: string,
+    isAvailable: boolean,
+    commentText: string,
+    commentAuthorEmail: string,
+  ) {
+  try {
+    // Since we're using a composite key (partition + sort), 
+    // adding a new comment means creating a new item with the same issueId
+    // but a different commentKey value
+    const nowStr = new Date().toISOString();
+    const commentKey = 'ISSUE#COMMENT#' + nowStr; // Composite sort key
+
+    const result = await dbClient.models.IssueP2.create({
+      issueId,
+      priority,
+      claim,
+      proUrl,
+      conUrl,
+      proDocType,
+      conDocType,
+      proAuthorEmail,
+      conAuthorEmail,
+      isAvailable,
+      commentKey,
+      commentText,
+      commentAuthorEmail,
+      updatedT: nowStr,
+      createdT: nowStr,
+    });
+    
+    console.log('New comment added: ', result);
+    return result;
+  } catch (error) {
+    console.error('Error adding comment: ', error);
+    throw error;
+  }
+}
+
 // Another UPDATE - If you want to modify an existing comment
 async function updateExistingComment(issueId: string, commentKey: string, newText: string) {
   try {
@@ -210,6 +258,7 @@ async function getAllRecordsForIssue(issueId: string) {
 export {
   createIssue,
   addCommentToIssue,
+  addCommentToIssueXP2,
   updateExistingComment,
   getAllIssueRecords,
   getAllIssueRecordsXP2,

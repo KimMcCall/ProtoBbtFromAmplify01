@@ -2,7 +2,7 @@ import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { useEffect } from "react";
 import './IssuePage.css'
-import { PlaceholderForEmptyUrl } from "../utils/constants";
+import { PlaceholderForEmptyUrl, ShowMergedComments } from "../utils/constants";
 import { selectDisplayBlockForCurrentIssue } from "../features/issues/issues";
 import { useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,8 @@ function IssuePage() {
 
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    const commentsUrl = `/comments?stance=${stance}`;
+    const baseUrl = ShowMergedComments ? '/commentsXP2' : '/comments'
+    const commentsUrl = `${baseUrl}?stance=${stance}`;
     console.log(`Calling navigate('${commentsUrl}')`)
     navigate(commentsUrl)
   }
