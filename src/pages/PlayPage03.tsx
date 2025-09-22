@@ -4,10 +4,11 @@ import { Flex, Radio, RadioGroupField } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { ChangeEvent, useState } from "react";
 import './PlayPage03.css';
+import { docType_GoogleDoc } from "../utils/constants";
 
 function PlayPage03() {
 
-  const [docTypeChoice, seDocTypeChoice] = useState('pdfViaIframe');
+  const [docTypeChoice, seDocTypeChoice] = useState('googleDoc');
 
   const handleDoocTypeRadioButtonChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -19,7 +20,7 @@ function PlayPage03() {
   const showPdfViaIframe = docTypeChoice === 'pdfViaIframe';
   const showPdfViaEmbed = docTypeChoice === 'pdfViaEmbed';
   const showVideo = docTypeChoice === 'youTube';
-  const showGoogle = docTypeChoice === 'googleDoc';
+  const showGoogle = docTypeChoice === docType_GoogleDoc;
 
   console.log(`At page loading time, docTypeChoice: '${docTypeChoice}'`)
 
@@ -35,7 +36,7 @@ function PlayPage03() {
               <RadioGroupField
                 className="docTypeButtons"
                 legend=""
-                name="activityChoice"
+                name="docTypeChoice"
                 direction="row"
                 value={docTypeChoice}
                 onChange={handleDoocTypeRadioButtonChange}
@@ -74,11 +75,12 @@ function PlayPage03() {
         {
           showGoogle &&
           (
-          <iframe
-            height="680px"
-            width="800px"
-            src="https://docs.google.com/document/d/e/2PACX-1vTg6xAjojulAXh49sfu6l0uwlGq8yGLjIIvN9vLA15sSCTZ_UjsJBPp5R560j1dGdK-gDYp5-LKemLT/pub?embedded=true"
-            ></iframe>
+            <iframe
+              src="https://docs.google.com/document/d/e/2PACX-1vTg6xAjojulAXh49sfu6l0uwlGq8yGLjIIvN9vLA15sSCTZ_UjsJBPp5R560j1dGdK-gDYp5-LKemLT/pub?embedded=true"
+              width= "850px"
+              height="660px"
+              >
+              </iframe>
           )
         }
         {

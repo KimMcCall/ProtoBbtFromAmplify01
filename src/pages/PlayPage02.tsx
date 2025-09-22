@@ -12,7 +12,7 @@ import { sendEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
 import { createIssue } from "../utils/dynamodb_operations";
 import { getIssue } from "../utils/comment_operations";
-import { defaultConAuthor, defaultProAuthor, ProxyForNoUrl } from "../utils/constants";
+import { defaultConAuthor, defaultProAuthor, PlaceholderForEmptyUrl } from "../utils/constants";
 import './PlayPage02.css';
 import { IssueType, selectAllIssues } from "../features/issues/issues";
 
@@ -252,8 +252,8 @@ function PlayPage02() {
   const handleCreateIssueClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
     const priority = getRandomIntegerInRange(1, 1000000);
-    const proUrl = ProxyForNoUrl;
-    const conUrl = ProxyForNoUrl;
+    const proUrl = PlaceholderForEmptyUrl;
+    const conUrl = PlaceholderForEmptyUrl;
     const proIsPdf = false;
     const conIsPdf = false;
     const makeAvailable = false;

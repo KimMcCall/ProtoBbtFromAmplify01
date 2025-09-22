@@ -4,7 +4,7 @@ import PageWrapper from "../components/PageWrapper";
 import { useEffect, SyntheticEvent, useState } from 'react';
 import { getAllIssueRecords } from '../utils/dynamodb_operations';
 // import { useAppDispatch } from '../app/hooks';
-import { IssueType, IssueBlockForRenderingType, setDisplayBlocks, setCurrentIssueId, setIssues } from '../features/issues/issues';
+import { setCurrentIssueId, IssueType, setIssues, IssueBlockForRenderingType, setDisplayBlocks } from '../features/issues/issues';
 import './HomePage.css'
 import { useAppDispatch } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
@@ -41,22 +41,19 @@ const basicStruct: IssueBlockForRenderingType = {
   claim: '',
   proUrl: '',
   conUrl: '',
-  proIsPdf: true,
-  conIsPdf: true,
-  proComments: [{
-    commentKey: 'lksffksdll',
-    authorEmail: '',
+  proDocType: '',
+  conDocType: '',
+  comments: [{
+    commentKey: '',
+    commentAuthorEmail: '',
     time: '',
-    text: 'PRO commentText'}],
-  conComments: [{
-    commentKey: 'afl;dskr0r',
-    authorEmail: '',
-    time: '',
-    text: 'CON commentText'}],
+    text: ''}],
 }
+
 const arryOfStucts = [basicStruct];
 
 function HomePage() {
+  // const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
   const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
   const dispatch = useAppDispatch();
   
@@ -64,16 +61,13 @@ function HomePage() {
     const fetchIssues = async () => {
       await getAllIssueRecords().then(
       (result) => {
-        // GATOR: figure out how to avoid this error
-        // @ts-expect-error This is, indeed, a type mismatch, but I'm hoping it'll be OK
         const iterable: Iterable<IssueType> = result.values();
         const issues = Array.from(iterable);
-        const sortedAndRepairedIssus = sortAndRepairIssues(issues);
-        console.log(`# repairedIssues: ${sortedAndRepairedIssus.length}`)
-        dispatch(setIssues(sortedAndRepairedIssus));
-        const structured = structurePerIssue(sortedAndRepairedIssus);
+        const sortedAndRepairedIssues = sortAndRepairIssues(issues);
+        console.log(`# sortedAndRepairedIssues: ${sortedAndRepairedIssues.length}`)
+        dispatch(setIssues(sortedAndRepairedIssues));
+        const structured = structurePerIssue(sortedAndRepairedIssues);
         console.log(`# structured: ${structured.length}`)
-        console.log(structured);
         setStructuredForRendering(structured);
         dispatch(setDisplayBlocks(structured));
       }
@@ -81,36 +75,22 @@ function HomePage() {
     };
 
     fetchIssues(); // Call the async function
+
   }, [dispatch]);
 
 
   return (
     <PageWrapper>
       <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
-      {
-      structuredForRendering.map(struct => (
-      <ClaimCard key={struct.issueId} struct={struct} />
-    ))}
+        {
+          structuredForRendering.map(struct => (
+            <ClaimCard key={struct.issueId} struct={struct} />
+          )
+        )
+        }
       </Flex>
     </PageWrapper>
   );
-
-  /*
-  return (
-    <PageWrapper>
-      <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
-        <h1>My Glorious App</h1>
-        <div>
-          You're on the Home Page.
-        </div>
-        <div>
-          <button onClick={() => {handleButtonClick("/sketch")}}>Go to Sketch page</button>
-        </div>
-        loading &&  <div>Loading user info...</div>
-      </Flex>
-    </PageWrapper>
-  );
-  */
 }
 
 export default HomePage;

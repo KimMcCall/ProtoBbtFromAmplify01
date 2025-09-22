@@ -16,7 +16,8 @@ function NoConUrlPage() {
   
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    navigate('/comments?stance=con')
+    const baseUrl = '/comments';
+    navigate(`${baseUrl}?stance=con`)
   }
 
   return (

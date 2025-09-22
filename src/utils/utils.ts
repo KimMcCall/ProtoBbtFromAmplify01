@@ -2,7 +2,7 @@
 import { getCurrentUser } from "aws-amplify/auth";
 import { dbClient } from "../main";
 import { CommentBlockType, IssueBlockForRenderingType, IssueType } from "../features/issues/issues";
-import { ProxyForNoComment, ProxyForNoUrl } from "./constants";
+import { PlaceholderForEmptyComment, PlaceholderForEmptyUrl } from "./constants";
 
 type UserStatus =
 "returningRegistrant" |
@@ -242,7 +242,7 @@ export const sortAndRepairIssues = (issues: IssueType[]) => {
   const sortedByUpdate = sortByUpdateT(issues);
   const sortedByIssueId = sortByIssueId(sortedByUpdate);
   const sortedByPriority = sortByIncreasingPriority(sortedByIssueId);
-  const repairedIssues = repairKeyStrings(sortedByPriority);
+  const repairedIssues = repairPlaceholderStrings(sortedByPriority);
   return repairedIssues;
 }
 
@@ -279,15 +279,15 @@ const sortByIncreasingPriority = (issues: IssueType[]) => {
   return retVal;
 }
 
-const repairKeyStrings = (issues: IssueType[]) => {
+const repairPlaceholderStrings = (issues: IssueType[]) => {
   const repairedIssues = issues.map((issue) => {
-    if (issue.proUrl === ProxyForNoUrl) {
+    if (issue.proUrl === PlaceholderForEmptyUrl) {
       issue.proUrl = '';
     }
-    if (issue.conUrl === ProxyForNoUrl) {
+    if (issue.conUrl === PlaceholderForEmptyUrl) {
       issue.conUrl = '';
     }
-    if (issue.commentText === ProxyForNoComment) {
+    if (issue.commentText === PlaceholderForEmptyComment) {
       issue.commentText = '';
     }
     return issue;
@@ -313,43 +313,36 @@ const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) =>
   let claim = '';
   let proUrl = '';
   let conUrl = '';
-  let proIsPdf = false;
-  let conIsPdf = false;
-  let proComments: CommentBlockType[] = [];
-  let conComments: CommentBlockType[] = [];
+  let proDocType = '';
+  let conDocType = '';
+  let comments: CommentBlockType[] = [];
 
   issuesForThisId.forEach((issue) => {
     claim = issue.claim;
     proUrl = issue.proUrl;
     conUrl = issue.conUrl;
-    proIsPdf = issue.proIsPdf;
-    conIsPdf = issue.conIsPdf;
-    const isEmpty = issue.commentText.length <= 0;
+    proDocType = issue.proDocType;
+    conDocType = issue.conDocType;
+    const isEmpty = issue.commentText === PlaceholderForEmptyComment;
     if (isEmpty) {
       return;
     }
     const commentStruct: CommentBlockType = {
       commentKey: issue.commentKey,
-      authorEmail: issue.authorId,
+      commentAuthorEmail: issue.commentAuthorEmail,
       time: issue.updatedT,
       text: issue.commentText,
     };
-    const proOrCon = issue.commentType;
-    if (proOrCon === 'PRO') {
-      proComments = proComments.concat(commentStruct);
-    } else {
-      conComments = conComments.concat(commentStruct);
-    }
+    comments = comments.concat(commentStruct);
   });
   const retVal: IssueBlockForRenderingType = {
-    issueId: issueId,
-    claim: claim,
-    proUrl: proUrl,
-    conUrl: conUrl,
-    proIsPdf: proIsPdf,
-    conIsPdf: conIsPdf,
-    proComments: proComments,
-    conComments: conComments,
+    issueId,
+    claim,
+    proUrl,
+    conUrl,
+    proDocType,
+    conDocType,
+    comments,
   }
   return retVal;
 }

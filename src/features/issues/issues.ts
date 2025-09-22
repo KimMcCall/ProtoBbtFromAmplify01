@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
 import type { RootState } from '../../app/store'
 
+/*
 // Define a type for the slice state
 export interface IssueType {
   issueId: string
@@ -24,10 +25,31 @@ export interface IssueType {
   createdAt: string
   updatedAt: string
 }
+*/
+
+export interface IssueType {
+  issueId: string
+  priority: number
+  claim: string
+  proUrl: string
+  conUrl: string
+  proDocType: string
+  conDocType: string
+  proAuthorEmail: string
+  conAuthorEmail: string
+  isAvailable: boolean
+  commentKey: string
+  commentText: string
+  commentAuthorEmail: string
+  createdT: string
+  updatedT: string
+  createdAt: string
+  updatedAt: string
+}
 
 export interface CommentBlockType {
   commentKey: string
-  authorEmail: string
+  commentAuthorEmail: string
   time: string
   text: string
 }
@@ -41,10 +63,9 @@ export interface IssueBlockForRenderingType {
   claim: string
   proUrl: string
   conUrl: string
-  proIsPdf: boolean,
-  conIsPdf: boolean,
-  proComments: CommentBlockType[]
-  conComments: CommentBlockType[]
+  proDocType: string,
+  conDocType: string,
+  comments: CommentBlockType[]
 }
 
 export interface IssuesSliceType {
@@ -53,47 +74,23 @@ export interface IssuesSliceType {
   currentIssueId: string
 }
 
-/*
-  issueId: string;
-  claim: string;
-  proUrl: string;
-  conUrl: string;
-  proIsPdf: boolean;
-  conIsPdf: boolean;
-  proAuthorId: string;
-  conAuthorId: string;
-  makeAvailable: boolean;
-  commentKey: string;
-  commentId: string;
-  commentText: string;
-  authorId: string;
-  createdT: string;
-  updatedT: string;
-  priority: Nullable<number>;
-  commentType: "PRO" | "CON" | null;
-  readonly createdAt: string;
-  readonly updatedAt: string;
-*/
-
 // Define the initial state using that type
 const initialIssueInstance: IssueType = {
   issueId: '',
+  priority: 0,
   claim: '',
   proUrl: '',
   conUrl: '',
-  proIsPdf: false,
-  conIsPdf: false,
-  proAuthorId: '',
-  conAuthorId: '',
-  makeAvailable: false,
+  proDocType: '',
+  conDocType: '',
+  proAuthorEmail: '',
+  conAuthorEmail: '',
+  isAvailable: false,
   commentKey: '',
-  commentId: '',
   commentText: '',
-  authorId: '',
+  commentAuthorEmail: '',
   createdT: '',
   updatedT: '',
-  priority: 0,
-  commentType: '',
   createdAt: '',
   updatedAt: '',
 }
@@ -104,10 +101,9 @@ const initialDisplayBlockInstance: IssueBlockForRenderingType = {
   claim: '',
   proUrl: '',
   conUrl: '',
-  proIsPdf: false,
-  conIsPdf: false,
-  proComments: [],
-  conComments: [],
+  proDocType: '',
+  conDocType: '',
+  comments: [],
 }
 
 const initialState: IssuesSliceType = {
