@@ -2,11 +2,9 @@ import { Button, CheckboxField, Flex, TextAreaField, TextField } from "@aws-ampl
 import PageWrapper from "../components/PageWrapper";
 import './AdminIssuesPage.css'
 import { ChangeEvent, SetStateAction, SyntheticEvent, useState } from "react";
-import { createIssue, getAllRecordsForIssue } from "../utils/dynamodb_operations";
+import { createIssue } from "../utils/dynamodb_operations";
 import { getRandomIntegerInRange } from "../utils/utils";
 import ToastNotifier from "../components/ToastNotifier";
-import { useAppDispatch } from "../app/hooks";
-import { IssueType, setIssues } from "../features/issues/issues";
 import { defaultConAuthor, defaultIssueId, defaultPriority, defaultProAuthor } from "../utils/constants";
 
 // Claim: There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive.
@@ -110,21 +108,9 @@ function AdminIssuesPage() {
   const [shouldShowAcceptanceToast, setShouldShowAcceptanceToast] = useState(false);
   const [issueIdForRetrieval, setIssueIdForRetrival] = useState(defaultIssueId);
 
-  const dispatch = useAppDispatch();
-
   const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     innerHandleSubmit(event, setToastMessage, setShouldShowAcceptanceToast)
   };
-
-  const handleGetIssuesButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-
-    // @ts-expect-error I modified getAllRecordsForIssue to ensure priority !== null
-    const allIssues: IssueType[] = await getAllRecordsForIssue(issueIdForRetrieval);
-    console.log(`allIssues: ${allIssues}`)
-    console.log(`nIssues: ${allIssues.length}`)
-    dispatch(setIssues(allIssues));
-  }
 
   const handleClaimChange = (error: ChangeEvent<HTMLTextAreaElement>) => {
     error.stopPropagation();
@@ -180,9 +166,6 @@ function AdminIssuesPage() {
         </div>
         <div className='formRoot2'>
           <Flex direction="row">
-            <Button onClick={(e) => handleGetIssuesButtonClick(e)}>
-              Get Issues
-            </Button>
             <TextField
               className="issueIdInput"
               label='issueId:'

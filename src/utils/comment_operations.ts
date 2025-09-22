@@ -1,45 +1,5 @@
 import { dbClient } from '../main';
 
-// Query all PRO comments for an issue
-async function getProComments(issueId: string) {
-  try {
-    const result = await dbClient.models.IssueP1.list({
-      filter: {
-        and: [
-          { issueId: { eq: issueId } },
-          { commentKey: { beginsWith: 'PRO#' } }
-        ]
-      }
-    });
-    
-    console.log('Pro comments:', result);
-    return result;
-  } catch (error) {
-    console.error('Error querying pro comments:', error);
-    throw error;
-  }
-}
-
-// Query all CON comments for an issue
-async function getConComments(issueId: string) {
-  try {
-    const result = await dbClient.models.IssueP1.list({
-      filter: {
-        and: [
-          { issueId: { eq: issueId } },
-          { commentKey: { beginsWith: 'CON#' } }
-        ]
-      }
-    });
-    
-    console.log('Con comments:', result);
-    return result;
-  } catch (error) {
-    console.error('Error querying con comments:', error);
-    throw error;
-  }
-}
-
 // Query all comments for an issue (both PRO and CON)
 async function getIssue(issueId: string) {
   try {
@@ -116,7 +76,7 @@ async function updateComment(issueId: string, commentKey: string, newText: strin
 // Delete a specific comment
 async function deleteComment(issueId: string, commentKey: string) {
   try {
-    const result = await dbClient.models.IssueP1.delete({
+    const result = await dbClient.models.IssueP2.delete({
       issueId: issueId,
       commentKey: commentKey,
     });
@@ -131,8 +91,6 @@ async function deleteComment(issueId: string, commentKey: string) {
 
 export {
   getIssue,
-  getProComments,
-  getConComments,
   getAllComments,
   updateComment,
   deleteComment

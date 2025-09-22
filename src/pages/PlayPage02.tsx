@@ -12,7 +12,7 @@ import { sendEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
 import { createIssue } from "../utils/dynamodb_operations";
 import { getIssue } from "../utils/comment_operations";
-import { defaultConAuthor, defaultProAuthor, PlaceholderForEmptyUrl } from "../utils/constants";
+import { defaultConAuthor, defaultProAuthor, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
 import './PlayPage02.css';
 import { IssueType, selectAllIssues } from "../features/issues/issues";
 
@@ -361,8 +361,8 @@ function PlayPage02() {
     const claim = p1Issue.claim;
     const proUrl = p1Issue.proUrl;
     const conUrl = p1Issue.conUrl;
-    const proDocType = p1Issue.proIsPdf ? 'Pdf' : 'YouTube';
-    const conDocType = p1Issue.conIsPdf ? 'Pdf' : 'YouTube';
+    const proDocType = p1Issue.proIsPdf ? 'Pdf' : docType_YouTube;
+    const conDocType = p1Issue.conIsPdf ? 'Pdf' : docType_YouTube;
     const proAuthorEmail = p1Issue.proAuthorId;
     const conAuthorEmail = p1Issue.conAuthorId;
     const isAvailable = p1Issue.makeAvailable;

@@ -230,30 +230,6 @@ async function getAllIssueRecordsXP2() {
   }
 }
 
-// QUERY Operation - Get all records for a specific issue
-async function getAllRecordsForIssue(issueId: string) {
-  try {
-    const result = await dbClient.models.IssueP1.list({
-      filter: {
-        issueId: { eq: issueId }
-      }
-    });
-    
-    const issuesWithPossibleNullPriority = result.data;
-    const healthyIssues = issuesWithPossibleNullPriority.map((issue)=> {
-      if (issue.priority == null) {
-        issue.priority = 0;
-      }
-      return issue;
-    });
-
-    return healthyIssues;
-  } catch (error) {
-    console.error('Error querying comments:', error);
-    throw error;
-  }
-}
-
 // Example usage
 export {
   createIssue,
@@ -262,5 +238,4 @@ export {
   updateExistingComment,
   getAllIssueRecords,
   getAllIssueRecordsXP2,
-  getAllRecordsForIssue,
 };
