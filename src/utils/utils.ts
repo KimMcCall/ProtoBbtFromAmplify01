@@ -1,8 +1,8 @@
 // utils.ts
 import { getCurrentUser } from "aws-amplify/auth";
 import { dbClient } from "../main";
-import { CommentBlockType, IssueBlockForRenderingType, IssueType } from "../features/issues/issues";
-import { ProxyForNoComment, ProxyForNoUrl } from "./constants";
+import { CommentBlockType, CommentBlockTypeXP2, IssueBlockForRenderingType, IssueBlockForRenderingTypeXP2, IssueType, IssueTypeXP2 } from "../features/issues/issues";
+import { PlaceholderForEmptyComment, PlaceholderForEmptyCommentXP2, PlaceholderForEmptyUrl, PlaceholderForEmptyUrlXP2 } from "./constants";
 
 type UserStatus =
 "returningRegistrant" |
@@ -242,7 +242,15 @@ export const sortAndRepairIssues = (issues: IssueType[]) => {
   const sortedByUpdate = sortByUpdateT(issues);
   const sortedByIssueId = sortByIssueId(sortedByUpdate);
   const sortedByPriority = sortByIncreasingPriority(sortedByIssueId);
-  const repairedIssues = repairKeyStrings(sortedByPriority);
+  const repairedIssues = repairPlaceholderStrings(sortedByPriority);
+  return repairedIssues;
+}
+
+export const sortAndRepairIssuesXP2 = (issues: IssueTypeXP2[]) => {
+  const sortedByUpdate = sortByUpdateTXP2(issues);
+  const sortedByIssueId = sortByIssueIdXP2(sortedByUpdate);
+  const sortedByPriority = sortByIncreasingPriorityXP2(sortedByIssueId);
+  const repairedIssues = repairPlaceholderStringsXP2(sortedByPriority);
   return repairedIssues;
 }
 
@@ -257,7 +265,29 @@ const sortByUpdateT = (issues: IssueType[]) => {
   return retVal;
 }
 
+const sortByUpdateTXP2 = (issues: IssueTypeXP2[]) => {
+  const nIssues = issues.length;
+  let dupedIssues: IssueTypeXP2[] = [];
+  for (let i = 0; i < nIssues; i++) {
+    dupedIssues = dupedIssues.concat(issues[i])
+  }
+
+  const retVal = dupedIssues.sort((a, b) => a.updatedT.localeCompare(b.updatedT));
+  return retVal;
+}
+
 const sortByIssueId = (issues: IssueType[]) => {
+  const retVal = issues.sort((a, b) => {
+    const aIssueId = a.issueId;
+    const bIssueId = b.issueId;
+    if (aIssueId < bIssueId) { return -1; }
+    else if (aIssueId === bIssueId) { return 0; }
+    else { return 1; }
+  })
+  return retVal;
+}
+
+const sortByIssueIdXP2 = (issues: IssueTypeXP2[]) => {
   const retVal = issues.sort((a, b) => {
     const aIssueId = a.issueId;
     const bIssueId = b.issueId;
@@ -279,15 +309,42 @@ const sortByIncreasingPriority = (issues: IssueType[]) => {
   return retVal;
 }
 
-const repairKeyStrings = (issues: IssueType[]) => {
+const sortByIncreasingPriorityXP2 = (issues: IssueTypeXP2[]) => {
+  const retVal = issues.sort((a, b) => {
+    const aPriority = a.priority;
+    const bPriority = b.priority;
+    if (aPriority > bPriority) { return -1; }
+    else if (aPriority === bPriority) { return 0; }
+    else { return 1; }
+  })
+  return retVal;
+}
+
+const repairPlaceholderStrings = (issues: IssueType[]) => {
   const repairedIssues = issues.map((issue) => {
-    if (issue.proUrl === ProxyForNoUrl) {
+    if (issue.proUrl === PlaceholderForEmptyUrl) {
       issue.proUrl = '';
     }
-    if (issue.conUrl === ProxyForNoUrl) {
+    if (issue.conUrl === PlaceholderForEmptyUrl) {
       issue.conUrl = '';
     }
-    if (issue.commentText === ProxyForNoComment) {
+    if (issue.commentText === PlaceholderForEmptyComment) {
+      issue.commentText = '';
+    }
+    return issue;
+  });
+  return repairedIssues;
+}
+
+const repairPlaceholderStringsXP2 = (issues: IssueTypeXP2[]) => {
+  const repairedIssues = issues.map((issue) => {
+    if (issue.proUrl === PlaceholderForEmptyUrlXP2) {
+      issue.proUrl = '';
+    }
+    if (issue.conUrl === PlaceholderForEmptyUrlXP2) {
+      issue.conUrl = '';
+    }
+    if (issue.commentText === PlaceholderForEmptyCommentXP2) {
       issue.commentText = '';
     }
     return issue;
@@ -302,6 +359,18 @@ export const structurePerIssue = (listOfIssues: IssueType[]) => {
   // @ts-expect-error I only put strings into the Set, so that's all I'll get out
   mySet.forEach((issueId: string) => {
     const struct: IssueBlockForRenderingType = createRenderingStuctForIssueId(issueId, listOfIssues)
+    myStructs = myStructs.concat(struct);
+  });
+  return myStructs;
+}
+
+export const structurePerIssueXP2 = (listOfIssues: IssueTypeXP2[]) => {
+  const mySet = new Set();
+  listOfIssues.forEach((issue) => { mySet.add(issue.issueId)});
+  let myStructs: IssueBlockForRenderingTypeXP2[]  = [];
+  // @ts-expect-error I only put strings into the Set, so that's all I'll get out
+  mySet.forEach((issueId: string) => {
+    const struct: IssueBlockForRenderingTypeXP2 = createRenderingStuctForIssueIdXP2(issueId, listOfIssues)
     myStructs = myStructs.concat(struct);
   });
   return myStructs;
@@ -350,6 +419,46 @@ const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) =>
     conIsPdf: conIsPdf,
     proComments: proComments,
     conComments: conComments,
+  }
+  return retVal;
+}
+
+const createRenderingStuctForIssueIdXP2 = (issueId: string, issues: IssueTypeXP2[]) => {
+  const issuesForThisId = issues.filter((issue) => issue.issueId === issueId);
+  // since we want the value of the latest one, we'll just override these each time through
+  let claim = '';
+  let proUrl = '';
+  let conUrl = '';
+  let proDocType = '';
+  let conDocType = '';
+  let comments: CommentBlockTypeXP2[] = [];
+
+  issuesForThisId.forEach((issue) => {
+    claim = issue.claim;
+    proUrl = issue.proUrl;
+    conUrl = issue.conUrl;
+    proDocType = issue.proDocType;
+    conDocType = issue.conDocType;
+    const isEmpty = issue.commentText === PlaceholderForEmptyCommentXP2;
+    if (isEmpty) {
+      return;
+    }
+    const commentStruct: CommentBlockTypeXP2 = {
+      commentKey: issue.commentKey,
+      commentAuthorEmail: issue.commentAuthorEmail,
+      time: issue.updatedT,
+      text: issue.commentText,
+    };
+    comments = comments.concat(commentStruct);
+  });
+  const retVal: IssueBlockForRenderingTypeXP2 = {
+    issueId,
+    claim,
+    proUrl,
+    conUrl,
+    proDocType,
+    conDocType,
+    comments,
   }
   return retVal;
 }

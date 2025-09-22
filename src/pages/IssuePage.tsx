@@ -2,7 +2,7 @@ import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { useEffect } from "react";
 import './IssuePage.css'
-import { ProxyForNoUrl } from "../utils/constants";
+import { PlaceholderForEmptyUrl } from "../utils/constants";
 import { selectDisplayBlockForCurrentIssue } from "../features/issues/issues";
 import { useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
@@ -30,10 +30,10 @@ function IssuePage() {
   }
 
   const block = useAppSelector(selectDisplayBlockForCurrentIssue);
-  const proUrl = block?.proUrl || ProxyForNoUrl;
-  const conUrl = block?.conUrl || ProxyForNoUrl;
-  const proIsBlank = proUrl === ProxyForNoUrl;
-  const conIsBlank = conUrl === ProxyForNoUrl;
+  const proUrl = block?.proUrl || PlaceholderForEmptyUrl;
+  const conUrl = block?.conUrl || PlaceholderForEmptyUrl;
+  const proIsBlank = proUrl === PlaceholderForEmptyUrl;
+  const conIsBlank = conUrl === PlaceholderForEmptyUrl;
   const proIsPdf = proIsBlank ? false : block?.proIsPdf;
   const conIsPdf = conIsBlank ? false : block?.proIsPdf;
 

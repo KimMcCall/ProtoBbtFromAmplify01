@@ -168,6 +168,20 @@ async function getAllIssueRecords() {
   }
 }
 
+// QUERY Operation - Get all Issue records
+async function getAllIssueRecordsXP2() {
+  try {
+    const result = await dbClient.models.IssueP2.list();
+    const returnedIssues = result.data;
+    const nonNullIssues = returnedIssues.filter((issue) => issue !== null);    
+    console.log(`# nonNullIssues: ${nonNullIssues.length}`)
+    return nonNullIssues;
+  } catch (error) {
+    console.error('Error in getAllIssueRecordsXP2():', error);
+    throw error;
+  }
+}
+
 // QUERY Operation - Get all records for a specific issue
 async function getAllRecordsForIssue(issueId: string) {
   try {
@@ -198,5 +212,6 @@ export {
   addCommentToIssue,
   updateExistingComment,
   getAllIssueRecords,
+  getAllIssueRecordsXP2,
   getAllRecordsForIssue,
 };

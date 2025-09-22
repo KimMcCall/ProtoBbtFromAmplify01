@@ -2,16 +2,16 @@
 import { Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { useEffect, SyntheticEvent, useState } from 'react';
-import { getAllIssueRecords } from '../utils/dynamodb_operations';
+import { getAllIssueRecordsXP2 } from '../utils/dynamodb_operations';
 // import { useAppDispatch } from '../app/hooks';
-import { IssueType, IssueBlockForRenderingType, setDisplayBlocks, setCurrentIssueId, setIssues } from '../features/issues/issues';
+import { setCurrentIssueId, IssueTypeXP2, setIssuesXP2, IssueBlockForRenderingTypeXP2, setDisplayBlocksXP2 } from '../features/issues/issues';
 import './HomePage.css'
 import { useAppDispatch } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
-import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
+import { sortAndRepairIssuesXP2, structurePerIssueXP2 } from "../utils/utils";
 
 interface ClaimCardProps {
-  struct: IssueBlockForRenderingType;
+  struct: IssueBlockForRenderingTypeXP2;
 }
 
 function ClaimCard(props: ClaimCardProps) {
@@ -36,6 +36,7 @@ function ClaimCard(props: ClaimCardProps) {
   )
 }
 
+/*
 const basicStruct: IssueBlockForRenderingType = {
   issueId: '',
   claim: '',
@@ -54,24 +55,43 @@ const basicStruct: IssueBlockForRenderingType = {
     time: '',
     text: 'CON commentText'}],
 }
-const arryOfStucts = [basicStruct];
+*/
+
+const basicStructXP2: IssueBlockForRenderingTypeXP2 = {
+  issueId: '',
+  claim: '',
+  proUrl: '',
+  conUrl: '',
+  proDocType: '',
+  conDocType: '',
+  comments: [{
+    commentKey: '',
+    commentAuthorEmail: '',
+    time: '',
+    text: ''}],
+}
+
+// const arryOfStucts = [basicStruct];
+const arryOfStuctsXP2 = [basicStructXP2];
 
 function HomePage() {
-  const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
+  // const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
+  const [structuredForRenderingXP2, setStructuredForRenderingXP2] = useState(arryOfStuctsXP2);
   const dispatch = useAppDispatch();
   
   useEffect(() => {
+    /*
     const fetchIssues = async () => {
       await getAllIssueRecords().then(
       (result) => {
         // GATOR: figure out how to avoid this error
-        // @ts-expect-error This is, indeed, a type mismatch, but I'm hoping it'll be OK
+        / ts-expect-error This is, indeed, a type mismatch, but I'm hoping it'll be OK
         const iterable: Iterable<IssueType> = result.values();
         const issues = Array.from(iterable);
-        const sortedAndRepairedIssus = sortAndRepairIssues(issues);
-        console.log(`# repairedIssues: ${sortedAndRepairedIssus.length}`)
-        dispatch(setIssues(sortedAndRepairedIssus));
-        const structured = structurePerIssue(sortedAndRepairedIssus);
+        const sortedAndRepairedIssues = sortAndRepairIssues(issues);
+        console.log(`# repairedIssues: ${sortedAndRepairedIssues.length}`)
+        dispatch(setIssues(sortedAndRepairedIssues));
+        const structured = structurePerIssue(sortedAndRepairedIssues);
         console.log(`# structured: ${structured.length}`)
         console.log(structured);
         setStructuredForRendering(structured);
@@ -79,8 +99,27 @@ function HomePage() {
       }
     )
     };
+    */
+    const fetchIssuesXP2 = async () => {
+      await getAllIssueRecordsXP2().then(
+      (result) => {
+        const iterable: Iterable<IssueTypeXP2> = result.values();
+        const issues = Array.from(iterable);
+        const sortedAndRepairedIssues = sortAndRepairIssuesXP2(issues);
+        console.log(`# sortedAndRepairedIssues: ${sortedAndRepairedIssues.length}`)
+        dispatch(setIssuesXP2(sortedAndRepairedIssues));
+        const structured = structurePerIssueXP2(sortedAndRepairedIssues);
+        console.log(`# structured: ${structured.length}`)
+        console.log(structured);
+        setStructuredForRenderingXP2(structured);
+        dispatch(setDisplayBlocksXP2(structured));
+      }
+    )
+    };
 
-    fetchIssues(); // Call the async function
+    // await fetchIssues(); // Call the async function
+    fetchIssuesXP2(); // Call the async function
+
   }, [dispatch]);
 
 
@@ -88,7 +127,7 @@ function HomePage() {
     <PageWrapper>
       <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
       {
-      structuredForRendering.map(struct => (
+      structuredForRenderingXP2.map(struct => (
       <ClaimCard key={struct.issueId} struct={struct} />
     ))}
       </Flex>

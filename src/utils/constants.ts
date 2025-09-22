@@ -48,5 +48,7 @@ const defaultClaim1 = 'There is no meaningful sense in which Tyler Robinson is l
 const defaultClaim2 = 'The left has perpetrated less political violence than the right';
 export const defaultClaim = constantSet === 1 ? defaultClaim1 : defaultClaim2;
 
-export const ProxyForNoUrl = 'No URL';
-export const ProxyForNoComment = 'No Comment';
+export const PlaceholderForEmptyUrl = 'No URL';
+export const ProxyForNoUrlXP2 = 'NoURL_428b47f5-ebfe-46d5-a14b-ae4a9625de04';
+export const PlaceholderForEmptyComment = 'No Comment';
+export const ProxyForNoCommentXP2 = 'NoComment_b8d50a00-4b4e-4a36-be4c-b7e1cecd5cc1';
