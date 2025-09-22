@@ -23,7 +23,7 @@ import AdminIssuesPage from './pages/AdminIssuesPage';
 import AdminSubmissions from './pages/AdminSubmissionsPage';
 import IssuePage from './pages/IssuePage';
 import HomePage from './pages/HomePage';
-import MergedCommentsPage from './pages/MergedCommentsPage';
+import CommentsPage from './pages/CommentsPage';
 import NoProUrlPage from './pages/NoProUrlPage';
 import NoConUrlPage from './pages/NoConUrlPage';
 
@@ -36,7 +36,7 @@ function App() {
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/issue" element={<IssuePage />} />
-        <Route path="/commentsXP2" element={<MergedCommentsPage />} />
+        <Route path="/commentsXP2" element={<CommentsPage />} />
         <Route
           path="/suggest"
           element={
