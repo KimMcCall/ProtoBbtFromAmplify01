@@ -1,26 +1,26 @@
 import { Button, Flex } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
-import { CommentBlockTypeXP2,
-  IssueTypeXP2,
-  selectAllIssuesXP2,
-  selectDisplayBlockForCurrentIssueXP2,
-  selectSomeRecordForCurrentIssueXP2,
-  setDisplayBlocksXP2,
-  setIssuesXP2 } from "../features/issues/issues";
+import { CommentBlockType,
+  IssueType,
+  selectAllIssues,
+  selectDisplayBlockForCurrentIssue,
+  selectSomeRecordForCurrentIssue,
+  setDisplayBlocks,
+  setIssues } from "../features/issues/issues";
 import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
-import { sortAndRepairIssuesXP2, structurePerIssueXP2 } from "../utils/utils";
+import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 import { selectCurrentUser } from "../features/userInfo/userInfoSlice";
-import { addCommentToIssueXP2 } from "../utils/dynamodb_operations";
+import { addCommentToIssue } from "../utils/dynamodb_operations";
 import CommentSubmissionForm from "../components/CommentSubmissionForm";
 import { useNavigate } from "react-router-dom";
 
-interface CommentTilePropsXP2 {
-  block: CommentBlockTypeXP2;
+interface CommentTileProps {
+  block: CommentBlockType;
 }
 
-function CommentTile(props: CommentTilePropsXP2) {
+function CommentTile(props: CommentTileProps) {
   const { block } = props;
   const { commentKey, time, commentAuthorEmail, text } = block;
 
@@ -53,10 +53,10 @@ function CommentsPage() {
 
   const showPro = stance === 'pro';
 
-  const allIssues = useAppSelector(selectAllIssuesXP2);
-  const aRecord = useAppSelector(selectSomeRecordForCurrentIssueXP2);
+  const allIssues = useAppSelector(selectAllIssues);
+  const aRecord = useAppSelector(selectSomeRecordForCurrentIssue);
   const authorEmail = useAppSelector(selectCurrentUser).canonicalEmail;
-  const issueBlock = useAppSelector(selectDisplayBlockForCurrentIssueXP2);
+  const issueBlock = useAppSelector(selectDisplayBlockForCurrentIssue);
   // @ts-expect-error I'm pretty sure issueBlock is not undefined
   const commentBlocks = issueBlock.comments; 
 
@@ -87,17 +87,17 @@ function CommentsPage() {
     const commenntKey = `ISSUE#COMMENT#${nowStr}`;
     const commentText = text;
     // @ts-expect-error I'm pretty sure there are no fields here with 'undefined' content
-    const clonedRecord: IssueTypeXP2 = { ...aRecord };
+    const clonedRecord: IssueType = { ...aRecord };
     clonedRecord.commentKey = commenntKey;
     clonedRecord.commentText = commentText;
     clonedRecord.createdT = nowStr;
     clonedRecord.updatedT = nowStr;
     clonedRecord.commentAuthorEmail = authorEmail;
     const augmentedIssues = allIssues.concat(clonedRecord);
-    const sortedAndRepairedIssues = sortAndRepairIssuesXP2(augmentedIssues);
-    const structured = structurePerIssueXP2(sortedAndRepairedIssues);
-    dispatch(setIssuesXP2(sortedAndRepairedIssues));
-    dispatch(setDisplayBlocksXP2(structured));
+    const sortedAndRepairedIssues = sortAndRepairIssues(augmentedIssues);
+    const structured = structurePerIssue(sortedAndRepairedIssues);
+    dispatch(setIssues(sortedAndRepairedIssues));
+    dispatch(setDisplayBlocks(structured));
 
     const copiedIssueId = clonedRecord.issueId;
     const copiedPriority = clonedRecord.priority;
@@ -111,7 +111,7 @@ function CommentsPage() {
     const copiedIsAvailable = clonedRecord.isAvailable;
     const copiedAuthorEmail = clonedRecord.commentAuthorEmail;
 
-    await addCommentToIssueXP2(
+    await addCommentToIssue(
       copiedIssueId,
       copiedPriority,
       copiedClaim,

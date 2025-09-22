@@ -16,7 +16,7 @@ function NoProUrlPage() {
   
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-        const baseUrl = '/commentsXP2';
+        const baseUrl = '/comments';
         navigate(`${baseUrl}?stance=pro`)
   }
 

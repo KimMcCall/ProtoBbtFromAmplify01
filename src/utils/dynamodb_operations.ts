@@ -79,57 +79,6 @@ async function createIssueWithComment(
 
 // UPDATE Operation - Adding a Comment to a given issue
 async function addCommentToIssue(
-    isPro: boolean,
-    copiedIssueId: string,
-    copiedClaim: string,
-    copiedPriority: number,
-    copiedProUrl: string,
-    copiedConUrl: string,
-    copiedProAuthorId: string,
-    copiedConAuthorId: string,
-    copiedProIsPdf: boolean,
-    copiedConIsPdf: boolean,
-    copiedMakeAvailable: boolean,
-    commentText: string,
-    authorId: string,
-  ) {
-  try {
-    // Since we're using a composite key (partition + sort), 
-    // adding a new comment means creating a new item with the same issueId
-    // but a different proComment value
-    const nowStr = new Date().toISOString();
-    const commentId = `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`;
-
-    const result = await dbClient.models.IssueP1.create({
-      issueId: copiedIssueId, // Same issue ID
-      priority: copiedPriority,
-      claim: copiedClaim,
-      proUrl: copiedProUrl,
-      conUrl: copiedConUrl,
-      proIsPdf: copiedProIsPdf,
-      conIsPdf: copiedConIsPdf,
-      proAuthorId: copiedProAuthorId,
-      conAuthorId: copiedConAuthorId,
-      makeAvailable: copiedMakeAvailable,
-      commentId: commentId, // This acts as a unique identifier for this comment
-      commentText: commentText,
-      commentType: isPro ? 'PRO' : 'CON',
-      authorId: authorId,
-      commentKey: 'ISSUE#' + commentId, // Composite sort key: "ISSUE#PRO#{commentId}" or "ISSUE#CON#{commentId}"
-      updatedT: nowStr,
-      createdT: nowStr,
-    });
-    
-    console.log(`New ${isPro ? 'PRO' : 'CON'} comment added:`, result);
-    return result;
-  } catch (error) {
-    console.error(`Error adding ${isPro ? 'PRO' : 'CON'} comment:`, error);
-    throw error;
-  }
-}
-
-// UPDATE Operation - Adding a Comment to a given issue
-async function addCommentToIssueXP2(
     issueId: string,
     priority: number,
     claim: string,
@@ -198,34 +147,13 @@ async function updateExistingComment(issueId: string, commentKey: string, newTex
 // QUERY Operation - Get all Issue records
 async function getAllIssueRecords() {
   try {
-    const result = await dbClient.models.IssueP1.list();
-    const returnedIssues = result.data;
-    const nonNullIssues = returnedIssues.filter((issue) => issue !== null);    
-    const issuesWithPossibleNullPriority = nonNullIssues;
-    const healthyIssues = issuesWithPossibleNullPriority.map((issue)=> {
-      if (issue.priority == null) {
-        issue.priority = 0;
-      }
-      return issue;
-    });
-    console.log(`# healthyIssues: ${healthyIssues.length}`)
-    return healthyIssues;
-  } catch (error) {
-    console.error('Error in getAllIssueRecords():', error);
-    throw error;
-  }
-}
-
-// QUERY Operation - Get all Issue records
-async function getAllIssueRecordsXP2() {
-  try {
     const result = await dbClient.models.IssueP2.list();
     const returnedIssues = result.data;
     const nonNullIssues = returnedIssues.filter((issue) => issue !== null);    
     console.log(`# nonNullIssues: ${nonNullIssues.length}`)
     return nonNullIssues;
   } catch (error) {
-    console.error('Error in getAllIssueRecordsXP2():', error);
+    console.error('Error in getAllIssueRecords():', error);
     throw error;
   }
 }
@@ -234,8 +162,6 @@ async function getAllIssueRecordsXP2() {
 export {
   createIssue,
   addCommentToIssue,
-  addCommentToIssueXP2,
   updateExistingComment,
   getAllIssueRecords,
-  getAllIssueRecordsXP2,
 };

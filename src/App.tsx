@@ -36,7 +36,7 @@ function App() {
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/issue" element={<IssuePage />} />
-        <Route path="/commentsXP2" element={<CommentsPage />} />
+        <Route path="/comments" element={<CommentsPage />} />
         <Route
           path="/suggest"
           element={

@@ -14,7 +14,7 @@ import { createIssue } from "../utils/dynamodb_operations";
 import { getIssue } from "../utils/comment_operations";
 import { defaultConAuthor, defaultProAuthor, PlaceholderForEmptyUrl } from "../utils/constants";
 import './PlayPage02.css';
-import { IssueTypeXP2, selectAllIssuesXP2 } from "../features/issues/issues";
+import { IssueType, selectAllIssues } from "../features/issues/issues";
 
 interface ImageTilePropsType {
   issueId: string
@@ -60,7 +60,7 @@ function PlayPage02() {
   const newPath = useAppSelector(selecNext);
   const navigateTo = useNavigate();
 
-  const allIssues: IssueTypeXP2[] = useAppSelector(selectAllIssuesXP2);
+  const allIssues: IssueType[] = useAppSelector(selectAllIssues);
   const issueMap = new Map();
   allIssues.forEach((issue) => issueMap.set(issue.issueId, issue.claim))
   let idClaimPairs: IdClaimPairType[] = [];

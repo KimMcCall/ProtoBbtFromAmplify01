@@ -27,7 +27,7 @@ export interface IssueType {
 }
 */
 
-export interface IssueTypeXP2 {
+export interface IssueType {
   issueId: string
   priority: number
   claim: string
@@ -47,35 +47,35 @@ export interface IssueTypeXP2 {
   updatedAt: string
 }
 
-export interface CommentBlockTypeXP2 {
+export interface CommentBlockType {
   commentKey: string
   commentAuthorEmail: string
   time: string
   text: string
 }
 
-export interface IssuesTypeXP2 {
-  issues: IssueTypeXP2[]
+export interface IssuesType {
+  issues: IssueType[]
 }
 
-export interface IssueBlockForRenderingTypeXP2 {
+export interface IssueBlockForRenderingType {
   issueId: string
   claim: string
   proUrl: string
   conUrl: string
   proDocType: string,
   conDocType: string,
-  comments: CommentBlockTypeXP2[]
+  comments: CommentBlockType[]
 }
 
-export interface IssuesSliceTypeXP2 {
-  issuesXP2: IssueTypeXP2[]
-  displayBlocksXP2: IssueBlockForRenderingTypeXP2[]
+export interface IssuesSliceType {
+  issues: IssueType[]
+  displayBlocks: IssueBlockForRenderingType[]
   currentIssueId: string
 }
 
 // Define the initial state using that type
-const initialIssueInstanceXP2: IssueTypeXP2 = {
+const initialIssueInstance: IssueType = {
   issueId: '',
   priority: 0,
   claim: '',
@@ -96,7 +96,7 @@ const initialIssueInstanceXP2: IssueTypeXP2 = {
 }
 
 // Define the initial state using that type
-const initialDisplayBlockInstanceXP2: IssueBlockForRenderingTypeXP2 = {
+const initialDisplayBlockInstance: IssueBlockForRenderingType = {
   issueId: '',
   claim: '',
   proUrl: '',
@@ -106,9 +106,9 @@ const initialDisplayBlockInstanceXP2: IssueBlockForRenderingTypeXP2 = {
   comments: [],
 }
 
-const initialState: IssuesSliceTypeXP2 = {
-  issuesXP2: [initialIssueInstanceXP2],
-  displayBlocksXP2: [initialDisplayBlockInstanceXP2],
+const initialState: IssuesSliceType = {
+  issues: [initialIssueInstance],
+  displayBlocks: [initialDisplayBlockInstance],
   currentIssueId: '',
 };
 
@@ -117,13 +117,13 @@ export const issuesSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    setIssuesXP2: (state, action: PayloadAction<IssueTypeXP2[]>) => {
+    setIssues: (state, action: PayloadAction<IssueType[]>) => {
       const newIssues = action.payload;
-      state.issuesXP2 = newIssues;
+      state.issues = newIssues;
     },
-    setDisplayBlocksXP2: (state, action: PayloadAction<IssueBlockForRenderingTypeXP2[]>) => {
+    setDisplayBlocks: (state, action: PayloadAction<IssueBlockForRenderingType[]>) => {
       const newBlocks = action.payload;
-      state.displayBlocksXP2 = newBlocks;
+      state.displayBlocks = newBlocks;
     },
     setCurrentIssueId: (state, action: PayloadAction<string>) => {
       state.currentIssueId = action.payload;
@@ -132,23 +132,23 @@ export const issuesSlice = createSlice({
 })
 
 export const {
-  setIssuesXP2,
-  setDisplayBlocksXP2,
+  setIssues,
+  setDisplayBlocks,
   setCurrentIssueId,
 } = issuesSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectAllIssuesXP2 =  (state: RootState) => state.persistedReducer.issues.issuesXP2;
-export const selectAllDisplayBlocksXP2 =  (state: RootState) => state.persistedReducer.issues.displayBlocksXP2;
-export const selectDisplayBlockForCurrentIssueXP2 =  (state: RootState) => {
+export const selectAllIssues =  (state: RootState) => state.persistedReducer.issues.issues;
+export const selectAllDisplayBlocks =  (state: RootState) => state.persistedReducer.issues.displayBlocks;
+export const selectDisplayBlockForCurrentIssue =  (state: RootState) => {
   const issueId = state.persistedReducer.issues.currentIssueId;
-  const allBlocks = state.persistedReducer.issues.displayBlocksXP2;
+  const allBlocks = state.persistedReducer.issues.displayBlocks;
   const foundBlock = allBlocks.find((block) => block.issueId === issueId);
   return foundBlock;
 }
-export const selectSomeRecordForCurrentIssueXP2 =  (state: RootState) => {
+export const selectSomeRecordForCurrentIssue =  (state: RootState) => {
   const issueId = state.persistedReducer.issues.currentIssueId;
-  const allIssues = state.persistedReducer.issues.issuesXP2;
+  const allIssues = state.persistedReducer.issues.issues;
   const foundIssue = allIssues.find((issue) => issue.issueId === issueId);
   return foundIssue;
 }

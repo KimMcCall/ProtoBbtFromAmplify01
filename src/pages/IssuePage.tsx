@@ -2,8 +2,8 @@ import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { useEffect } from "react";
 import './IssuePage.css'
-import { docType_GoogleDoc, docType_Pdf, docType_YouTube, PlaceholderForEmptyUrlXP2 } from "../utils/constants";
-import { selectDisplayBlockForCurrentIssueXP2 } from "../features/issues/issues";
+import { docType_GoogleDoc, docType_Pdf, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
+import { selectDisplayBlockForCurrentIssue } from "../features/issues/issues";
 import { useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
 
@@ -29,11 +29,11 @@ function IssuePage() {
     navigate(fullNewUrl, { replace: true})
   }
 
-  const block = useAppSelector(selectDisplayBlockForCurrentIssueXP2);
-  const proUrl = block?.proUrl || PlaceholderForEmptyUrlXP2;
-  const conUrl = block?.conUrl || PlaceholderForEmptyUrlXP2;
-  const proIsBlank = proUrl === PlaceholderForEmptyUrlXP2;
-  const conIsBlank = conUrl === PlaceholderForEmptyUrlXP2;
+  const block = useAppSelector(selectDisplayBlockForCurrentIssue);
+  const proUrl = block?.proUrl || PlaceholderForEmptyUrl;
+  const conUrl = block?.conUrl || PlaceholderForEmptyUrl;
+  const proIsBlank = proUrl === PlaceholderForEmptyUrl;
+  const conIsBlank = conUrl === PlaceholderForEmptyUrl;
   const proDocType = block?.proDocType;
   const proIsPdf = proDocType === docType_Pdf;
   const proIsYouTubeVideo = proDocType === docType_YouTube;
@@ -54,7 +54,7 @@ function IssuePage() {
 
   const handleShowCommentsClick = (event: { stopPropagation: () => void; }) =>{
     event.stopPropagation();
-    const baseUrl = '/commentsXP2';
+    const baseUrl = '/comments';
     const commentsUrl = `${baseUrl}?stance=${stance}`;
     console.log(`Calling navigate('${commentsUrl}')`)
     navigate(commentsUrl)

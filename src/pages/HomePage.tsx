@@ -2,16 +2,16 @@
 import { Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { useEffect, SyntheticEvent, useState } from 'react';
-import { getAllIssueRecordsXP2 } from '../utils/dynamodb_operations';
+import { getAllIssueRecords } from '../utils/dynamodb_operations';
 // import { useAppDispatch } from '../app/hooks';
-import { setCurrentIssueId, IssueTypeXP2, setIssuesXP2, IssueBlockForRenderingTypeXP2, setDisplayBlocksXP2 } from '../features/issues/issues';
+import { setCurrentIssueId, IssueType, setIssues, IssueBlockForRenderingType, setDisplayBlocks } from '../features/issues/issues';
 import './HomePage.css'
 import { useAppDispatch } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
-import { sortAndRepairIssuesXP2, structurePerIssueXP2 } from "../utils/utils";
+import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 
 interface ClaimCardProps {
-  struct: IssueBlockForRenderingTypeXP2;
+  struct: IssueBlockForRenderingType;
 }
 
 function ClaimCard(props: ClaimCardProps) {
@@ -36,7 +36,7 @@ function ClaimCard(props: ClaimCardProps) {
   )
 }
 
-const basicStructXP2: IssueBlockForRenderingTypeXP2 = {
+const basicStruct: IssueBlockForRenderingType = {
   issueId: '',
   claim: '',
   proUrl: '',
@@ -50,31 +50,31 @@ const basicStructXP2: IssueBlockForRenderingTypeXP2 = {
     text: ''}],
 }
 
-const arryOfStuctsXP2 = [basicStructXP2];
+const arryOfStucts = [basicStruct];
 
 function HomePage() {
   // const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
-  const [structuredForRenderingXP2, setStructuredForRenderingXP2] = useState(arryOfStuctsXP2);
+  const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
   const dispatch = useAppDispatch();
   
   useEffect(() => {
-    const fetchIssuesXP2 = async () => {
-      await getAllIssueRecordsXP2().then(
+    const fetchIssues = async () => {
+      await getAllIssueRecords().then(
       (result) => {
-        const iterable: Iterable<IssueTypeXP2> = result.values();
+        const iterable: Iterable<IssueType> = result.values();
         const issues = Array.from(iterable);
-        const sortedAndRepairedIssues = sortAndRepairIssuesXP2(issues);
+        const sortedAndRepairedIssues = sortAndRepairIssues(issues);
         console.log(`# sortedAndRepairedIssues: ${sortedAndRepairedIssues.length}`)
-        dispatch(setIssuesXP2(sortedAndRepairedIssues));
-        const structured = structurePerIssueXP2(sortedAndRepairedIssues);
+        dispatch(setIssues(sortedAndRepairedIssues));
+        const structured = structurePerIssue(sortedAndRepairedIssues);
         console.log(`# structured: ${structured.length}`)
-        setStructuredForRenderingXP2(structured);
-        dispatch(setDisplayBlocksXP2(structured));
+        setStructuredForRendering(structured);
+        dispatch(setDisplayBlocks(structured));
       }
     )
     };
 
-    fetchIssuesXP2(); // Call the async function
+    fetchIssues(); // Call the async function
 
   }, [dispatch]);
 
@@ -83,7 +83,7 @@ function HomePage() {
     <PageWrapper>
       <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
         {
-          structuredForRenderingXP2.map(struct => (
+          structuredForRendering.map(struct => (
             <ClaimCard key={struct.issueId} struct={struct} />
           )
         )
