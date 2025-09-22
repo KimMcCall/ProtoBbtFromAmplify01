@@ -8,7 +8,7 @@ import { CommentBlockTypeXP2,
   selectSomeRecordForCurrentIssueXP2,
   setDisplayBlocksXP2,
   setIssuesXP2 } from "../features/issues/issues";
-import './MergedCommentsPage.css';
+import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
 import { sortAndRepairIssuesXP2, structurePerIssueXP2 } from "../utils/utils";
 import { selectCurrentUser } from "../features/userInfo/userInfoSlice";

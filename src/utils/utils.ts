@@ -1,7 +1,7 @@
 // utils.ts
 import { getCurrentUser } from "aws-amplify/auth";
 import { dbClient } from "../main";
-import { CommentBlockType, CommentBlockTypeXP2, IssueBlockForRenderingType, IssueBlockForRenderingTypeXP2, IssueType, IssueTypeXP2 } from "../features/issues/issues";
+import { CommentBlockTypeXP2, IssueBlockForRenderingTypeXP2, IssueTypeXP2 } from "../features/issues/issues";
 import { PlaceholderForEmptyCommentXP2, PlaceholderForEmptyUrlXP2 } from "./constants";
 
 type UserStatus =
@@ -295,18 +295,6 @@ const repairPlaceholderStringsXP2 = (issues: IssueTypeXP2[]) => {
   return repairedIssues;
 }
 
-export const structurePerIssue = (listOfIssues: IssueType[]) => {
-  const mySet = new Set();
-  listOfIssues.forEach((issue) => { mySet.add(issue.issueId)});
-  let myStructs: IssueBlockForRenderingType[]  = [];
-  // @ts-expect-error I only put strings into the Set, so that's all I'll get out
-  mySet.forEach((issueId: string) => {
-    const struct: IssueBlockForRenderingType = createRenderingStuctForIssueId(issueId, listOfIssues)
-    myStructs = myStructs.concat(struct);
-  });
-  return myStructs;
-}
-
 export const structurePerIssueXP2 = (listOfIssues: IssueTypeXP2[]) => {
   const mySet = new Set();
   listOfIssues.forEach((issue) => { mySet.add(issue.issueId)});
@@ -317,53 +305,6 @@ export const structurePerIssueXP2 = (listOfIssues: IssueTypeXP2[]) => {
     myStructs = myStructs.concat(struct);
   });
   return myStructs;
-}
-
-const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) => {
-  const issuesForThisId = issues.filter((issue) => issue.issueId === issueId);
-  // since we want the value of the latest one, we'll just override these each time through
-  let claim = '';
-  let proUrl = '';
-  let conUrl = '';
-  let proIsPdf = false;
-  let conIsPdf = false;
-  let proComments: CommentBlockType[] = [];
-  let conComments: CommentBlockType[] = [];
-
-  issuesForThisId.forEach((issue) => {
-    claim = issue.claim;
-    proUrl = issue.proUrl;
-    conUrl = issue.conUrl;
-    proIsPdf = issue.proIsPdf;
-    conIsPdf = issue.conIsPdf;
-    const isEmpty = issue.commentText.length <= 0;
-    if (isEmpty) {
-      return;
-    }
-    const commentStruct: CommentBlockType = {
-      commentKey: issue.commentKey,
-      authorEmail: issue.authorId,
-      time: issue.updatedT,
-      text: issue.commentText,
-    };
-    const proOrCon = issue.commentType;
-    if (proOrCon === 'PRO') {
-      proComments = proComments.concat(commentStruct);
-    } else {
-      conComments = conComments.concat(commentStruct);
-    }
-  });
-  const retVal: IssueBlockForRenderingType = {
-    issueId: issueId,
-    claim: claim,
-    proUrl: proUrl,
-    conUrl: conUrl,
-    proIsPdf: proIsPdf,
-    conIsPdf: conIsPdf,
-    proComments: proComments,
-    conComments: conComments,
-  }
-  return retVal;
 }
 
 const createRenderingStuctForIssueIdXP2 = (issueId: string, issues: IssueTypeXP2[]) => {

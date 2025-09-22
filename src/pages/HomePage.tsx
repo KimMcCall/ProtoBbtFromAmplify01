@@ -36,27 +36,6 @@ function ClaimCard(props: ClaimCardProps) {
   )
 }
 
-/*
-const basicStruct: IssueBlockForRenderingType = {
-  issueId: '',
-  claim: '',
-  proUrl: '',
-  conUrl: '',
-  proIsPdf: true,
-  conIsPdf: true,
-  proComments: [{
-    commentKey: 'lksffksdll',
-    authorEmail: '',
-    time: '',
-    text: 'PRO commentText'}],
-  conComments: [{
-    commentKey: 'afl;dskr0r',
-    authorEmail: '',
-    time: '',
-    text: 'CON commentText'}],
-}
-*/
-
 const basicStructXP2: IssueBlockForRenderingTypeXP2 = {
   issueId: '',
   claim: '',
@@ -71,7 +50,6 @@ const basicStructXP2: IssueBlockForRenderingTypeXP2 = {
     text: ''}],
 }
 
-// const arryOfStucts = [basicStruct];
 const arryOfStuctsXP2 = [basicStructXP2];
 
 function HomePage() {
@@ -80,26 +58,6 @@ function HomePage() {
   const dispatch = useAppDispatch();
   
   useEffect(() => {
-    /*
-    const fetchIssues = async () => {
-      await getAllIssueRecords().then(
-      (result) => {
-        // GATOR: figure out how to avoid this error
-        / ts-expect-error This is, indeed, a type mismatch, but I'm hoping it'll be OK
-        const iterable: Iterable<IssueType> = result.values();
-        const issues = Array.from(iterable);
-        const sortedAndRepairedIssues = sortAndRepairIssues(issues);
-        console.log(`# repairedIssues: ${sortedAndRepairedIssues.length}`)
-        dispatch(setIssues(sortedAndRepairedIssues));
-        const structured = structurePerIssue(sortedAndRepairedIssues);
-        console.log(`# structured: ${structured.length}`)
-        console.log(structured);
-        setStructuredForRendering(structured);
-        dispatch(setDisplayBlocks(structured));
-      }
-    )
-    };
-    */
     const fetchIssuesXP2 = async () => {
       await getAllIssueRecordsXP2().then(
       (result) => {
@@ -110,14 +68,12 @@ function HomePage() {
         dispatch(setIssuesXP2(sortedAndRepairedIssues));
         const structured = structurePerIssueXP2(sortedAndRepairedIssues);
         console.log(`# structured: ${structured.length}`)
-        console.log(structured);
         setStructuredForRenderingXP2(structured);
         dispatch(setDisplayBlocksXP2(structured));
       }
     )
     };
 
-    // await fetchIssues(); // Call the async function
     fetchIssuesXP2(); // Call the async function
 
   }, [dispatch]);
@@ -126,30 +82,15 @@ function HomePage() {
   return (
     <PageWrapper>
       <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
-      {
-      structuredForRenderingXP2.map(struct => (
-      <ClaimCard key={struct.issueId} struct={struct} />
-    ))}
+        {
+          structuredForRenderingXP2.map(struct => (
+            <ClaimCard key={struct.issueId} struct={struct} />
+          )
+        )
+        }
       </Flex>
     </PageWrapper>
   );
-
-  /*
-  return (
-    <PageWrapper>
-      <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
-        <h1>My Glorious App</h1>
-        <div>
-          You're on the Home Page.
-        </div>
-        <div>
-          <button onClick={() => {handleButtonClick("/sketch")}}>Go to Sketch page</button>
-        </div>
-        loading &&  <div>Loading user info...</div>
-      </Flex>
-    </PageWrapper>
-  );
-  */
 }
 
 export default HomePage;
