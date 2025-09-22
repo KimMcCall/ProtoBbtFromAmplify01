@@ -141,12 +141,13 @@ function CommentsPage() {
   }
 
   if (commentBlocks) {
+    const nonEmptyBlocks = commentBlocks.filter(block => block.text);
     return (
       <PageWrapper>
         <div className="commentPageDiv">
           <div className="commentsAreaDiv">
           {
-          commentBlocks.map(block => (
+          nonEmptyBlocks.map(block => (
           <CommentTile key={block.commentKey} block={block} />
         ))}
           </div>
