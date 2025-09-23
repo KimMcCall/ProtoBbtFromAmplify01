@@ -4,7 +4,7 @@ import './AdminIssuesPage.css'
 import { ChangeEvent, SetStateAction, SyntheticEvent, useState } from "react";
 import { createIssueXP2 } from "../utils/dynamodb_operations";
 import ToastNotifier from "../components/ToastNotifier";
-import { defaultIssueId, docType_GoogleDoc, docType_Pdf, docType_Unknown, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
+import { docType_GoogleDoc, docType_Pdf, docType_Unknown, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
 import { selectCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { useAppSelector } from "../app/hooks";
 import { IssueType, selectAllIssues } from "../features/issues/issues";
