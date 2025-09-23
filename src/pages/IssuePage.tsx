@@ -151,79 +151,8 @@ function IssuePage() {
               height="660px"
               >
               </iframe>
-              /*
-            <iframe
-              src="https://docs.google.com/document/d/e/2PACX-1vTg6xAjojulAXh49sfu6l0uwlGq8yGLjIIvN9vLA15sSCTZ_UjsJBPp5R560j1dGdK-gDYp5-LKemLT/pub?embedded=true"
-              width= "850px"
-              height="660px"
-              >
-              </iframe>
-              */
           )
         }
-        {
-          showPro ?
-        (
-          <Flex direction='row'>
-            <Flex direction='column'>
-              {
-                proIsPdf ?
-                (
-                  <embed
-                    src={proUrl}
-                    type="application/pdf"
-                    width="832px"
-                    height="642px" />
-                )
-                :
-                (
-                  <iframe
-                    width="1026"
-                    height="581"
-                    src={proUrl}
-                    title="YouTube video player"
-                    // frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    //referrerpolicy="strict-origin-when-cross-origin"
-                    //allowfullscreen
-                    />
-                )
-              }
-            </Flex>
-          </Flex>
-        )
-        :
-        (
-          <Flex direction='row'>
-            <Flex direction='column'>
-              {
-                conIsPdf ?
-                (
-                  <embed
-                    src={conUrl}
-                    type="application/pdf"
-                    width="832px"
-                    height="642px" />
-                )
-                :
-                (
-                  <iframe
-                    width="1026"
-                    height="581"
-                    src={conUrl}
-                    title="YouTube video player"
-                    // frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    //referrerpolicy="strict-origin-when-cross-origin"
-                    //allowfullscreen
-                    />
-                )
-              }
-            </Flex>
-          </Flex>
-        )
-      }
-
         <div className="showContrastingViewButtonDiv">
           <Flex>
             <Button onClick={handleShowContrastingViewClick}>
