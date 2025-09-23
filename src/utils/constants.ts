@@ -32,6 +32,7 @@ export const defaultConAuthor = constantSet === 1 ? conAuthorId1 : conAuthorId2;
 export const PlaceholderForEmptyUrl = 'NoUrl_428b47f5-ebfe-46d5-a14b-ae4a9625de04';
 export const PlaceholderForEmptyComment = 'NoComment_b8d50a00-4b4e-4a36-be4c-b7e1cecd5cc1';
 
-export const docType_Pdf = 'pdf';
+export const docType_Pdf = 'Pdf';
 export const docType_YouTube = 'YouTube';
-export const docType_GoogleDoc = 'googleDoc';
+export const docType_GoogleDoc = 'GoogleDoc';
+export const docType_Unknown = 'UnknownDocType_5e3209b0-adca-456f-b632-c4c6469fc008';

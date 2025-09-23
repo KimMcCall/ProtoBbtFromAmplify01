@@ -1,4 +1,5 @@
 import { dbClient } from '../main';
+import { defaultConAuthor, defaultProAuthor, docType_Unknown, PlaceholderForEmptyComment, PlaceholderForEmptyUrl } from './constants';
 
 // CREATE Operation - Adding a new issue with first comment
 async function createIssue(
@@ -42,6 +43,53 @@ async function createIssue(
       }
     } else {
       console.log('Returned from createIssue: ', result);
+    }
+    return result;
+  } catch (error) {
+    console.error('Error creating issue:', error);
+    throw error;
+  }
+}
+
+// CREATE Operation - Adding a new issue (with no comment)
+async function createIssueXP2(
+    priority: number,
+    claim: string,
+    proUrl: string,
+    conUrl: string,
+    proDocType: string,
+    conDocType: string,
+    proAuthorEmail: string,
+    conAuthorEmail: string,
+    currentUserEmail: string,
+  ) {
+  const nowStr = new Date().toISOString();
+  try {
+    const result = await dbClient.models.IssueP2.create({
+      issueId: 'ISSUE#' + nowStr,
+      priority: priority,
+      claim: claim,
+      proUrl: proUrl || PlaceholderForEmptyUrl,
+      conUrl: conUrl || PlaceholderForEmptyUrl,
+      proDocType: proDocType || docType_Unknown,
+      conDocType: conDocType || docType_Unknown,
+      proAuthorEmail: proAuthorEmail || defaultProAuthor,
+      conAuthorEmail: conAuthorEmail || defaultConAuthor,
+      isAvailable: false,  // make it available later
+      commentKey: 'ISSUE#COMMENT#' + nowStr,
+      commentText: PlaceholderForEmptyComment,
+      commentAuthorEmail: currentUserEmail,
+      createdT: nowStr,
+      updatedT: nowStr,
+    });
+    const { data, errors } = result;
+    if (data === null) {
+      if (errors) {
+        const message = errors[0].message;
+        console.log(message);
+      }
+    } else {
+      console.log('Returned from createIssueXP2: ', result);
     }
     return result;
   } catch (error) {
@@ -128,12 +176,12 @@ async function addCommentToIssue(
 // Another UPDATE - If you want to modify an existing comment
 async function updateExistingComment(issueId: string, commentKey: string, newText: string) {
   try {
-    const result = await dbClient.models.IssueP1.update({
+    const result = await dbClient.models.IssueP2.update({
       issueId: issueId,
       commentKey: commentKey,
+      updatedT: new Date().toISOString(),
       // Update specific fields
       commentText: newText,
-      updatedT: new Date().toISOString(),
     });
     
     console.log('Comment updated:', result);
@@ -161,6 +209,7 @@ async function getAllIssueRecords() {
 // Example usage
 export {
   createIssue,
+  createIssueXP2,
   addCommentToIssue,
   updateExistingComment,
   getAllIssueRecords,

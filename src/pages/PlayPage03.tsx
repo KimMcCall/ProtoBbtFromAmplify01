@@ -8,7 +8,7 @@ import { docType_GoogleDoc } from "../utils/constants";
 
 function PlayPage03() {
 
-  const [docTypeChoice, seDocTypeChoice] = useState('googleDoc');
+  const [docTypeChoice, seDocTypeChoice] = useState('GoogleDoc');
 
   const handleDoocTypeRadioButtonChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -48,10 +48,10 @@ function PlayPage03() {
                   <Radio value="pdfViaEmbed">&nbsp;Pdf via Embe</Radio>
                 </div>
                 <div className="docTypeButtonDiv">
-                  <Radio value="youTube">&nbsp;YouTube Video</Radio>
+                  <Radio value="YouTube">&nbsp;YouTube Video</Radio>
                 </div>
                 <div className="docTypeButtonDiv">
-                  <Radio value="googleDoc">&nbsp;Google Doc</Radio>
+                  <Radio value="GoogleDoc">&nbsp;Google Doc</Radio>
                 </div>
               </RadioGroupField>
             </div>

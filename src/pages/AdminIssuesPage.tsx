@@ -1,17 +1,19 @@
-import { Button, CheckboxField, Flex, TextAreaField, TextField } from "@aws-amplify/ui-react";
+import { Button, Flex, Radio, RadioGroupField, TextAreaField, TextField } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import './AdminIssuesPage.css'
 import { ChangeEvent, SetStateAction, SyntheticEvent, useState } from "react";
-import { createIssue } from "../utils/dynamodb_operations";
-import { getRandomIntegerInRange } from "../utils/utils";
+import { createIssueXP2 } from "../utils/dynamodb_operations";
 import ToastNotifier from "../components/ToastNotifier";
-import { defaultConAuthor, defaultIssueId, defaultPriority, defaultProAuthor } from "../utils/constants";
+import { defaultIssueId, docType_GoogleDoc, docType_Pdf, docType_Unknown, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
+import { selectCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
+import { useAppSelector } from "../app/hooks";
 
 // Claim: There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive.
 // Priority: 999000
 // ProURL: {ProxyForNoUrl}
 // ConURL: {ProxyForNoUrl}
   
+/*
 const innerHandleSubmit = async (
   event: SyntheticEvent<HTMLFormElement>,
   toastSetter: { (value: SetStateAction<string>): void; (arg0: string): void; },
@@ -53,7 +55,6 @@ const innerHandleSubmit = async (
     conIsPdf = convertedConIsPdf === 'on';
   }
 
-  /*
   Structure of what gets created (and returned from create())
 authorId: ""
 claim: "There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive."
@@ -74,9 +75,7 @@ proIsPdf: false
 proUrl: {ProxyForNoUrl}
 updatedAt: "2025-09-15T06:01:27.289Z"
 updatedT: "2025-09-15T06:01:26.304Z"
-  */
     
-  /*
     priority: number,
     claim: string,
     proUrl: string,
@@ -86,7 +85,6 @@ updatedT: "2025-09-15T06:01:26.304Z"
     proAuthorId: string,
     conAuthorId: string,
     makeAvailable: boolean,
-  */
   await createIssue(
     priority,
     convertedClaim,
@@ -101,27 +99,102 @@ updatedT: "2025-09-15T06:01:26.304Z"
   toastSetter('Your issue has been received');
   toastShower(true);
 };
+*/
 
 function AdminIssuesPage() {
-  const [claimForNewIssue, setClaimForNewIssue] = useState('');
   const [toastMessage, setToastMessage] = useState('Sorry! You need to fill in at least one URL');
   const [shouldShowAcceptanceToast, setShouldShowAcceptanceToast] = useState(false);
   const [issueIdForRetrieval, setIssueIdForRetrival] = useState(defaultIssueId);
+  const [proDocTypeChoice, setProDocTypeChoice] = useState(docType_Unknown);
+  const [conDocTypeChoice, setConDocTypeChoice] = useState(docType_Unknown);
+  const [newIssueProUrl, setNewIssueProUrl] = useState('');
+  const [newIssueConUrl, setNewIssueConUrl] = useState('');
+  const [newIssueClaim, setNewIssueClaim] = useState('');
+  const [newIssuePriority, setNewIssuePriority] = useState('400000')
 
-  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
-    innerHandleSubmit(event, setToastMessage, setShouldShowAcceptanceToast)
+  const currentUserEmail = useAppSelector(selectCurrentUserCanonicalEmail)
+
+  const handleControlledNewIssueSubmission = (event: SyntheticEvent<HTMLButtonElement>) => {
+    handleControlledNewIssueSubmission2(event, setToastMessage, setShouldShowAcceptanceToast)
   };
 
-  const handleClaimChange = (error: ChangeEvent<HTMLTextAreaElement>) => {
-    error.stopPropagation();
-    setClaimForNewIssue(error.target.value);
+const handleControlledNewIssueSubmission2 = async (
+    event: SyntheticEvent<HTMLButtonElement>,
+    toastSetter: { (value: SetStateAction<string>): void; (arg0: string): void; },
+    toastShower: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; }) => {
+  event.stopPropagation();
+  const priority = Number(newIssuePriority);
+  const claim = newIssueClaim;
+  if (!claim) {
+    alert('You need to type a claim into the "Claim:" box');
+    toastSetter('You need to type a claim into the "Claim:" box');
+    toastShower(true);
+    return;
+  }
+  // GATOR: guard against setting a pro/conDocType when ther's no pro/conUrl
+  const profferedProUrl = newIssueProUrl;
+  const profferedConUrl = newIssueConUrl;
+  const proUrl = profferedProUrl || PlaceholderForEmptyUrl;
+  const conUrl = profferedConUrl || PlaceholderForEmptyUrl;
+  const proDocType = proDocTypeChoice;
+  const conDocType = conDocTypeChoice;
+  const proAuthorEmail = '';
+  const conAuthorEmail = '';
+  const commentAuthorEmail = currentUserEmail;
+
+
+  await createIssueXP2(
+    priority,
+    claim,
+    proUrl,
+    conUrl,
+    proDocType,
+    conDocType,
+    proAuthorEmail,
+    conAuthorEmail,
+    commentAuthorEmail,
+  );
+  toastSetter('Your issue has been received');
+  toastShower(true);
+}
+
+  const handleClaimChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    event.stopPropagation();
+    setNewIssueClaim(event.target.value);
+  }
+
+  const handlePriorityChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation();
+    setNewIssuePriority(event.target.value);
+  }
+
+  const handleProUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation();
+    setNewIssueProUrl(event.target.value);
+  }
+
+  const handleConUrlChange = (event: ChangeEvent<HTMLInputElement>) => {
+    event.stopPropagation();
+    setNewIssueConUrl(event.target.value);
+  }
+
+  const handleProDocTpeChoiceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const choice = event.target.value;
+    console.log(`Changing proDocTypeChoice to '${choice}'`)
+    setProDocTypeChoice(choice);
+  }
+
+  const handleConDocTpeChoiceChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const choice = event.target.value;
+    setConDocTypeChoice(choice);
   }
 
   return (
     <PageWrapper>
       <div>
         <div className='formRoot'>
-          <Flex as="form" direction='column' onSubmit={handleSubmit}>
+          {/*<Flex as="form" direction='column' onSubmit={handleSubmit}>*/}
+          <Flex direction='column'>
             <Flex className='urlsBlock' direction='column'>
               <Flex direction='row'>
                 <div className="textFieldLabel">
@@ -130,36 +203,58 @@ function AdminIssuesPage() {
                 <TextAreaField
                   label=''
                   name='claim'
-                  value={claimForNewIssue} cols={40} rows={4}
+                  value={newIssueClaim} cols={50} rows={8}
                   onChange={handleClaimChange}
                   />
                 <div className="textFieldLabel">
                   Priority:
                 </div>
-                <TextField label='' name='priority' defaultValue={defaultPriority} width='140px'/>
+                <TextField label='' name='priority' value={newIssuePriority} onChange={handlePriorityChange} width='140px'/>
               </Flex>
               <Flex direction='row'>
                 <div className="textFieldLabel">
                   Pro URL: 
                 </div>
-                <TextField label='' name='proUrl' defaultValue="" width='800px'/>
-                <CheckboxField
-                  label="isPdf"
-                  name="proIsPdf"
-                />
+                <Flex direction="column">
+                  <TextField label='' name='proUrl' value={newIssueProUrl} width='800px' onChange={handleProUrlChange}/>
+                  <Flex direction={"rpw"}>
+                    <RadioGroupField
+                      legend="What kind of document?"
+                      name="proDocTypeChoice"
+                      direction="row"
+                      value={proDocTypeChoice}
+                      onChange={handleProDocTpeChoiceChange}
+                    >
+                      <Radio value={docType_YouTube}>YouTube Video</Radio>
+                      <Radio value={docType_GoogleDoc}>Google Doc</Radio>
+                      <Radio value={docType_Pdf}>Pdf</Radio>
+                      <Radio value={docType_Unknown}>`None of the above</Radio>
+                    </RadioGroupField>
+                  </Flex>
+                </Flex>
               </Flex>
               <Flex>
                 <div className="textFieldLabel">
                   Con URL: 
                 </div>
-                <TextField label='' name='conUrl' defaultValue="" width='800px'/>
-                <CheckboxField
-                  label="isPdf"
-                  name="conIsPdf"
-                />
+                <Flex direction="column">
+                  <TextField label='' name='conUrl' value={newIssueConUrl} width='800px' onChange={handleConUrlChange}/>
+                  <RadioGroupField
+                    legend="What kind of document?"
+                    name="conDocTypeChoice"
+                    direction="row"
+                    value={conDocTypeChoice}
+                    onChange={handleConDocTpeChoiceChange}
+                  >
+                    <Radio value={docType_YouTube}>YouTube Video</Radio>
+                    <Radio value={docType_GoogleDoc}>Google Doc</Radio>
+                    <Radio value={docType_Pdf}>Pdf</Radio>
+                    <Radio value={docType_Unknown}>None of the above</Radio>
+                  </RadioGroupField>
+                </Flex>
               </Flex>
             </Flex>
-            <Button type="submit" width='200px'>
+            <Button width='200px' onClick={handleControlledNewIssueSubmission}>
               Create New Issue
             </Button>
           </Flex>
