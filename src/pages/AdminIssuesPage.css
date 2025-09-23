@@ -1,6 +1,11 @@
 /* AdminIssuesPage.css */
 
-.formRoot {
+.activityRadioButtonsDiv {
+  margin-top: 12px;
+  margin-bottom: 12px;
+}
+
+.otherFieldsFormRoot {
   border: 1px black solid;
   padding: 6px;
 }
