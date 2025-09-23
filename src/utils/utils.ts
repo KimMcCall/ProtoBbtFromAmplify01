@@ -273,17 +273,11 @@ interface SharedIdGroupType {
 }
 
 export const sortAndRepairIssues = (issues: IssueType[]) => {
-  console.log(`# of issues: ${issues.length}`, issues);
   const groupedById: SharedIdGroupType[] = groupById(issues);
-  console.log(`# of groupedById: ${groupedById.length}`, groupedById);
   const sortedByUpdate: SharedIdGroupType[] = sortEachGroupByUpdateT(groupedById);
-  console.log(`# of sortedByUpdate: ${sortedByUpdate.length}`, sortedByUpdate);
   const sortedByPriority: SharedIdGroupType[] = sortByDecreasingPriority(sortedByUpdate);
-  console.log(`# of sortedByPriority: ${sortedByPriority.length}`, sortedByPriority);
   const reunitedIssues: IssueType[] = uniteGroups(sortedByPriority);
-  console.log(`# of reunitedIssues: ${reunitedIssues.length}`, reunitedIssues);
   const repairedIssues = repairPlaceholderStrings(reunitedIssues);
-  console.log(`# of repairedIssues: ${repairedIssues.length}`, repairedIssues);
   return repairedIssues;
 }
 
@@ -404,6 +398,5 @@ const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) =>
     conDocType,
     comments,
   }
-  console.log(`comments: `, comments);
   return retVal;
 }

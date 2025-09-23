@@ -198,7 +198,6 @@ async function getAllIssueRecords() {
     const result = await dbClient.models.IssueP2.list();
     const returnedIssues = result.data;
     const nonNullIssues = returnedIssues.filter((issue) => issue !== null);    
-    console.log(`# nonNullIssues: ${nonNullIssues.length}`)
     return nonNullIssues;
   } catch (error) {
     console.error('Error in getAllIssueRecords():', error);

@@ -63,10 +63,8 @@ function HomePage() {
         const iterable: Iterable<IssueType> = result.values();
         const allIssues = Array.from(iterable);
         const sortedAndRepairedIssues = sortAndRepairIssues(allIssues);
-        console.log(`# sortedAndRepairedIssues: ${sortedAndRepairedIssues.length}`)
         dispatch(setIssues(sortedAndRepairedIssues));
         const structured = structurePerIssue(sortedAndRepairedIssues);
-        console.log(`# structured: ${structured.length}`)
         setStructuredForRendering(structured);
         dispatch(setDisplayBlocks(structured));
       }
