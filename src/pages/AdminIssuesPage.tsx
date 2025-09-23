@@ -228,7 +228,7 @@ const handleControlledNewIssueSubmission2 = async (
                       <Radio value={docType_YouTube}>YouTube Video</Radio>
                       <Radio value={docType_GoogleDoc}>Google Doc</Radio>
                       <Radio value={docType_Pdf}>Pdf</Radio>
-                      <Radio value={docType_Unknown}>`None of the above</Radio>
+                      <Radio value={docType_Unknown}>None of the above</Radio>
                     </RadioGroupField>
                   </Flex>
                 </Flex>

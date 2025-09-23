@@ -42,6 +42,35 @@ export function getRandomIntegerInRange(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+export const getLatestRowWithIssueId = async (issueId: string) => {
+  const myFilter = {
+    filter: {
+      issueId: { eq: issueId }
+    }
+  };
+  // @ts-expect-error By the time I use this it won't be null
+  let latestSoFar: IssueTypes = null;
+
+  await dbClient.models.IssueP2.list(myFilter)
+  .then((response) => {
+    const allRowsWithThisIssueId = response.data;
+    if (allRowsWithThisIssueId.length < 1)  {
+      const errorMsg = "Big SNAFU: Found no records with issueId: " + issueId
+      alert(errorMsg);
+      throw new Error(errorMsg);
+    }
+    latestSoFar = allRowsWithThisIssueId[0];
+    allRowsWithThisIssueId.forEach((row) => {
+      if (row.updatedT.localeCompare(latestSoFar.updatedT) > 0 ) {
+        latestSoFar = row
+      }
+    }
+  )
+}
+  )
+  return latestSoFar;
+}
+
 export async function haveLoggedInUser(): Promise<boolean> {
     const showUserInfo = true;
     try {
@@ -238,45 +267,76 @@ const innerComputeStatus = async (email: string): Promise<UserStatus>  => {
   return retVal;
 }
 
+interface SharedIdGroupType {
+  groupPriority: number
+  issues: IssueType[]
+}
+
 export const sortAndRepairIssues = (issues: IssueType[]) => {
-  const sortedByUpdate = sortByUpdateT(issues);
-  const sortedByIssueId = sortByIssueId(sortedByUpdate);
-  const sortedByPriority = sortByIncreasingPriority(sortedByIssueId);
-  const repairedIssues = repairPlaceholderStrings(sortedByPriority);
+  console.log(`# of issues: ${issues.length}`, issues);
+  const groupedById: SharedIdGroupType[] = groupById(issues);
+  console.log(`# of groupedById: ${groupedById.length}`, groupedById);
+  const sortedByUpdate: SharedIdGroupType[] = sortEachGroupByUpdateT(groupedById);
+  console.log(`# of sortedByUpdate: ${sortedByUpdate.length}`, sortedByUpdate);
+  const sortedByPriority: SharedIdGroupType[] = sortByDecreasingPriority(sortedByUpdate);
+  console.log(`# of sortedByPriority: ${sortedByPriority.length}`, sortedByPriority);
+  const reunitedIssues: IssueType[] = uniteGroups(sortedByPriority);
+  console.log(`# of reunitedIssues: ${reunitedIssues.length}`, reunitedIssues);
+  const repairedIssues = repairPlaceholderStrings(reunitedIssues);
+  console.log(`# of repairedIssues: ${repairedIssues.length}`, repairedIssues);
   return repairedIssues;
 }
 
-const sortByUpdateT = (issues: IssueType[]) => {
-  const nIssues = issues.length;
-  let dupedIssues: IssueType[] = [];
-  for (let i = 0; i < nIssues; i++) {
-    dupedIssues = dupedIssues.concat(issues[i])
-  }
-
-  const retVal = dupedIssues.sort((a, b) => a.updatedT.localeCompare(b.updatedT));
-  return retVal;
+const groupById =  (issues: IssueType[]) => {
+  const issueIdSet = new Set();
+  issues.forEach((issue) => { issueIdSet.add(issue.issueId)});
+  let myGroups: SharedIdGroupType[] = [];
+  // @ts-expect-error I only put strings into the Set, so that's all I'll get out
+  issueIdSet.forEach((issueId: string) => {
+    let latestUpdateT = '0';
+    let priorityOfLatest = -1;
+    const issuesWithThisId = issues.filter(issue => {
+      return issue.issueId === issueId
+    });
+    issuesWithThisId.forEach(issue => {
+      if (issue.updatedT > latestUpdateT) {
+        latestUpdateT = issue.updatedT;
+        priorityOfLatest = issue.priority;
+      }
+    })
+    const group: SharedIdGroupType = { groupPriority: priorityOfLatest, issues: issuesWithThisId };
+    myGroups = myGroups.concat(group);
+  });
+  return myGroups;
 }
 
-const sortByIssueId = (issues: IssueType[]) => {
-  const retVal = issues.sort((a, b) => {
-    const aIssueId = a.issueId;
-    const bIssueId = b.issueId;
-    if (aIssueId < bIssueId) { return -1; }
-    else if (aIssueId === bIssueId) { return 0; }
-    else { return 1; }
-  })
-  return retVal;
+const sortEachGroupByUpdateT = (groups: SharedIdGroupType[]) => {
+  let sortedGroups: SharedIdGroupType[] = [];
+  groups.forEach(group => {
+    const issues = group.issues;
+    const sortedIssues = issues.sort((a, b) => a.updatedT.localeCompare(b.updatedT));
+    group.issues = sortedIssues;
+    sortedGroups = sortedGroups.concat(group);
+  });
+  return sortedGroups;
 }
 
-const sortByIncreasingPriority = (issues: IssueType[]) => {
-  const retVal = issues.sort((a, b) => {
-    const aPriority = a.priority;
-    const bPriority = b.priority;
-    if (aPriority > bPriority) { return -1; }
-    else if (aPriority === bPriority) { return 0; }
-    else { return 1; }
+const sortByDecreasingPriority = (issueGroups: SharedIdGroupType[]) => {
+  issueGroups.sort((a, b) => {
+    return 0 - (a.groupPriority - b.groupPriority);
   })
-  return retVal;
+  return issueGroups;
+}
+
+const uniteGroups = (groups: SharedIdGroupType[]) => {
+  let issues: IssueType[] = [];
+  groups.forEach(group => {
+    const groupIssues = group.issues;
+    groupIssues.forEach (issue => {
+      issues = issues.concat(issue);
+    })
+  })
+  return issues;
 }
 
 const repairPlaceholderStrings = (issues: IssueType[]) => {
@@ -296,11 +356,11 @@ const repairPlaceholderStrings = (issues: IssueType[]) => {
 }
 
 export const structurePerIssue = (listOfIssues: IssueType[]) => {
-  const mySet = new Set();
-  listOfIssues.forEach((issue) => { mySet.add(issue.issueId)});
+  const issueIdSet = new Set();
+  listOfIssues.forEach((issue) => { issueIdSet.add(issue.issueId)});
   let myStructs: IssueBlockForRenderingType[]  = [];
   // @ts-expect-error I only put strings into the Set, so that's all I'll get out
-  mySet.forEach((issueId: string) => {
+  issueIdSet.forEach((issueId: string) => {
     const struct: IssueBlockForRenderingType = createRenderingStuctForIssueId(issueId, listOfIssues)
     myStructs = myStructs.concat(struct);
   });
@@ -344,5 +404,6 @@ const createRenderingStuctForIssueId = (issueId: string, issues: IssueType[]) =>
     conDocType,
     comments,
   }
+  console.log(`comments: `, comments);
   return retVal;
 }

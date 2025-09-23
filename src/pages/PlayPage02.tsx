@@ -6,7 +6,7 @@ import PageWrapper from "../components/PageWrapper";
 import { selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin, setCurrentUserAsSuperAdmin, setCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
-import { computeUserStatus, getRandomIntegerInRange, toCanonicalEmail, UserStatusType } from "../utils/utils";
+import { computeUserStatus, getLatestRowWithIssueId, getRandomIntegerInRange, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
 import { sendEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
@@ -53,7 +53,7 @@ function PlayPage02() {
   const [issueIdText, setIssueIdText] = useState('');
   const [claimText, setClaimText] = useState('');
   const [priorityText, setPriorityText] = useState('');
-  const [availabilityChoice, setAvailabilityChoice] = useState('unavailable');
+  const [availabilityChoice, setAvailabilityChoice] = useState('noChoiceYet');
 
   const dispatch = useAppDispatch();
   const isNowSuperAdmin = useAppSelector(selectCurrentUserIsSuperAdmin);
@@ -304,29 +304,40 @@ function PlayPage02() {
     setIssueIdText('');
     setClaimText('');
     setPriorityText('');
-    setAvailabilityChoice('unavailable')
+    setAvailabilityChoice('noChoiceYet')
   }
 
   const handleOtherFieldsSubmitButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     console.log("Should now update the DB")
-    /*
-    // GATOR: Commenting this out so it will compile. Lots to fix here.
     const issueId = issueIdText;
     if (!issueId) {
       alert('You can\'t submit without selecting an issue');
       return;
     }
 
+    const availability = availabilityChoice; // 'available', 'unavailable', or 'noChoiceYet'
+    if (availability === 'noChoiceYet') {
+      alert('You have to choose either "Make Available" or "Make Unavailable"');
+      return;
+    }
+
     const claim = claimText;
     const priorityString = priorityText;
-    const availability = availabilityChoice; // 'available' or 'unavailable'
     const haveClaim = claim.length > 0;
     const havePriorityString = priorityString.length > 0;
-    const priority = parseInt(priorityString);
+    const priority = havePriorityString ?  parseInt(priorityString): -1;
     const shouldBeAvailable = availability === 'available';
+    const latestRow: IssueType = await getLatestRowWithIssueId(issueId);
+    if (!latestRow) {
+      alert("big screwup. getLatestRowWithIssueId() didn't return a row")
+      throw new Error("big screwup. getLatestRowWithIssueId() didn't return a rpw");
+    }
+
+    const commentKey = latestRow.commentKey;
     let myUpdate =  {
       issueId: issueId,
+      commentKey: commentKey,
       isAvailable: shouldBeAvailable,
     };
     if (haveClaim) {
@@ -337,20 +348,16 @@ function PlayPage02() {
       const addition = { priority: priority};
       myUpdate = { ...myUpdate, ...addition}
     }
-    await dbClient.models.IssueP1.update(myUpdate).then(
+
+    await dbClient.models.IssueP2.update(myUpdate).then(
           (response) => {
-            console.log(' back from update()');
             // @ts-expect-error It will not be undefined if the .update() succeeded!
-            const modifiedUser: SingleUserInfoType = response.data;
-            const { id, isAdmin } = modifiedUser;
-            console.log(` new value of isAdmin: ${isAdmin}`)
-            dispatch(setDesignatedUserId(id));
-            const pair: UserBooleanPropertySettinPairType = { userId: id, value: isAdmin}
-            dispatch(setUserIsAdmin(pair));
-            setButtonTextsForUser(modifiedUser);
+            const modifiedIssue: IssueType = response.data;
+            const { issueId, commentKey } = modifiedIssue;
+            // dispatch(setDesignatedUserId(id));
+            console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
           }
         );
-  */
   }
 
   const handleIssueTileClick = (event: SyntheticEvent<HTMLDivElement>, issueId: string) => {

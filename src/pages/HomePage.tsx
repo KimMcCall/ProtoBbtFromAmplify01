@@ -53,7 +53,6 @@ const basicStruct: IssueBlockForRenderingType = {
 const arryOfStucts = [basicStruct];
 
 function HomePage() {
-  // const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
   const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
   const dispatch = useAppDispatch();
   
@@ -62,8 +61,8 @@ function HomePage() {
       await getAllIssueRecords().then(
       (result) => {
         const iterable: Iterable<IssueType> = result.values();
-        const issues = Array.from(iterable);
-        const sortedAndRepairedIssues = sortAndRepairIssues(issues);
+        const allIssues = Array.from(iterable);
+        const sortedAndRepairedIssues = sortAndRepairIssues(allIssues);
         console.log(`# sortedAndRepairedIssues: ${sortedAndRepairedIssues.length}`)
         dispatch(setIssues(sortedAndRepairedIssues));
         const structured = structurePerIssue(sortedAndRepairedIssues);
