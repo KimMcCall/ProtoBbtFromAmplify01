@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Flex } from '@aws-amplify/ui-react';
 import SubmissionEditor from './SubmissionEditor';
 import SuggestionTile from './SuggestionTile';
-import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissionsPage'
+import {SubmissionWithDateType as SubmissionType} from '../pages/AdminSubmissionsPage'
 import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
 import { selectCurrentUserId } from '../features/userInfo/userInfoSlice';
@@ -71,7 +71,7 @@ function SuggestionsPanel() {
             >
               {
               foundSubmissions.map(sub => (
-              <SuggestionTile suggestion={sub} submissionSetter={setSelectionCallback} editorSetter={setShowEditor} />
+                <SuggestionTile key={sub.id} submission={sub} submissionSetter={setSelectionCallback} editorSetter={setShowEditor} />
             ))}
             </Flex>
           </div>
