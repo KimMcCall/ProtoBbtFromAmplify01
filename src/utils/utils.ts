@@ -151,6 +151,22 @@ export function isRecent(timeString: string, nSecs: number) {
   return now < horizon;
 }
 
+const millisRadix = 1100000000;
+// The biggest number our DB can handle is about 2147483648
+// so we'll take the remainder when dividing by something close to half that
+
+export const tallySubmission = (currentUserId: string)=> {
+  const epicMillis = Date.now();
+  const dbCompatible = epicMillis % millisRadix;
+  const createStruct = {
+    userId: currentUserId,
+    timestamp: dbCompatible,
+  };
+  dbClient.models.SubmissionTally.create(createStruct).then(
+    (response) => {console.log("response: ", response)}
+  )
+}
+
 export const computeUserStatus = async (submittedAuthId: string, submittedEmail: string): Promise<UserStatusAndUser> => {
   let retVal: UserStatus = 'uninitialized';
 

@@ -10,8 +10,8 @@ import { CommentBlockType,
   setIssues } from "../features/issues/issues";
 import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
-import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
-import { selectCurrentUser } from "../features/userInfo/userInfoSlice";
+import { sortAndRepairIssues, structurePerIssue, tallySubmission } from "../utils/utils";
+import { selectCurrentUser, selectCurrentUserId } from "../features/userInfo/userInfoSlice";
 import { addCommentToIssue } from "../utils/dynamodb_operations";
 import CommentSubmissionForm from "../components/CommentSubmissionForm";
 import { useNavigate } from "react-router-dom";
@@ -58,7 +58,9 @@ function CommentsPage() {
   const authorEmail = useAppSelector(selectCurrentUser).canonicalEmail;
   const issueBlock = useAppSelector(selectDisplayBlockForCurrentIssue);
   // @ts-expect-error I'm pretty sure issueBlock is not undefined
-  const commentBlocks = issueBlock.comments; 
+  const commentBlocks = issueBlock.comments;
+
+  const currentUserId = useAppSelector(selectCurrentUserId);
 
   const handleBackToViewButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -74,12 +76,14 @@ function CommentsPage() {
 
   const createCommentFromSubmission = async (text: string) => {
     createCommentWithText(text);
+    tallySubmission(currentUserId);
   }
   
   const handleAutoCommentButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     const commentText = `This is an auto-generated comment that should show up in the dB.`;
     createCommentWithText(commentText);
+    tallySubmission(currentUserId);
   }
 
   const createCommentWithText = async (text: string) => {
@@ -125,7 +129,6 @@ function CommentsPage() {
       commentText,
       copiedAuthorEmail,
     );
-
   }
 
   const handleCancelSubmissionForm = () => {

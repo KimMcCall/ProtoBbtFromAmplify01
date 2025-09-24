@@ -6,6 +6,7 @@ import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
 import { useState } from 'react';
 import ToastNotifier from '../components/ToastNotifier';
+import { tallySubmission } from '../utils/utils';
 
 const policyP: React.CSSProperties = {
   fontStyle: 'italic',
@@ -24,8 +25,7 @@ function SuggestionsPage() {
   const [shouldShowAcceptanceToast,setShouldShowAcceptanceToast ] = useState(false);
   const [toastMessage, setToastMessage] = useState('Your suggestion has been received');
 
-
-  const userId =  useAppSelector(selectCurrentUserId);
+  const currentUserId =  useAppSelector(selectCurrentUserId);
 
   const handleSiteSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
     handleSubmit(event, 'Site Suggestion');
@@ -55,7 +55,7 @@ function SuggestionsPage() {
       return;
     }
     const structToCreate = {
-      userId: userId,
+      userId: currentUserId,
       category: category,
       title: convertedTitle,
       content: convertedText,
@@ -69,6 +69,7 @@ function SuggestionsPage() {
     dbClient.models.Submission.create(structToCreate);
     setToastMessage('Your suggestion has been received');
     setShouldShowAcceptanceToast(true);
+    tallySubmission(currentUserId);
   };
 
   return (
