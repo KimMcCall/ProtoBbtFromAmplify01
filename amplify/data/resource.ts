@@ -34,8 +34,8 @@ const schema = a.schema({
       isTrusted: a.boolean().required().default(false),
     })
     .secondaryIndexes((index) => [
-      index("authId").queryField("listByAuthId"),
-      index("canonicalEmail").queryField("listByCanonicalEmail"),
+      index("authId").queryField("listByAuthIdXP2"),
+      index("canonicalEmail").queryField("listByCanonicalEmailXP2"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
   IssueP1: a
