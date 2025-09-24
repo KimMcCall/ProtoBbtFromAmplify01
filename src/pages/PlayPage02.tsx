@@ -251,20 +251,13 @@ function PlayPage02() {
   const migrateUser = (oldUser: SingleUserInfoType) => {
     const createStruct = {
       authId: oldUser.authId,
-      name: oldUser.name,
+      name: oldUser.name || '',
       canonicalEmail: oldUser.canonicalEmail,
       initialEmail: oldUser.initialEmail,
       isSuperAdmin: oldUser.isSuperAdmin,
       isAdmin: oldUser.isAdmin,
       isBanned: oldUser.isBanned,
       isTrusted: false,
-    }
-    const models = dbClient.models;
-    const model = dbClient.models.RegisteredUserP2;
-    console.log("models: ", models);
-    console.log("model: ", model);
-    if (!model) {
-      return;
     }
     dbClient.models.RegisteredUserP2.create(createStruct).then(
       (response) => {
