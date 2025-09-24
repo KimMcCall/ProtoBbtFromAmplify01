@@ -6,13 +6,11 @@ import PageWrapper from "../components/PageWrapper";
 import { selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin, setCurrentUserAsSuperAdmin, setCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
-import { computeUserStatus, getLatestRowWithIssueId, getRandomIntegerInRange, toCanonicalEmail, UserStatusType } from "../utils/utils";
+import { computeUserStatus, getLatestRowWithIssueId, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
 import { sendEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
-import { createIssue } from "../utils/dynamodb_operations";
 import { getIssue } from "../utils/comment_operations";
-import { defaultConAuthor, defaultProAuthor, PlaceholderForEmptyUrl } from "../utils/constants";
 import './PlayPage02.css';
 import { IssueType, selectAllIssues } from "../features/issues/issues";
 
@@ -228,46 +226,6 @@ function PlayPage02() {
       newValue = 'random@example.com';
     }
     dispatch(setCurrentUserCanonicalEmail(newValue))
-  }
-
-  const handleShowToastClick = (event: { stopPropagation: () => void; }) => {
-    event.stopPropagation();
-    setShowToast(true);
-  }
-
-  /*
-    priority: number,
-    claim: string,
-    proUrl: string,
-    conUrl: string,
-    proIsPdf: boolean,
-    conIsPdf: boolean,
-    proAuthorId: string,
-    conAuthorId: string,
-    makeAvailable: boolean,
-  */
-
-  const claim = 'Thinking honestly can change an opinion';
-
-  const handleCreateIssueClick = (event: { stopPropagation: () => void; }) => {
-    event.stopPropagation();
-    const priority = getRandomIntegerInRange(1, 1000000);
-    const proUrl = PlaceholderForEmptyUrl;
-    const conUrl = PlaceholderForEmptyUrl;
-    const proIsPdf = false;
-    const conIsPdf = false;
-    const makeAvailable = false;
-    createIssue(
-      priority,
-      claim,
-      proUrl,
-      conUrl,
-      proIsPdf,
-      conIsPdf,
-      defaultProAuthor, // proAuthorId
-      defaultConAuthor, // conAuthorId
-      makeAvailable,
-    );
   }
 
   const handleFetchIssueClick = (event: { stopPropagation: () => void; }) => {
@@ -567,8 +525,6 @@ function PlayPage02() {
 
               <ToastNotifier message={toastMessage} shouldShow={showToast} showF={setShowToast}/>
               <Flex>
-                <button onClick={handleShowToastClick}>Show Toast</button>
-                <Button onClick={handleCreateIssueClick}> Create Issue </Button>
                 <Button onClick={handleFetchIssueClick}> Fetch Issue </Button>
               </Flex>
             </Flex>

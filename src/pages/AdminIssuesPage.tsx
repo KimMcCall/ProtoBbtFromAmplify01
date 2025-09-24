@@ -2,7 +2,7 @@ import { Button, Flex, Radio, RadioGroupField, TextAreaField, TextField } from "
 import PageWrapper from "../components/PageWrapper";
 import './AdminIssuesPage.css'
 import { ChangeEvent, SetStateAction, SyntheticEvent, useState } from "react";
-import { createIssueXP2 } from "../utils/dynamodb_operations";
+import { createIssue } from "../utils/dynamodb_operations";
 import ToastNotifier from "../components/ToastNotifier";
 import { docType_GoogleDoc, docType_Pdf, docType_Unknown, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
 import { selectCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
@@ -15,94 +15,6 @@ import { dbClient } from "../main";
 // Priority: 999000
 // ProURL: {ProxyForNoUrl}
 // ConURL: {ProxyForNoUrl}
-  
-/*
-const innerHandleSubmit = async (
-  event: SyntheticEvent<HTMLFormElement>,
-  toastSetter: { (value: SetStateAction<string>): void; (arg0: string): void; },
-  toastShower: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; }) => {
-  event.preventDefault(); // Prevent default form submission behavior
-  // Handle form data here, e.g., send to an API or update state
-  const form: HTMLFormElement = event.currentTarget
-  const formData = new FormData(form);
-  const formJson = Object.fromEntries(formData.entries());
-  const submittedClaim = formJson.claim;
-  const convertedClaim = submittedClaim.toString();
-  if (convertedClaim.length === 0) {
-    toastSetter('Sorry! You need to fill in the "Claim:" field');
-    toastShower(true);
-    return;
-  }
-  const submittedPriority = formJson.priority;
-  const convertedPriority = submittedPriority.toString();
-  const priority = convertedPriority ? Number(convertedPriority) : getRandomIntegerInRange(1, 1000000);
-  const submittedProUrl = formJson.proUrl;
-  const convertedProUrl = submittedProUrl.toString();
-  const submittedConUrl = formJson.conUrl;
-  const convertedConUrl = submittedConUrl.toString();
-  if (convertedConUrl.length === 0 && convertedProUrl.length ===0) {
-    toastSetter('Sorry! You need to fill in at least one URL');
-    toastShower(true);
-    return;
-  }
-  const submittedProIsPdf = formJson.proIsPdf;
-  let proIsPdf = false;
-  let conIsPdf = false;
-  if (submittedProIsPdf) {
-    const convertedProIsPdf = submittedProIsPdf.toString();
-    proIsPdf = convertedProIsPdf === 'on';
-  }
-  const submittedConIsPdf = formJson.conIsPdf;
-  if (submittedConIsPdf) {
-    const convertedConIsPdf = submittedConIsPdf.toString();
-    conIsPdf = convertedConIsPdf === 'on';
-  }
-
-  Structure of what gets created (and returned from create())
-authorId: ""
-claim: "There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive."
-commentId: ""
-commentKey: "PRO#"
-commentText: ""
-commentType: "PRO"
-conAuthorId: "denier@example.com"
-conIsPdf: true
-conUrl: defaultConUrl
-createdAt: "2025-09-15T06:01:27.289Z"
-createdT: "2025-09-15T06:01:26.304Z"
-issueId: "ISSUE#2025-09-15T06:01:26.304Z"
-makeAvailable: false
-priority: defaultPriority
-proAuthorId: defaultProAuthor
-proIsPdf: false
-proUrl: {ProxyForNoUrl}
-updatedAt: "2025-09-15T06:01:27.289Z"
-updatedT: "2025-09-15T06:01:26.304Z"
-    
-    priority: number,
-    claim: string,
-    proUrl: string,
-    conUrl: string,
-    proIsPdf: boolean,
-    conIsPdf: boolean,
-    proAuthorId: string,
-    conAuthorId: string,
-    makeAvailable: boolean,
-  await createIssue(
-    priority,
-    convertedClaim,
-    convertedProUrl,
-    convertedConUrl,
-    proIsPdf,
-    conIsPdf,
-    defaultProAuthor,
-    defaultConAuthor,
-    false, // makeAvailable.  We'll set this later.
-  );
-  toastSetter('Your issue has been received');
-  toastShower(true);
-};
-*/
 
 interface ImageTilePropsType {
   issueId: string
@@ -188,7 +100,7 @@ const handleControlledNewIssueSubmission2 = async (
   const commentAuthorEmail = currentUserEmail;
 
 
-  await createIssueXP2(
+  await createIssue(
     priority,
     claim,
     proUrl,
