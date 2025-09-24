@@ -151,19 +151,45 @@ export function isRecent(timeString: string, nSecs: number) {
   return now < horizon;
 }
 
-const millisRadix = 1100000000;
+// Dreaming: we want an integral 'time' value that
+//   1) will fit within our DB's notion of a number (< 2^31)
+//   2) won't roll over for a while
+//   3) since we want (2), we'd like it to start around Sept 23, 2025 (as I'm writing this)
+// So we'd like to ridiculously choose a 20-year roll-over period by taking the remainder of now / msInTwetyYears
+// But, unfortunately, that number can get really high, since msInTwetyYears is *way* more than 2^31
+// so we'll bite the bullet and set our radix to guarantee a number that will fit in the DB
+// const ourRadix = 2147483648; // upperlimitOfDbInt: 2^31
+const ourRadix = 2000000000; // just to play it a bit safe
+// Unfortunately, this means that our clock will roll over once every 23 days or so
+// const msPerDay = 1000 * 60 * 60 * 24; // approx 23.14
+// const radixInDays = ourRadix / msPerDay;
+// console.log(`radixInDays: ${radixInDays}`);
+// const isoForClockStart = '2025-09-23T00:00:00.000Z';
+// const epicTimeForClockStart = Date.parse(isoForClockStart);
+// const epicTimeForClockStart = 1758585600000; // 2025-09-23T00:00:00.000Z
+// console.log(`epicTimeForClockStart: ${epicTimeForClockStart}`);
+// const truncatedClockStart = epicTimeForClockStart % ourRadix;
+const truncatedClockStart = 585600000;
+// const now = Date.now();
+// console.log(`now: ${now}`);
+// const truncatedToFitInDb = now % ourRadix;
+// const zeroed = truncatedToFitInDb - truncatedClockStart;
+// console.log(`zeroed: ${zeroed}`);
+
+// const millisRadix = 1100000000;
 // The biggest number our DB can handle is about 2147483648
 // so we'll take the remainder when dividing by something close to half that
 
 export const tallySubmission = (currentUserId: string)=> {
   const epicMillis = Date.now();
-  const dbCompatible = epicMillis % millisRadix;
+  const dbCompatible = epicMillis % ourRadix;
+  const zeroed = dbCompatible - truncatedClockStart;
   const createStruct = {
     userId: currentUserId,
-    timestamp: dbCompatible,
+    timestamp: zeroed,
   };
   dbClient.models.SubmissionTally.create(createStruct).then(
-    (response) => {console.log("response: ", response)}
+    (response) => {console.log("SubmissionTally.create response: ", response)}
   )
 }
 
