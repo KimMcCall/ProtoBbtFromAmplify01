@@ -33,7 +33,7 @@ function LoggedInPage(user: AuthUser) {
       const status: UserStatusType = statusAndUser.status;
       const user = statusAndUser.user;
 
-      let memoContent = `userId: ${userId};\nusername: ${username};`;
+      let memoContent = `userId: ${submittedAuthId};\nusername: ${username};`;
       memoContent += `\nsignInDetails.loginId: ${signInDetails?.loginId};`;
       memoContent += `\nstatus: ${status}`;
 
@@ -62,7 +62,7 @@ function LoggedInPage(user: AuthUser) {
         const initialEmail = signInDetails?.loginId || '';
         const reduxUser: SingleUserInfoType = {
           id: user.id,
-          authId: userId,
+          authId: submittedAuthId,
           name: user.name || '',
           canonicalEmail: cEmail,
           initialEmail: initialEmail,
@@ -145,7 +145,7 @@ function LoggedInPage(user: AuthUser) {
         You're on the LoggedIn Page.
       </h2>
       <div>
-        userId: {userId}
+        submittedAuthId: {submittedAuthId}
       </div>
       <div>
         username: {user.username}

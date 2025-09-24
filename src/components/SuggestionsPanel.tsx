@@ -29,7 +29,6 @@ function SuggestionsPanel() {
     isArchived: false,
     isBanned: false,
     isTrashed: false,
-
   };
 
   const userId = useAppSelector(selectCurrentUserId) || 'fsda;lkjf-sdafhh_BOGUS';
@@ -39,6 +38,8 @@ function SuggestionsPanel() {
       await dbClient.models.Submission.listByUserId({ userId: userId }).then(
       (response) => {
         const submissions = response.data;
+        // console.log(`# submissions: ${submissions.length}`);
+        // submissions.forEach(sub => {console.log(`  sub.id: ${sub.id}`)})
         setFoundSubmissions(submissions || emptyProps);
       }
     )
@@ -71,7 +72,7 @@ function SuggestionsPanel() {
             >
               {
               foundSubmissions.map(sub => (
-                <SuggestionTile key={sub.id} submission={sub} submissionSetter={setSelectionCallback} editorSetter={setShowEditor} />
+                <SuggestionTile niceKey={sub.id} submission={sub} submissionSetter={setSelectionCallback} editorSetter={setShowEditor} />
             ))}
             </Flex>
           </div>

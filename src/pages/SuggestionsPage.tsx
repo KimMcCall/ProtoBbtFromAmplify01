@@ -4,9 +4,9 @@ import SuggestionsPanel from '../components/SuggestionsPanel';
 import { selectCurrentUserId } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
-import { useState } from 'react';
+import { SyntheticEvent, useState } from 'react';
 import ToastNotifier from '../components/ToastNotifier';
-import { tallySubmission } from '../utils/utils';
+import { checkForSubmissionPermission, tallySubmission } from '../utils/utils';
 
 const policyP: React.CSSProperties = {
   fontStyle: 'italic',
@@ -27,38 +27,34 @@ function SuggestionsPage() {
 
   const currentUserId =  useAppSelector(selectCurrentUserId);
 
-  const handleSiteSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
-    handleSubmit(event, 'Site Suggestion');
+  const handleSiteSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
+    const havePermission = await checkForSubmissionPermission(currentUserId);
+    if (!havePermission){
+      return;
+    }
+    await handleSubmitControlled('Site Suggestion', siteTitle, siteText);
     setSiteTitle('');
     setSiteText('');
   };
 
-  const handleTopicSubmit = (event: React.SyntheticEvent<HTMLFormElement>) => {
-    handleSubmit(event, 'Topic Suggestion')
+  const handleTopicSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
+    const havePermission = await checkForSubmissionPermission(currentUserId);
+    if (!havePermission){
+      return;
+    }
+    await handleSubmitControlled('Topic Suggestion', topicTitle, topicText);
     setTopicTitle('');
     setTopicText('');
   };
 
-  const handleSubmit = (event: React.SyntheticEvent<HTMLFormElement>, category: string) => {
-    event.preventDefault(); // Prevent default form submission behavior
-    // Handle form data here, e.g., send to an API or update state
-    const form: HTMLFormElement = event.currentTarget
-    const formData = new FormData(form);
-    const formJson = Object.fromEntries(formData.entries());
-    const submittedTitle = formJson.title;
-    const convertedTitle = submittedTitle.toString();
-    const submittedText = formJson.suggestion;
-    const convertedText = submittedText.toString();
-    if (convertedText.length === 0) {
-      setToastMessage('Sorry! You need to fill in some content for your suggestion');
-      setShouldShowAcceptanceToast(true);
-      return;
-    }
+  const handleSubmitControlled = async (category: string, title: string, text: string) => {
     const structToCreate = {
       userId: currentUserId,
       category: category,
-      title: convertedTitle,
-      content: convertedText,
+      title: title,
+      content: text,
       isRead: false,
       isStarred: false,
       isImportant: false,
@@ -66,11 +62,11 @@ function SuggestionsPage() {
       isBanned: false,
       isTrashed: false,
     };
-    dbClient.models.Submission.create(structToCreate);
+    await dbClient.models.Submission.create(structToCreate);
     setToastMessage('Your suggestion has been received');
     setShouldShowAcceptanceToast(true);
     tallySubmission(currentUserId);
-  };
+  }
 
   return (
     <PageWrapper>
@@ -90,7 +86,7 @@ function SuggestionsPage() {
               Site administrotrs reserve the right to summarily ban anyone who submits
               vulgar, hateful, name-calling, or otherwise abusive content.
             </p>
-            <Flex as="form" direction="column" onSubmit={handleSiteSubmit}>
+            <Flex direction="column">
               <TextField
                 label='Title (optional):'
                 name='title'
@@ -107,7 +103,7 @@ function SuggestionsPage() {
                   setSiteText(e.target.value);
                 }}
                 rows={13} cols={120} />
-              <Button type="submit">Submit Site Suggestion</Button>
+              <Button onClick={handleSiteSubmitControlled}>Submit Site Suggestion</Button>
             </Flex>
           </div>
         </Tabs.Panel>
@@ -124,7 +120,7 @@ function SuggestionsPage() {
               Site administrotrs reserve the right to summarily ban anyone who submits
               vulgar, hateful, name-calling, or otherwise abusive content.
             </p>
-            <Flex as="form" direction="column" onSubmit={handleTopicSubmit}>
+            <Flex direction="column">
               <TextField
                 label='Title (optional):'
                 name='title'
@@ -141,7 +137,7 @@ function SuggestionsPage() {
                   setTopicText(e.target.value);
                 }}
                 rows={13} cols={120} />
-              <Button type="submit">Submit Topic Suggestion</Button>
+              <Button onClick={handleTopicSubmitControlled}>Submit Topic Suggestion</Button>
             </Flex>
           </div>
         </Tabs.Panel>

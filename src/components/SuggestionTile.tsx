@@ -2,14 +2,14 @@ import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissio
 import './SuggestionTile.css';
 
 interface MyProps {
-  key: string
+  niceKey: string
   submission: SubmissionType
   submissionSetter: (submission: SubmissionType) => void
   editorSetter: (b: boolean) => void
 }
 
 const SuggestionTile: React.FC<MyProps> = (props)  => {
-  const { key, submission, submissionSetter, editorSetter } = props;
+  const { niceKey, submission, submissionSetter, editorSetter } = props;
 
   const handleTileClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
@@ -18,7 +18,7 @@ const SuggestionTile: React.FC<MyProps> = (props)  => {
   }
 
   return (
-    <div key={key} className='suggestionTile' onClick={handleTileClick} >
+    <div key={niceKey} className='suggestionTile' onClick={handleTileClick} >
       {submission.content}
     </div>
   );

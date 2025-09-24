@@ -10,7 +10,7 @@ import { CommentBlockType,
   setIssues } from "../features/issues/issues";
 import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
-import { sortAndRepairIssues, structurePerIssue, tallySubmission } from "../utils/utils";
+import { checkForSubmissionPermission, sortAndRepairIssues, structurePerIssue, tallySubmission } from "../utils/utils";
 import { selectCurrentUser, selectCurrentUserId } from "../features/userInfo/userInfoSlice";
 import { addCommentToIssue } from "../utils/dynamodb_operations";
 import CommentSubmissionForm from "../components/CommentSubmissionForm";
@@ -75,12 +75,20 @@ function CommentsPage() {
   }
 
   const createCommentFromSubmission = async (text: string) => {
+    const freeToProceed = await checkForSubmissionPermission(currentUserId);
+    if (!freeToProceed) {
+      return;
+    }
     createCommentWithText(text);
     tallySubmission(currentUserId);
   }
   
   const handleAutoCommentButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    const freeToProceed = await checkForSubmissionPermission(currentUserId);
+    if (!freeToProceed) {
+      return;
+    }
     const commentText = `This is an auto-generated comment that should show up in the dB.`;
     createCommentWithText(commentText);
     tallySubmission(currentUserId);

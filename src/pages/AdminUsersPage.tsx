@@ -8,7 +8,8 @@ import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { selectAllUsers, selectDesgnatedUser, setAllUsers, setDesignatedUserId, setUserIsAdmin, setUserIsBanned, SingleUserInfoType, UserBooleanPropertySettinPairType } from "../features/userInfo/userInfoSlice";
 import { dbClient } from "../main";
 
-const superAdminUserId = '0e5de473-b488-4ede-a3da-c1b79e7a9eb0';
+// const superAdminUserId = '0e5de473-b488-4ede-a3da-c1b79e7a9eb0';
+const superAdminUserId = 'a9262597-4129-4b84-84a3-a0b991eeb052';
 let  allUsers: SingleUserInfoType[] = [];
 let filterString = '';
 let adminsOnly = false;

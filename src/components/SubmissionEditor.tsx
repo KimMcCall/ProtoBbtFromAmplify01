@@ -17,12 +17,12 @@ function SubmissionEditor(props: SubmissionEditorProps) {
 
   const { submission, editorShowOrHide} = props;
 
-  const handleCloseClick = (event: { stopPropagation: () => void; }) => {
+  const handleCancelButtonClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
     editorShowOrHide(false);
   }
 
-  const handleSaveClick = async (event: { stopPropagation: () => void; }) => {
+  const handleSubmitButtonClick = async (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
         const myUpdate =  {
           id: submission.id,
@@ -63,11 +63,11 @@ function SubmissionEditor(props: SubmissionEditorProps) {
             rows={17}/>
         </div>
         <Flex direction='row'>
-          <Button onClick={handleCloseClick}>
-            Close
+          <Button onClick={handleCancelButtonClick}>
+            Cancel
           </Button>
-          <Button onClick={handleSaveClick}>
-            Save
+          <Button onClick={handleSubmitButtonClick}>
+            Submit
           </Button>
         </Flex>
       </Flex>

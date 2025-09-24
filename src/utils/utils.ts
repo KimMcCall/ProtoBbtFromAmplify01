@@ -180,17 +180,80 @@ const truncatedClockStart = 585600000;
 // The biggest number our DB can handle is about 2147483648
 // so we'll take the remainder when dividing by something close to half that
 
-export const tallySubmission = (currentUserId: string)=> {
+export const tallySubmission = (userId: string)=> {
   const epicMillis = Date.now();
   const dbCompatible = epicMillis % ourRadix;
   const zeroed = dbCompatible - truncatedClockStart;
   const createStruct = {
-    userId: currentUserId,
+    userId: userId,
     timestamp: zeroed,
   };
   dbClient.models.SubmissionTally.create(createStruct).then(
-    (response) => {console.log("SubmissionTally.create response: ", response)}
+    (response) => {console.log("SubmissionTally.create() response: ", response)}
   )
+}
+
+const nSubmissionsAllowedPer24Hr = 3;
+const distanceToLookBack = 1000 * 60 * 60 * 24 * nSubmissionsAllowedPer24Hr;
+const submissionCountWarningThreashold = nSubmissionsAllowedPer24Hr - 1;
+
+export const checkForSubmissionPermission = async (userId: string) => {
+  console.log(`at top of checkForSubmissionPermission() calling checkForTrustedPermission()`)
+  const haveTrustedPermission = await checkForTrustedPermission(userId);
+  if (haveTrustedPermission) {
+    console.log(`Allowing Submission because user ${userId} is trusted`)
+    return true;
+  }
+  console.log(`User ${userId} doesn't seem to be Trusted`);
+  const haveTallyPermission = await checkSubmissionTallyForPermission(userId);
+  // Maybe do some other tests
+  console.log(`haveTallyPermission: ${haveTallyPermission}`)
+  return haveTallyPermission;
+}
+
+const checkForTrustedPermission = async (userId: string) => {
+  let retVal = false;
+  const idStruct = {id: userId}
+  const jsonString = JSON.stringify(idStruct);
+  console.log(`at top of checkForTrustedPermission() calling get(${jsonString})`);
+  await dbClient.models.RegisteredUserP2.get(idStruct).then(
+    (response) => {
+      console.log(`in then() clause`)
+      const user = response.data;
+      console.log(`user:`, user);
+      retVal = user?.isTrusted || false;
+    }
+  )
+  return retVal;
+}
+
+const checkSubmissionTallyForPermission = async (userId: string) => {
+  const myArgStruct = { userId: userId};
+  let retVal = false;
+  await dbClient.models.SubmissionTally.byUserId(myArgStruct).then(
+    (result) => {
+      const tallyRecords = result.data;
+      const now = Date.now();
+      const truncatedNow = now % ourRadix;
+      const timeHorizon = truncatedNow - distanceToLookBack;
+      const recentRecords = tallyRecords.filter(record => Date.parse(record.createdAt) > timeHorizon)
+      const nRecents = recentRecords.length;
+      console.log(`nRecents: ${nRecents}`)
+      if (nRecents < submissionCountWarningThreashold) {
+        retVal = true;
+      } else if (nRecents === submissionCountWarningThreashold) {
+        const msg = `To avoid an avalanche, we only permit ${nSubmissionsAllowedPer24Hr} submissions per 24 hour period. Just letting you know that since this is submission number ${nRecents + 1} for you, your next one is likely to be rejected unless you wait a while.`;
+        alert(msg);
+        retVal = true;
+      } else {
+        /* nRecents > submissionCountWarningThreashold */
+        const msg = `To avoid an avalanche, we only permit ${nSubmissionsAllowedPer24Hr} submissions per 24 hour period. Since you're looking to exceed this, I'm afraid we have to reject your submission for now.`;
+        alert(msg);
+        retVal = false;
+      }
+    }
+  )
+  return retVal;
 }
 
 export const computeUserStatus = async (submittedAuthId: string, submittedEmail: string): Promise<UserStatusAndUser> => {
