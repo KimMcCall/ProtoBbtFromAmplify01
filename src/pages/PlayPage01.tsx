@@ -30,7 +30,7 @@ const showDiv = {
 
 const testGet = () => {
   console.log("running test!")
-  dbClient.models.RegisteredUser.get({id: 'fb54f3eb-7967-4b8b-ac82-fd256ff6c598'})
+  dbClient.models.RegisteredUserP2.get({id: 'a9262597-4129-4b84-84a3-a0b991eeb052'})
   .then((response) => {
     const user = response.data;
     // if no match, returns user=null and errors=undefined
@@ -40,7 +40,7 @@ const testGet = () => {
 };
 
 const testSecondaryIndex = () => {
-  dbClient.models.RegisteredUser.listByCanonicalEmail({
+  dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({
     canonicalEmail: 'mccall.kim@gmail.com',
   })
   .then((response) => {
@@ -58,7 +58,7 @@ function PlayPage01() {
   const [ userList, setUserList ] = useState("");
 
   const listSuperAdmins = () => {
-    dbClient.models.RegisteredUser.list()
+    dbClient.models.RegisteredUserP2.list()
     .then((response) => {
       const allUsers = response.data;
       const superUsers = allUsers.filter((user) => user.isSuperAdmin);

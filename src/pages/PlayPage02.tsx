@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Flex, Radio, RadioGroupField, TextField } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
-import { selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin, setCurrentUserAsSuperAdmin, setCurrentUserCanonicalEmail, SingleUserInfoType } from "../features/userInfo/userInfoSlice";
+import { selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin, setCurrentUserAsSuperAdmin, setCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
 import { computeUserStatus, getLatestRowWithIssueId, toCanonicalEmail, UserStatusType } from "../utils/utils";
@@ -90,7 +90,7 @@ function PlayPage02() {
   const checkDbForCorruption = async () => {
     let retVal = 'retVal never got overidden';
     let haveResetRetVal = false;
-    await dbClient.models.RegisteredUser.list().then(
+    await dbClient.models.RegisteredUserP2.list().then(
       (response) => {
         const allRecords = response.data;
         const authIds: string[] = [];
@@ -128,7 +128,7 @@ function PlayPage02() {
     const match = cEmail === expectedCEmail;
     console.log(`match in simpleTest: ${match}`);
     let retVal = -1;
-     await dbClient.models.RegisteredUser.listByCanonicalEmail({ canonicalEmail: cEmail }).then(
+     await dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({ canonicalEmail: cEmail }).then(
       //?
       (response) => {
         const listOfMatchingCanonicals = response.data;
@@ -235,6 +235,9 @@ function PlayPage02() {
 
   const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    console.log("We're short-circuiting the migration, since it's alreaddy happened!");
+    return;
+    /*
     console.log("Now I have to migrate the data");
     dbClient.models.RegisteredUser.list().then(
       (response) => {
@@ -246,8 +249,10 @@ function PlayPage02() {
         });
       }
     )
+     */ 
   }
 
+  /*
   const migrateUser = (oldUser: SingleUserInfoType) => {
     const createStruct = {
       authId: oldUser.authId,
@@ -267,6 +272,7 @@ function PlayPage02() {
     )
 
   }
+  */
 
   const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
   const toastMessage = "This is a long enough text to stretch across multiple lines, I hope";

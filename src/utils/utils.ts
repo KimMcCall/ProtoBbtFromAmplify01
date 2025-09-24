@@ -167,7 +167,7 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
     updatedAt: '',
   };
 
-  await dbClient.models.RegisteredUser.listByAuthId({
+  await dbClient.models.RegisteredUserP2.listByAuthIdXP2({
     authId: submittedAuthId,
   }).then (
     async (response) => {
@@ -243,7 +243,7 @@ const innerComputeStatus = async (email: string): Promise<UserStatus>  => {
   const cEmail = toCanonicalEmail(email);
   // if there's a record with this canonicalEmal, then we're dealing with an alias
   console.log(`2) listing records with canonicalEmail: ${cEmail}`);
-  await dbClient.models.RegisteredUser.listByCanonicalEmail({ canonicalEmail: cEmail }).then(
+  await dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({ canonicalEmail: cEmail }).then(
     (response) => {
       console.log('3) Back from call to listByCanonicalEmail()')
       const usersWithMatchingCanonicalEmail = response.data;

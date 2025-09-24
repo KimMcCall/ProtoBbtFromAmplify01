@@ -96,9 +96,8 @@ function AdminUsersPage() {
   
     useEffect(() => {
       console.log('calling list()');
-      dbClient.models.RegisteredUser.list().then(
+      dbClient.models.RegisteredUserP2.list().then(
         (result) => { 
-          // @ts-expect-error Maybe some fields are missing, but I think it'll be alright
           const allUsers = sortByEmail(result.data);
           dispatch(setAllUsers(allUsers));
           setFilteredUsers(allUsers);
@@ -137,7 +136,7 @@ function AdminUsersPage() {
       isBanned: newState,
     };
     console.log(`setting isBanned: ${newState}`);
-    await dbClient.models.RegisteredUser.update(myUpdate).then(
+    await dbClient.models.RegisteredUserP2.update(myUpdate).then(
       (response) => {
         console.log(' back from update()');
         // @ts-expect-error It will not be undefined if the .update() succeeded!
@@ -165,7 +164,7 @@ function AdminUsersPage() {
       isAdmin: newState,
     };
     console.log(`setting isAdmin: ${newState}`);
-    await dbClient.models.RegisteredUser.update(myUpdate).then(
+    await dbClient.models.RegisteredUserP2.update(myUpdate).then(
       (response) => {
         console.log(' back from update()');
         // @ts-expect-error It will not be undefined if the .update() succeeded!

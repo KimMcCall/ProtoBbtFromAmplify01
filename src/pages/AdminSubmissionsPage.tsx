@@ -390,7 +390,7 @@ function AdminSubmissionsPage() {
           const submissions: SubmissionWithDateType[] = submissionsResponse.data;
           const filteredSubmissions = filterSubmissionsForCategory(submissions, chosenCategory);
           // now build the userId2EmailMap
-          dbClient.models.RegisteredUser.list().then(
+          dbClient.models.RegisteredUserP2.list().then(
             (usersResponse) => {
               const allUsers = usersResponse.data;
               const userId2EmailMap = new Map();

@@ -69,6 +69,7 @@ function LoggedInPage(user: AuthUser) {
           isSuperAdmin: status === 'superAdmin',
           isAdmin: status === 'admin' || status === 'superAdmin',
           isBanned: false,
+          isTrusted: false,
         };
         dispatch(setCurrentUserInfo(reduxUser));
         navigate(newPath, { replace: true });
@@ -107,8 +108,9 @@ function LoggedInPage(user: AuthUser) {
         isSuperAdmin: false,
         isAdmin: false,
         isBanned: false,
+        isTrusted: false,
       };
-      dbClient.models.RegisteredUser.create(stuctToCreate).then((newUser) => {
+      dbClient.models.RegisteredUserP2.create(stuctToCreate).then((newUser) => {
         console.log("Created new RegisteredUser with canonicalEmail", cEmail, newUser);
         const returnedUserRecord = newUser.data;
         if (returnedUserRecord) {
@@ -121,6 +123,7 @@ function LoggedInPage(user: AuthUser) {
             isSuperAdmin: false,
             isAdmin: false,
             isBanned: false,
+            isTrusted: false,
           };
           dispatch(setCurrentUserInfo(newReduxUser));
         }

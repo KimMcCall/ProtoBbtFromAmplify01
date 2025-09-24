@@ -14,6 +14,7 @@ export interface SingleUserInfoType {
   isSuperAdmin: boolean
   isAdmin: boolean
   isBanned: boolean
+  isTrusted: boolean
 }
 
 export interface UserBooleanPropertySettinPairType  {
@@ -37,6 +38,7 @@ const basicInitialUser: SingleUserInfoType = {
   isSuperAdmin: false,
   isAdmin: false,
   isBanned: false,
+  isTrusted: false,
 }
 
 const basicInitialState: UserSliceType = {
@@ -71,6 +73,7 @@ export const userInfoSlice = createSlice({
       state.isAdmin = false;
       state.isSuperAdmin = false;
       state.isBanned = false;
+      state.isTrusted = false;
       */
     },
     setCurrentUserAsAdmin: (state, action: PayloadAction<boolean>) => {
@@ -89,6 +92,11 @@ export const userInfoSlice = createSlice({
       const { userId, value } = action.payload;
       const designatedUser: SingleUserInfoType = getUserWithId(state.allUsers, userId);
       designatedUser.isBanned = value;
+    },
+    setUserIsTrusted: (state, action: PayloadAction<UserBooleanPropertySettinPairType>) => {
+      const { userId, value } = action.payload;
+      const designatedUser: SingleUserInfoType = getUserWithId(state.allUsers, userId);
+      designatedUser.isTrusted = value;
     },
     setUserIsAdmin: (state, action: PayloadAction<UserBooleanPropertySettinPairType>) => {
       const { userId, value } = action.payload;
@@ -114,6 +122,7 @@ export const {
   setCurrentUserAsAdmin,
   setCurrentUserAsSuperAdmin,
   setUserIsBanned,
+  setUserIsTrusted,
   setUserIsAdmin,
   setAllUsers,
   setDesignatedUserId,
@@ -143,6 +152,9 @@ export const selectCurrentUserIsSuperAdmin = (state: RootState) =>
 
 export const selectCurrentUserIsBanned = (state: RootState) =>
   state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.isBanned
+
+export const selectCurrentUserIsTrusted = (state: RootState) =>
+  state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.isTrusted
 
 export const selectCurrentUserIsLoggedIn =  (state: RootState) =>
   state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.canonicalEmail.length > 0
