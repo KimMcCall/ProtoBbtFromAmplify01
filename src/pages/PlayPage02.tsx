@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button, Flex, Radio, RadioGroupField, TextField } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
-import { selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin, setCurrentUserAsSuperAdmin, setCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
+import { selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin, setCurrentUserAsSuperAdmin, setCurrentUserCanonicalEmail, SingleUserInfoType } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
 import { computeUserStatus, getLatestRowWithIssueId, toCanonicalEmail, UserStatusType } from "../utils/utils";
@@ -231,6 +231,48 @@ function PlayPage02() {
   const handleFetchIssueClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
     getIssue("ISSUE#2025-09-14T14:27:17.611Z");
+  }
+
+  const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    console.log("Now I have to migrate the data");
+    dbClient.models.RegisteredUser.list().then(
+      (response) => {
+        // @ts-expect-error It will not be undefined if the .update() succeeded!
+        const oldUsers: SingleUserInfoType[] = response.data;
+        console.log("oldUsers: ", oldUsers)
+        oldUsers.forEach(oldUser => {
+          migrateUser(oldUser);
+        });
+      }
+    )
+  }
+
+  const migrateUser = (oldUser: SingleUserInfoType) => {
+    const createStruct = {
+      authId: oldUser.authId,
+      name: oldUser.name,
+      canonicalEmail: oldUser.canonicalEmail,
+      initialEmail: oldUser.initialEmail,
+      isSuperAdmin: oldUser.isSuperAdmin,
+      isAdmin: oldUser.isAdmin,
+      isBanned: oldUser.isBanned,
+      isTrusted: false,
+    }
+    const models = dbClient.models;
+    const model = dbClient.models.RegisteredUserP2;
+    console.log("models: ", models);
+    console.log("model: ", model);
+    if (!model) {
+      return;
+    }
+    dbClient.models.RegisteredUserP2.create(createStruct).then(
+      (response) => {
+        const newUser = response.data;
+        console.log(newUser);
+      }
+    )
+
   }
 
   const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
@@ -526,6 +568,7 @@ function PlayPage02() {
               <ToastNotifier message={toastMessage} shouldShow={showToast} showF={setShowToast}/>
               <Flex>
                 <Button onClick={handleFetchIssueClick}> Fetch Issue </Button>
+                <Button onClick={handleMigrateDbClick}> Migrate User DB </Button>
               </Flex>
             </Flex>
           )
