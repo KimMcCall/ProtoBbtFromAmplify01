@@ -16,6 +16,7 @@ const schema = a.schema({
       isSuperAdmin: a.boolean().required().default(false),
       isAdmin: a.boolean().required().default(false),
       isBanned: a.boolean().required().default(false),
+      isTrusted: a.boolean().required().default(false),
     })
     .secondaryIndexes((index) => [
       index("authId").queryField("listByAuthId"),
