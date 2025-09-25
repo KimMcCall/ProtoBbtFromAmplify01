@@ -226,6 +226,7 @@ const handleControlledNewIssueSubmission2 = async (
           );
     }
 
+  const showNewIssueUi = activityChoice === 'createNewIssue';
   const showUrlsUi = activityChoice === 'manageUrls';
   const showOtherFieldsUi = activityChoice === 'manageOtherFields';
 
@@ -241,15 +242,106 @@ const handleControlledNewIssueSubmission2 = async (
             onChange={handleActivityRadioButtonChange}
           >
             <div className="activityButtonsDiv">
-              <Radio value="manageUrls">Manage pro/con URLs</Radio>
+              <Radio value="createNewIssue">&nbsp;Create a New Issue</Radio>
             </div>
             <div className="activityButtonsDiv">
-              <Radio value="manageOtherFields">Manage other Issue properties</Radio>
+              <Radio value="manageUrls">&nbsp;Manage pro/con URLs</Radio>
+            </div>
+            <div className="activityButtonsDiv">
+              <Radio value="manageOtherFields">&nbsp;Manage other Issue properties</Radio>
             </div>
           </RadioGroupField>
         </div>
         {
           showUrlsUi &&
+          (
+            <Flex direction="column" className="otherFieldsFormDiv">
+              <Flex direction="row">
+                <div className="issueScrollDiv">{
+                  idClaimPairs.map(pair => (
+                    <IssueTile
+                      key={pair.issueId}
+                      issueId={pair.issueId}
+                      claim={pair.claim}
+                      selectionCallback={handleIssueTileClick} />
+                    ))}
+                </div>
+                <Flex direction="column" gap="0px">
+                  <div className="chosenIssueLabel">
+                    chosen Issue ID:
+                  </div>
+                  <div className="chosenIssue">
+                    <TextField
+                      label=""
+                      name=""
+                      width="240px"
+                      value={issueIdText}
+                      readOnly
+                      />
+                </div>
+                </Flex>
+              </Flex>
+              <Flex direction='row'>
+                <div className="textFieldLabel">
+                  Pro URL: 
+                </div>
+                <Flex direction="column">
+                  <TextField label='' name='proUrl' value={newIssueProUrl} width='800px' onChange={handleProUrlChange}/>
+                  <Flex direction={"row"}>
+                    <RadioGroupField
+                      legend="What kind of document?"
+                      name="proDocTypeChoice"
+                      direction="row"
+                      value={proDocTypeChoice}
+                      onChange={handleProDocTpeChoiceChange}
+                    >
+                      <Radio value={docType_YouTube}>YouTube Video</Radio>
+                      <Radio value={docType_GoogleDoc}>Google Doc</Radio>
+                      <Radio value={docType_Pdf}>Pdf</Radio>
+                      <Radio value={docType_Unknown}>None of the above</Radio>
+                    </RadioGroupField>
+                  </Flex>
+                </Flex>
+              </Flex>
+              <Flex>
+                <div className="textFieldLabel">
+                  Con URL: 
+                </div>
+                <Flex direction="column">
+                  <TextField label='' name='conUrl' value={newIssueConUrl} width='800px' onChange={handleConUrlChange}/>
+                  <RadioGroupField
+                    legend="What kind of document?"
+                    name="conDocTypeChoice"
+                    direction="row"
+                    value={conDocTypeChoice}
+                    onChange={handleConDocTpeChoiceChange}
+                  >
+                    <Radio value={docType_YouTube}>YouTube Video</Radio>
+                    <Radio value={docType_GoogleDoc}>Google Doc</Radio>
+                    <Radio value={docType_Pdf}>Pdf</Radio>
+                    <Radio value={docType_Unknown}>None of the above</Radio>
+                  </RadioGroupField>
+                </Flex>
+              </Flex>
+              <Flex direction="row">
+                <div className="otherFieldsFormButtonsDiv">
+                  <Button className="otherFieldsFormButton" onClick={handleOtherFieldsClearButtonClick}>
+                    Clear
+                  </Button>
+                  <Button className="otherFieldsFormButton" onClick={handleOtherFieldsSubmitButtonClick}>
+                    Submit
+                  </Button>
+                </div>
+              </Flex>
+
+              <div>
+
+              </div>
+            </Flex>
+          )
+        }
+        {
+          showNewIssueUi && 
           (
           <div className='otherFieldsFormRoot'>
             {/*<Flex as="form" direction='column' onSubmit={handleSubmit}>*/}
@@ -276,7 +368,7 @@ const handleControlledNewIssueSubmission2 = async (
                   </div>
                   <Flex direction="column">
                     <TextField label='' name='proUrl' value={newIssueProUrl} width='800px' onChange={handleProUrlChange}/>
-                    <Flex direction={"rpw"}>
+                    <Flex direction={"row"}>
                       <RadioGroupField
                         legend="What kind of document?"
                         name="proDocTypeChoice"
