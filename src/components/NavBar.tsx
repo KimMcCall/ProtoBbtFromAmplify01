@@ -47,11 +47,10 @@ function NavBar() {
         wrap="nowrap"
         gap="1rem"
       >
-        <NavBarItem dest="/" label="Home" />
+        <NavBarItem dest="/" label="Issues" />
         <NavBarItem dest="/mission" label='Mission' />
         <NavBarItem dest="/suggest" label='Suggest' />
         <NavBarItem dest="/finances" label="Finances" />
-        <NavBarItem dest="/donate" label="Donate" />
         {isAdmin && <NavBarItem  dest="/adminUsers"  label="Admin Users" />}
         {isAdmin && <NavBarItem  dest="/adminIssues"  label="Admn Issues" />}
         {isAdmin && <NavBarItem  dest="/adminSubmissions"  label="Admin Texts" />}
