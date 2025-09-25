@@ -41,7 +41,7 @@ function IssueTile(props: ImageTilePropsType) {
 }
 
 function PlayPage02() {
-  const [ savedPath, setSavedPath] = useState("/donate");
+  const [ savedPath, setSavedPath] = useState("/finances");
   const [ userStatus, setUserStatus ] = useState("");
   const [ dbCheckFeedback, setDbCheckFeedback ] = useState("Waiting for czech");
   const [simpleTestResult, setSimpleTestResult] = useState(42)

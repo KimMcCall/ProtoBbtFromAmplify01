@@ -7,7 +7,6 @@ import Todos from "./pages/Todos";
 import SketchPage from "./pages/printing/SketchPage";
 import SuggestionPage from "./pages/SuggestionsPage";
 import MissionPage from './pages/MissionPage';
-import DonatePage from './pages/DonatePage';
 import FinancesPage from './pages/FinancesPage';
 import PlayPage01 from './pages/PlayPage01';
 import PlayPage02 from './pages/PlayPage02';
@@ -47,7 +46,6 @@ function App() {
         />
         <Route path="/mission" element={<MissionPage />} />
         <Route path="/finances" element={<FinancesPage />} />
-        <Route path="/donate" element={<DonatePage />} />
         <Route path="/noProUrl" element={<NoProUrlPage />} />
         <Route path="/noConUrl" element={<NoConUrlPage />} />
         <Route
