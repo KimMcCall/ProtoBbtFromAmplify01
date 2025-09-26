@@ -1,4 +1,4 @@
-import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissionsPage'
+import {SubmissionWithDateType_temp as SubmissionType} from '../pages//AdminSubmissionsPage'
 import './SuggestionTile.css';
 
 interface MyProps {

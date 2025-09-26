@@ -56,7 +56,7 @@ const schema = a.schema({
   Submission: a
     .model({
       userId: a.string(),
-      category: a.string().required(),
+      category: a.string().default(''),
       title: a.string().default(''),
       content: a.string().required(),
       isRead: a.boolean().default(false),

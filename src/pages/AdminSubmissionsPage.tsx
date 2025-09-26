@@ -241,7 +241,7 @@ export type SubmissionWithDateType_temp = {
     id: string;
     userId: string | null;
     // sender: string;
-    category: string;
+    category: string | null;
     title: string | null;
     content: string;
     createdAt: string;
@@ -257,7 +257,7 @@ type SubmissionWithDateAndSenderType = {
     id: string;
     userId: string | null;
     sender: string;
-    category: string;
+    category: string | null;
     title: string | null;
     content: string;
     createdAt: string;
