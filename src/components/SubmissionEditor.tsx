@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Flex, Button, TextField, TextAreaField } from '@aws-amplify/ui-react';
-import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissionsPage'
+import {SubmissionWithDateType_temp as SubmissionType} from '../pages//AdminSubmissionsPage'
 import { dbClient } from "../main";
 import './SubmissionEditor.css'
 
@@ -38,7 +38,7 @@ function SubmissionEditor(props: SubmissionEditorProps) {
   }
 
   useEffect(() => {
-    setTitle(submission.title);
+    setTitle(submission.title || '');
     setContent(submission.content);
   }, [submission.title, submission.content]);
 
