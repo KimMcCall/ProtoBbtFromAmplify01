@@ -11,7 +11,6 @@ function DoBetterPage() {
   const stance = shouldShowPro ? 'pro' : 'con';
   console.log(`With queryStringStance='${queryStringStance}' we have whatStanceShouldBe: '${stance}'`);
 
-  const littleStringToInsert = shouldShowPro ? "PRO" : "CON";
 
   return (
     <PageWrapper>
