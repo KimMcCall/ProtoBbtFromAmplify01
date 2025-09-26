@@ -1,2 +1,56 @@
 /* AdminUrlSubmissions.css */
 
+.urlSubmissionListDiv {
+  height: 400px;
+  border: 1px black solid;
+}
+
+.tileDiv {
+  padding: 4px;
+}
+
+.tileEmailDiv {
+  width: 140px;
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+}
+
+.tileClaimDiv {
+  width: 400px;;
+  white-space: nowrap; /* Prevents text from wrapping to the next line */
+  overflow: hidden;    /* Hides any overflowing content */
+  text-overflow: ellipsis; /* Displays an ellipsis (...) for truncated text */
+}
+
+.filterTextField {
+  width: 360px;
+  height: 24px;
+  font-size: 100%;
+  margin-bottom: 20px;
+  margin-top: -20px;
+}
+
+.justUnreviewedCheckboxDiv {
+  margin-left: 12px;
+  margin-top: 42px;
+  margin-bottom: 0px;
+}
+
+.issueIdTextField {
+  width: 310px;
+  height: 24px;
+  font-size: 100%;
+  margin-bottom: 12px;
+}
+
+.submitterCommentDiv {
+  width: 400px;
+  height: 400px;
+  border: 1px black solid;
+  overflow: auto;
+  padding: 4px;
+  margin-bottom: 12px;
+  margin-top: 32px;
+}
+

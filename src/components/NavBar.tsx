@@ -41,6 +41,7 @@ function NavBar() {
   return (
     <div className='bar'>
       <Flex
+        className='navBarFlex'
         direction="column"
         justifyContent="space-between"
         alignItems="left"
@@ -51,6 +52,7 @@ function NavBar() {
         <NavBarItem dest="/mission" label='Mission' />
         <NavBarItem dest="/suggest" label='Suggest' />
         <NavBarItem dest="/finances" label="Finances" />
+        {isAdmin && <NavBarItem  dest="/admin"  label="Admin" />}
         {isAdmin && <NavBarItem  dest="/adminUsers"  label="Admin Users" />}
         {isAdmin && <NavBarItem  dest="/adminIssues"  label="Admn Issues" />}
         {isAdmin && <NavBarItem  dest="/adminSubmissions"  label="Admin Texts" />}

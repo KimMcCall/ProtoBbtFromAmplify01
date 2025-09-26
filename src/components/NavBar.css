@@ -7,6 +7,10 @@
   background-color: #d0e0ff;
 }
 
+.navBarFlex {
+  width: 140px;
+}
+
 .navBarItem {
   padding-left: 4px;
   cursor: pointer;
