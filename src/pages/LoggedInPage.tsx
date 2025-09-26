@@ -109,6 +109,7 @@ function LoggedInPage(user: AuthUser) {
         isAdmin: false,
         isBanned: false,
         isTrusted: false,
+        withholdWelcome: false,
       };
       dbClient.models.RegisteredUserP2.create(stuctToCreate).then((newUser) => {
         console.log("Created new RegisteredUser with canonicalEmail", cEmail, newUser);
