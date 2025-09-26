@@ -26,6 +26,7 @@ const schema = a.schema({
       isAdmin: a.boolean().required().default(false),
       isBanned: a.boolean().required().default(false),
       isTrusted: a.boolean().required().default(false),
+      withholdWelcome: a.boolean().required().default(false),
     })
     .secondaryIndexes((index) => [
       index("authId").queryField("listByAuthIdXP2"),
@@ -103,7 +104,7 @@ const schema = a.schema({
   Todo: a
     .model({
       content: a.string(),
-      isDone: a.boolean().default(false), // Example of adding a new boolean field
+      isDone: a.boolean().default(false),
     })
     .authorization((allow) => [allow.publicApiKey()]),
   SubmissionTally: a
@@ -115,6 +116,23 @@ const schema = a.schema({
     .secondaryIndexes((index) => [
       index("userId").queryField("byUserId"),
     ])
+    .authorization((allow) => [allow.publicApiKey()]),
+  UrlSubmission: a
+    .model({
+      issueId: a.string().required(),
+      docType: a.string().required(),
+      url: a.string().required(),
+      stance: a.string().required(),
+      submitterId: a.string().required(),
+      submitterEmail: a.string().required(),
+      submitterComment: a.string().required(),
+      issueClaim: a.string().required(),
+      reviewed: a.boolean().default(false),
+      accepted: a.boolean().default(false),
+      yucky: a.boolean().default(false),
+      causedBanning: a.boolean().default(false),
+      lifePhase: a.string().required().default('Just Received'),
+    })
     .authorization((allow) => [allow.publicApiKey()]),
 });
 
