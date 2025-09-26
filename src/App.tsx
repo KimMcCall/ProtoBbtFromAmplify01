@@ -27,6 +27,7 @@ import NoProUrlPage from './pages/NoProUrlPage';
 import NoConUrlPage from './pages/NoConUrlPage';
 import AdminUrlSubmissions from './pages/AdminUrlSubmissions';
 import AdminPage from './pages/AdminPage';
+import DoBetterPage from './pages/DoBetterPage';
 
 function App() {
   return (
@@ -43,6 +44,14 @@ function App() {
           element={
             <ProtectedRoute>
               <SuggestionPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/doBetter"
+          element={
+            <ProtectedRoute>
+              <DoBetterPage />
             </ProtectedRoute>
           }
         />

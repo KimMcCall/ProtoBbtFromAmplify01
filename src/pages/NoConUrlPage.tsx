@@ -20,6 +20,12 @@ function NoConUrlPage() {
     navigate(`${baseUrl}?stance=con`)
   }
 
+  const handleDoBetterClick = (event: SyntheticEvent<HTMLButtonElement>) =>{
+    event.stopPropagation();
+    const baseUrl = '/doBetter';
+    navigate(`${baseUrl}?stance=con`)
+  }
+
   return (
     <PageWrapper>
       <div className="noConUrlRoot">
@@ -43,7 +49,7 @@ below for an explanation of the procedure
             <Button onClick={handleShowCommentsClick}>
               Show Comments
             </Button>
-            <Button>
+            <Button onClick={handleDoBetterClick}>
               Let Me Try To Do Better!
             </Button>
           </Flex>

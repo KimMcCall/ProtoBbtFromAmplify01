@@ -20,6 +20,12 @@ function NoProUrlPage() {
         navigate(`${baseUrl}?stance=pro`)
   }
 
+  const handleDoBetterClick = (event: SyntheticEvent<HTMLButtonElement>) =>{
+    event.stopPropagation();
+    const baseUrl = '/doBetter';
+    navigate(`${baseUrl}?stance=pro`)
+  }
+
   return (
     <PageWrapper>
       <div className="noProUrlRoot">
@@ -47,7 +53,7 @@ claim made on the home page.
             <Button onClick={handleShowCommentsClick}>
               Show Comments
             </Button>
-            <Button>
+            <Button onClick={handleDoBetterClick}>
               Let Me Try To Do Better!
             </Button>
           </Flex>

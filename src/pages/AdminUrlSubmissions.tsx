@@ -42,7 +42,6 @@ function AdminSubmissionsPage() {
     setFilterText(event.target.value)
   }
 
-  const testMsg = 'Some general claim that goes on and on and on and on and on and on for a while';
   const testComment = 'This is what the submitter wrote about their submission. It might be long or short.';
   function MyTile(props: MyTileProps) {
     const { niceKey, submitterEmail, issueId, issueClaim} = props;
