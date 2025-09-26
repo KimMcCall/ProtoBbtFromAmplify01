@@ -77,6 +77,7 @@ function AdminSubmissionsPage() {
     () => {
       const fetchData = async () => {
         await dbClient.models.UrlSubmission.list().then((response) => {
+          console.log('Fetched UrlSubmissions:', response.data);
           setAllSubmissions(response.data);
         }).catch((error) => {
           console.error('Error fetching UrlSubmissions:', error);
@@ -121,11 +122,15 @@ function AdminSubmissionsPage() {
                 </div>
               </Flex>
               <div className='urlSubmissionListDiv'>
+                {
+                  allSubmissions.map((submission) => (
                 <MyTile
-                  niceKey='123'
-                  submitterEmail='info@example.com'
-                  issueId='ISSUE#2025-09-15T06:01:26.304Z'
-                  issueClaim={testMsg} />
+                  niceKey={submission.id}
+                  submitterEmail={submission.submitterEmail}
+                  issueId={submission.issueId}
+                  issueClaim={submission.issueClaim} />
+                  ))
+                }
               </div>
             </Flex>
               <Flex direction='column'>
