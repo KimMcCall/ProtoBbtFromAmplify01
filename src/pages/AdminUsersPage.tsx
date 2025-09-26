@@ -99,9 +99,14 @@ function AdminUsersPage() {
       console.log('calling list()');
       dbClient.models.RegisteredUserP2.list().then(
         (result) => { 
-          const allUsers = sortByEmail(result.data);
-          dispatch(setAllUsers(allUsers));
-          setFilteredUsers(allUsers);
+          const allUsers = result.data;
+          console.log(`# allUsers: ${allUsers.length}`)
+          console.log(allUsers);
+          allUsers.forEach(user => console.log(user))
+          const sortedUsers = sortByEmail(allUsers);
+          sortedUsers.forEach(user => console.log(user))
+          dispatch(setAllUsers(sortedUsers));
+          setFilteredUsers(sortedUsers);
           enableButtons(false);
           filterString = searchBarText;
         }

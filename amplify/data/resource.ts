@@ -26,7 +26,7 @@ const schema = a.schema({
       isAdmin: a.boolean().required().default(false),
       isBanned: a.boolean().required().default(false),
       isTrusted: a.boolean().required().default(false),
-      withholdWelcome: a.boolean().required().default(false),
+      withholdWelcome: a.boolean().default(false),
     })
     .secondaryIndexes((index) => [
       index("authId").queryField("listByAuthIdXP2"),
