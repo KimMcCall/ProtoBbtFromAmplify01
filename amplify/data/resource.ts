@@ -33,31 +33,6 @@ const schema = a.schema({
       index("canonicalEmail").queryField("listByCanonicalEmailXP2"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
-  IssueP1: a
-    .model({
-      issueId: a.string().required(),
-      priority: a.integer(),
-      claim: a.string().required(),
-      proUrl: a.string().required(),
-      conUrl: a.string().required(),
-      proIsPdf: a.boolean().required().default(false),
-      conIsPdf: a.boolean().required().default(false),
-      proAuthorId: a.string().required(), // Who contributed the proUrl
-      conAuthorId: a.string().required(), // Who contributed the conUrl
-      makeAvailable: a.boolean().required().default(false),
-      commentKey: a.string().required(), // Composite sort key: "PRO#{commentId}" or "CON#{commentId}"
-      /* The 'required()' call in the following line is commented out because it
-         generated an error Property 'required' does not exist on type 'EnumType<readonly
-      */
-      commentType: a.enum(['PRO', 'CON'])/*.required()*/, // Helper field to identify comment type
-      commentId: a.string().required(), // Unique identifier for the comment
-      commentText: a.string().required(),
-      authorId: a.string().required(),  // author of comment
-      createdT: a.datetime().required(),
-      updatedT: a.datetime().required(),
-    })
-    .identifier(['issueId', 'commentKey']) // Composite primary key
-    .authorization((allow) => [allow.publicApiKey()]),
   IssueP2: a
     .model({
       issueId: a.string().required(),
@@ -82,14 +57,14 @@ const schema = a.schema({
     .model({
       userId: a.string(),
       category: a.string().required(),
-      title: a.string().required().default(''),
+      title: a.string().default(''),
       content: a.string().required(),
-      isRead: a.boolean().required().default(false),
-      isStarred: a.boolean().required().default(false),
-      isImportant: a.boolean().required().default(false),
-      isArchived: a.boolean().required().default(false),
-      isBanned: a.boolean().required().default(false),
-      isTrashed: a.boolean().required().default(false),
+      isRead: a.boolean().default(false),
+      isStarred: a.boolean().default(false),
+      isImportant: a.boolean().default(false),
+      isArchived: a.boolean().default(false),
+      isBanned: a.boolean().default(false),
+      isTrashed: a.boolean().default(false),
     })
     .secondaryIndexes((index) => [
       index("userId").queryField("listByUserId"),

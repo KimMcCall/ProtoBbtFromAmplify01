@@ -10,7 +10,6 @@ import { computeUserStatus, getLatestRowWithIssueId, toCanonicalEmail, UserStatu
 import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
 import { sendEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
-import { getIssue } from "../utils/comment_operations";
 import './PlayPage02.css';
 import { IssueType, selectAllIssues } from "../features/issues/issues";
 
@@ -226,11 +225,6 @@ function PlayPage02() {
       newValue = 'random@example.com';
     }
     dispatch(setCurrentUserCanonicalEmail(newValue))
-  }
-
-  const handleFetchIssueClick = (event: { stopPropagation: () => void; }) => {
-    event.stopPropagation();
-    getIssue("ISSUE#2025-09-14T14:27:17.611Z");
   }
 
   const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
@@ -566,7 +560,6 @@ function PlayPage02() {
 
               <ToastNotifier message={toastMessage} shouldShow={showToast} showF={setShowToast}/>
               <Flex>
-                <Button onClick={handleFetchIssueClick}> Fetch Issue </Button>
                 <Button onClick={handleMigrateDbClick}> Migrate User DB </Button>
               </Flex>
             </Flex>

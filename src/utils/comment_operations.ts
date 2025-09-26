@@ -1,5 +1,9 @@
 import { dbClient } from '../main';
 
+
+/* This function, which uses IssueP1, is not called anywhere
+   so we're commenting it out
+
 // Query all comments for an issue (both PRO and CON)
 async function getIssue(issueId: string) {
   try {
@@ -29,6 +33,10 @@ async function getIssue(issueId: string) {
     throw error;
   }
 }
+*/
+
+/* This function, which uses IssueP1, is not called anywhere
+   so we're commenting it out
 
 // Query all comments for an issue (both PRO and CON)
 async function getAllComments(issueId: string) {
@@ -54,11 +62,12 @@ async function getAllComments(issueId: string) {
     throw error;
   }
 }
+*/
 
 // Update a specific comment
 async function updateComment(issueId: string, commentKey: string, newText: string) {
   try {
-    const result = await dbClient.models.IssueP1.update({
+    const result = await dbClient.models.IssueP2.update({
       issueId: issueId,
       commentKey: commentKey,
       commentText: newText,
@@ -90,8 +99,8 @@ async function deleteComment(issueId: string, commentKey: string) {
 }
 
 export {
-  getIssue,
-  getAllComments,
+  // getIssue,
+  // getAllComments,
   updateComment,
   deleteComment
 };
