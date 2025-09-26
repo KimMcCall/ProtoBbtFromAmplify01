@@ -1,7 +1,7 @@
 import { Button, Flex, Radio, RadioGroupField, TextAreaField, TextField } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import './AdminIssuesPage.css'
-import { ChangeEvent, SetStateAction, SyntheticEvent, useState } from "react";
+import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { createIssue } from "../utils/dynamodb_operations";
 import ToastNotifier from "../components/ToastNotifier";
 import { docType_GoogleDoc, docType_Pdf, docType_Unknown, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
@@ -71,49 +71,41 @@ function AdminIssuesPage() {
   console.log(`# idClaimPairs: ${idClaimPairs.length}`)
   console.log(idClaimPairs);
 
-  const handleControlledNewIssueSubmission = (event: SyntheticEvent<HTMLButtonElement>) => {
-    handleControlledNewIssueSubmission2(event, setToastMessage, setShouldShowAcceptanceToast)
+  const handleNewIssueSubmission = async (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    const priority = Number(newIssuePriority);
+    const claim = newIssueClaim;
+    if (!claim) {
+      setToastMessage('You need to type a claim into the "Claim:" box');
+      setShouldShowAcceptanceToast(true);
+      return;
+    }
+    // GATOR: guard against setting a pro/conDocType when ther's no pro/conUrl
+    const profferedProUrl = newIssueProUrl;
+    const profferedConUrl = newIssueConUrl;
+    const proUrl = profferedProUrl || PlaceholderForEmptyUrl;
+    const conUrl = profferedConUrl || PlaceholderForEmptyUrl;
+    const proDocType = proDocTypeChoice;
+    const conDocType = conDocTypeChoice;
+    const proAuthorEmail = '';
+    const conAuthorEmail = '';
+    const commentAuthorEmail = currentUserEmail;
+
+
+    await createIssue(
+      priority,
+      claim,
+      proUrl,
+      conUrl,
+      proDocType,
+      conDocType,
+      proAuthorEmail,
+      conAuthorEmail,
+      commentAuthorEmail,
+    );
+    setToastMessage('Your issue has been received');
+    setShouldShowAcceptanceToast(true);
   };
-
-const handleControlledNewIssueSubmission2 = async (
-    event: SyntheticEvent<HTMLButtonElement>,
-    toastSetter: { (value: SetStateAction<string>): void; (arg0: string): void; },
-    toastShower: { (value: SetStateAction<boolean>): void; (arg0: boolean): void; }) => {
-  event.stopPropagation();
-  const priority = Number(newIssuePriority);
-  const claim = newIssueClaim;
-  if (!claim) {
-    alert('You need to type a claim into the "Claim:" box');
-    toastSetter('You need to type a claim into the "Claim:" box');
-    toastShower(true);
-    return;
-  }
-  // GATOR: guard against setting a pro/conDocType when ther's no pro/conUrl
-  const profferedProUrl = newIssueProUrl;
-  const profferedConUrl = newIssueConUrl;
-  const proUrl = profferedProUrl || PlaceholderForEmptyUrl;
-  const conUrl = profferedConUrl || PlaceholderForEmptyUrl;
-  const proDocType = proDocTypeChoice;
-  const conDocType = conDocTypeChoice;
-  const proAuthorEmail = '';
-  const conAuthorEmail = '';
-  const commentAuthorEmail = currentUserEmail;
-
-
-  await createIssue(
-    priority,
-    claim,
-    proUrl,
-    conUrl,
-    proDocType,
-    conDocType,
-    proAuthorEmail,
-    conAuthorEmail,
-    commentAuthorEmail,
-  );
-  toastSetter('Your issue has been received');
-  toastShower(true);
-}
 
   const handleClaimChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
     event.stopPropagation();
@@ -405,7 +397,7 @@ const handleControlledNewIssueSubmission2 = async (
                   </Flex>
                 </Flex>
               </Flex>
-              <Button width='200px' onClick={handleControlledNewIssueSubmission}>
+              <Button width='200px' onClick={handleNewIssueSubmission}>
                 Create New Issue
               </Button>
             </Flex>
