@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { Flex } from '@aws-amplify/ui-react';
 import SubmissionEditor from './SubmissionEditor';
 import SuggestionTile from './SuggestionTile';
-import {SubmissionWithDateType_temp as SubmissionType} from '../pages/AdminSubmissionsPage'
+import {SubmissionWithDateType as SubmissionType} from '../pages/AdminSubmissionsPage'
 import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
 import { selectCurrentUserId } from '../features/userInfo/userInfoSlice';

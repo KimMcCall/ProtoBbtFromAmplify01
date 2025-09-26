@@ -193,7 +193,7 @@ function CategoryButton (props: CategoryButtonPropType) {
   );
 }
 
-const filterSubmissionsForCategory = (submissions: SubmissionWithDateType_temp[], category: string) => {
+const filterSubmissionsForCategory = (submissions: SubmissionWithDateType[], category: string) => {
 if (category === "inbox") {
     const filtered = submissions.filter((sub) => sub && !sub.isArchived && !sub.isBanned && !sub.isTrashed);
     return filtered;
@@ -226,7 +226,7 @@ export type SubmissionWithDateType = {
     userId: string | null;
     // sender: string;
     category: string;
-    title: string;
+    title: string | null;
     content: string;
     createdAt: string;
     isRead: boolean;
@@ -237,36 +237,20 @@ export type SubmissionWithDateType = {
     isTrashed: boolean;
 }
 
-export type SubmissionWithDateType_temp = {
-    id: string;
-    userId: string | null;
-    // sender: string;
-    category: string | null;
-    title: string | null;
-    content: string;
-    createdAt: string;
-    isRead: boolean | null;
-    isImportant: boolean | null;
-    isStarred: boolean | null;
-    isArchived: boolean | null;
-    isBanned: boolean | null;
-    isTrashed: boolean | null;
-}
-
 type SubmissionWithDateAndSenderType = {
     id: string;
     userId: string | null;
     sender: string;
-    category: string | null;
+    category: string;
     title: string | null;
     content: string;
     createdAt: string;
-    isRead: boolean | null;
-    isImportant: boolean | null;
-    isStarred: boolean | null;
-    isArchived: boolean | null;
-    isBanned: boolean | null;
-    isTrashed: boolean | null;
+    isRead: boolean;
+    isImportant: boolean;
+    isStarred: boolean;
+    isArchived: boolean;
+    isBanned: boolean;
+    isTrashed: boolean;
 }
 
 const emptySubmissions: SubmissionWithDateAndSenderType[] = [];
@@ -403,7 +387,7 @@ function AdminSubmissionsPage() {
       const fetchSubmissions = async () => {
         await dbClient.models.Submission.list().then(
         (submissionsResponse) => {
-          const submissions: SubmissionWithDateType_temp[] = submissionsResponse.data;
+          const submissions: SubmissionWithDateType[] = submissionsResponse.data;
           const filteredSubmissions = filterSubmissionsForCategory(submissions, chosenCategory);
           // now build the userId2EmailMap
           dbClient.models.RegisteredUserP2.list().then(

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { Flex, Button, TextField, TextAreaField } from '@aws-amplify/ui-react';
-import {SubmissionWithDateType_temp as SubmissionType} from '../pages//AdminSubmissionsPage'
+import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissionsPage'
 import { dbClient } from "../main";
 import './SubmissionEditor.css'
 

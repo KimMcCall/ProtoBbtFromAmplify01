@@ -56,15 +56,15 @@ const schema = a.schema({
   Submission: a
     .model({
       userId: a.string(),
-      category: a.string().default(''),
+      category: a.string().required().default(''),
       title: a.string().default(''),
       content: a.string().required(),
-      isRead: a.boolean().default(false),
-      isStarred: a.boolean().default(false),
-      isImportant: a.boolean().default(false),
-      isArchived: a.boolean().default(false),
-      isBanned: a.boolean().default(false),
-      isTrashed: a.boolean().default(false),
+      isRead: a.boolean().required().default(false),
+      isStarred: a.boolean().required().default(false),
+      isImportant: a.boolean().required().default(false),
+      isArchived: a.boolean().required().default(false),
+      isBanned: a.boolean().required().default(false),
+      isTrashed: a.boolean().required().default(false),
     })
     .secondaryIndexes((index) => [
       index("userId").queryField("listByUserId"),
