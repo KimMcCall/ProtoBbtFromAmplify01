@@ -1,3 +1,5 @@
+// SuggestionsPanel.tsx
+
 import { useEffect, useState, useMemo } from 'react';
 import { Flex } from '@aws-amplify/ui-react';
 import SubmissionEditor from './SubmissionEditor';
