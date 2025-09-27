@@ -8,7 +8,7 @@ import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
 import { computeUserStatus, getLatestRowWithIssueId, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
-import { sendEmail } from "../features/email/Email";
+import { sendClientEmail, sendServerEmail } from "../features/email/Email";
 import ToastNotifier from "../components/ToastNotifier";
 import './PlayPage02.css';
 import { IssueType, selectAllIssues } from "../features/issues/issues";
@@ -45,7 +45,7 @@ function PlayPage02() {
   const [ dbCheckFeedback, setDbCheckFeedback ] = useState("Waiting for czech");
   const [simpleTestResult, setSimpleTestResult] = useState(42)
   const [showToast, setShowToast] = useState(false);
-  const [uiChoice, setUIChoice] = useState('uiMgmt');
+  const [uiChoice, setUIChoice] = useState('randomUI');
   const [activityChoice, setActivityChoice] = useState('manageOtherFields');
   const [issueIdText, setIssueIdText] = useState('');
   const [claimText, setClaimText] = useState('');
@@ -209,12 +209,21 @@ function PlayPage02() {
     dispatch(cacheAbortedCallFrom('person@example.com'))
   }
 
-  const testEmail = async () => {
+  const testServerEmail = async () => {
     // toAddressess: string[]; subject: string; body: string
     const toAddresses = ['mccall.kim@gmail.com'];
     const subject = 'testSubject';
     const body= '<p>Some <b>lovely</b> message</>';
-    sendEmail({toAddresses, subject, body } );
+    sendServerEmail({toAddresses, subject, body } );
+  }
+
+  const testClientEmail = async (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    // toAddressess: string[]; subject: string; body: string
+    const toAddresses = ['mccall.kim@gmail.com'];
+    const subject = 'testSubject';
+    const body= '<p>Some <b>lovely</b> message</>';
+    sendClientEmail({toAddresses, subject, body } );
   }
 
   const isLoggedIn = useAppSelector(selectCurrentUserIsLoggedIn)
@@ -555,12 +564,13 @@ function PlayPage02() {
                 />
                 <button onClick={() => resetLoginTracking()}>Reset Login Tracking</button>
                 <button onClick={() => addToLoginTracking()}>Add to Login Tracking</button>
-                <button onClick={() => testEmail()}>Test Email</button>
               </Flex>
 
               <ToastNotifier message={toastMessage} shouldShow={showToast} showF={setShowToast}/>
               <Flex>
                 <Button onClick={handleMigrateDbClick}> Migrate User DB </Button>
+                <button onClick={testServerEmail}>Test Server Email</button>
+                <button onClick={testClientEmail}>Test Client Email</button>
               </Flex>
             </Flex>
           )
