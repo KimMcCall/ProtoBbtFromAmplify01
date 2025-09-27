@@ -1,1 +1,22 @@
 /* DoBetterPage.css */
+
+.doBetterRadioGroupDiv {
+  margin-top: 24px;
+  margin-left: 12px;
+}
+
+.doBetterUrlAndButtonsDiv {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.doBetterButtonsRow {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: row;
+}
+
+.doBetterRadioDiv {
+  margin-left: 12px;
+}

@@ -1,6 +1,6 @@
 import { Button, Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
-import { useEffect } from "react";
+import { SyntheticEvent, useEffect } from "react";
 import './IssuePage.css'
 import { docType_GoogleDoc, docType_Pdf, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
 import { selectDisplayBlockForCurrentIssue } from "../features/issues/issues";
@@ -67,6 +67,12 @@ function IssuePage() {
     navigate('/noConUrl', {replace: true})
   }
   })
+  
+  const handleDoBetterClick = (event: SyntheticEvent<HTMLButtonElement>) =>{
+    event.stopPropagation();
+    const baseUrl = '/doBetter';
+    navigate(`${baseUrl}?stance=${stance}`)
+  }
 
   return (
     <PageWrapper>
@@ -160,6 +166,9 @@ function IssuePage() {
             </Button>
             <Button onClick={handleShowCommentsClick}>
               Show Comments
+            </Button>
+            <Button onClick={handleDoBetterClick}>
+              Let Me Try To Do Better!
             </Button>
           </Flex>
         </div>
