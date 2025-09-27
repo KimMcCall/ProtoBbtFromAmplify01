@@ -95,7 +95,7 @@ function DoBetterPage() {
       docType: showYouTubeUi ? 'YouTube' : showGoogleDocUi ? 'GoogleDoc' : 'Pdf',
       url: specifiedUrl,
       stance: stance,
-      submitterComment: 'Submitted via DoBetterPage. Should come from a yet-to-be textarea input.',
+      submitterComment: 'Submitted via DoBetterPage. Should come from a yet-to-be-implemented textarea input.',
       reviewed: false,
       accepted: false,
       yucky: false,

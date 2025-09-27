@@ -9,6 +9,7 @@ import { dbClient } from '../main';
 interface MyTileProps {
   niceKey: string
   submitterEmail: string
+  submitterComment: string
   issueId: string
   issueClaim: string
 }
@@ -30,9 +31,10 @@ interface UrlSubmission {
   lifePhase: string
 }
 
-function AdminSubmissionsPage() {
+function AdminUrlSubmissionsPage() {
   const [filterText, setFilterText] = useState('');
   const [chosenIssueId, setChosenIssueId] = useState('');
+  const [chosenUserComment, setChosenUserComment] = useState('');
   const [justUnreviewed, setJustUnreviewed] = useState(false);
   const [allSubmissions, setAllSubmissions] = useState<UrlSubmission[]>([]);
   const [displaySubmission, setDisplaySubmission] = useState(false);
@@ -42,14 +44,14 @@ function AdminSubmissionsPage() {
     setFilterText(event.target.value)
   }
 
-  const testComment = 'This is what the submitter wrote about their submission. It might be long or short.';
   function MyTile(props: MyTileProps) {
-    const { niceKey, submitterEmail, issueId, issueClaim} = props;
+    const { niceKey, submitterEmail, submitterComment, issueId, issueClaim} = props;
 
     const handleTileClick = (event: SyntheticEvent<HTMLDivElement>) => {
       event.stopPropagation();
       console.log('Tile clicked:', event);
-      setChosenIssueId(issueId)
+      setChosenIssueId(issueId);
+      setChosenUserComment(submitterComment);
     }
 
     return(
@@ -124,8 +126,10 @@ function AdminSubmissionsPage() {
                 {
                   allSubmissions.map((submission) => (
                 <MyTile
+                  key={submission.id}
                   niceKey={submission.id}
                   submitterEmail={submission.submitterEmail}
+                  submitterComment={submission.submitterComment}
                   issueId={submission.issueId}
                   issueClaim={submission.issueClaim} />
                   ))
@@ -145,7 +149,7 @@ function AdminSubmissionsPage() {
                     readOnly={true}
                   />
                   <div className='submitterCommentDiv'>
-                    {testComment}
+                    {chosenUserComment}
                   </div>
                 </div>
               </Flex>
@@ -169,4 +173,4 @@ function AdminSubmissionsPage() {
   )
 }
 
-export default AdminSubmissionsPage;
+export default AdminUrlSubmissionsPage;
