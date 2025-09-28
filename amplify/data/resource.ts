@@ -107,6 +107,7 @@ const schema = a.schema({
       yucky: a.boolean().required().default(false),
       causedBanning: a.boolean().required().default(false),
       lifePhase: a.string().required().default('Just Received'),
+      isCloistered: a.boolean().default(false),
     })
     .authorization((allow) => [allow.publicApiKey()]),
 });
