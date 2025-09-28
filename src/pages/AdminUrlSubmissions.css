@@ -54,3 +54,28 @@
   margin-top: 32px;
 }
 
+.previewDiv {
+  border: 1px black solid;
+}
+
+.previewButtonColumn {
+  margin-top: 12px;
+  margin-left: 12px;
+}
+
+.actionButtonsDiv {
+  margin-top: 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 48px;
+}
+
+.banCheckboxDiv {
+  margin-bottom: 0px;
+  margin-left: 20px;
+}
+
+.adminNotesDiv {
+  margin-top: 8px;
+}

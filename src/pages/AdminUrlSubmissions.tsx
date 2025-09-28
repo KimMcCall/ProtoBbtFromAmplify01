@@ -1,17 +1,18 @@
 // AdminUrlSubmissions.txt
 
-import { Button, CheckboxField, Flex, TextField } from '@aws-amplify/ui-react';
+import { Button, CheckboxField, Flex, TextAreaField, TextField } from '@aws-amplify/ui-react';
 import PageWrapper from '../components/PageWrapper'
 import './AdminUrlSubmissions.css'
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, MouseEvent, useEffect, useState } from 'react';
 import { dbClient } from '../main';
+import { getLatestRowWithIssueId } from '../utils/utils';
 
 interface MyTileProps {
   niceKey: string
-  submitterEmail: string
-  submitterComment: string
-  issueId: string
-  issueClaim: string
+  submission: UrlSubmission
+}
+interface PreviewUiProps {
+  submission: UrlSubmission
 }
 
 interface UrlSubmission {
@@ -34,10 +35,11 @@ interface UrlSubmission {
 function AdminUrlSubmissionsPage() {
   const [filterText, setFilterText] = useState('');
   const [chosenIssueId, setChosenIssueId] = useState('');
+  const [chosenSubmission , setChosenSubmission] = useState<UrlSubmission | null>(null);
   const [chosenUserComment, setChosenUserComment] = useState('');
-  const [justUnreviewed, setJustUnreviewed] = useState(false);
   const [allSubmissions, setAllSubmissions] = useState<UrlSubmission[]>([]);
-  const [displaySubmission, setDisplaySubmission] = useState(false);
+  const [previewSubmission, setPreviewSubmission] = useState(false);
+  const [banUser, setBanUser] = useState(false);
 
   const handleFilterTextChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
@@ -45,11 +47,16 @@ function AdminUrlSubmissionsPage() {
   }
 
   function MyTile(props: MyTileProps) {
-    const { niceKey, submitterEmail, submitterComment, issueId, issueClaim} = props;
+    // const { niceKey, submitterEmail, submitterComment, issueId, issueClaim} = props;
+    const { niceKey, submission } = props;
+    const { submitterEmail, submitterComment, issueId, issueClaim, stance} = submission;
 
     const handleTileClick = (event: SyntheticEvent<HTMLDivElement>) => {
       event.stopPropagation();
       console.log('Tile clicked:', event);
+      setChosenSubmission(submission);
+      console.log('chosenSubmission.docType: ', chosenSubmission?.docType );
+      console.log('submission.docType: ', submission?.docType );
       setChosenIssueId(issueId);
       setChosenUserComment(submitterComment);
     }
@@ -57,6 +64,9 @@ function AdminUrlSubmissionsPage() {
     return(
       <div key={niceKey} className='tileDiv' onClick={handleTileClick}>
         <Flex direction='row'>
+          <div className='tileStanceDiv'>
+            {stance}
+          </div>
           <div className='tileEmailDiv'>
             {submitterEmail}
           </div>
@@ -68,10 +78,14 @@ function AdminUrlSubmissionsPage() {
     )
   }
 
-  function handleDisplaySubmissionButtonClicked(event: SyntheticEvent<HTMLButtonElement>) {
+  function handlePreviewSubmissionButtonClicked(event: SyntheticEvent<HTMLButtonElement>) {
     event.stopPropagation();
+    if (!chosenIssueId) {
+      alert('Please select a submission from the list first.');
+      return;
+    }
     console.log('should display submission w/ issueId:', chosenIssueId);
-    setDisplaySubmission(true);
+    setPreviewSubmission(true);
   }
 
   useEffect(
@@ -89,7 +103,185 @@ function AdminUrlSubmissionsPage() {
     []
   );
 
-  const showChooseUri = !displaySubmission;
+  const showChooseUri = !previewSubmission;
+
+  function handleBanStateChange(event: ChangeEvent<HTMLInputElement>): void {
+    event.stopPropagation();
+    // This would typically update some state variable to track if the ban checkbox is checked
+    const shouldBanUser = event.target.checked;
+    console.log('Ban state changed:', shouldBanUser);
+    // You might want to add state management here, for example:
+    setBanUser(shouldBanUser);
+  }
+
+  function Preview(props: PreviewUiProps) {
+    const { submission } = props;
+
+    const handleAcceptSubmission = async (event: MouseEvent<HTMLButtonElement>) => {
+      event.stopPropagation();
+      if (!submission) return;
+
+      try {
+        // First update the submission to mark it as reviewed and accepted
+      const updatedSubmission = await dbClient.models.UrlSubmission.update({
+        id: submission.id,
+        reviewed: true,
+        accepted: true,
+        lifePhase: 'Accepted',
+      });
+      
+      // Next update the Issue to set the proUrl or conUrl based on the stance
+      const latestRow = await getLatestRowWithIssueId(submission.issueId);
+      const latestCommentKey = latestRow ? latestRow.commentKey : 'NoCommentsYet_8e1f3b3c-2f4e-4f7a-9d5a-1c2e3f4g5h6i';
+      console.log('Latest commentKey for issueId', submission.issueId, 'is:', latestCommentKey);
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const issueUpdateData: any = {};
+      issueUpdateData.updatedT = new Date().toISOString();
+      if (submission.stance === 'pro') {
+        issueUpdateData.proUrl = submission.url;
+        issueUpdateData.proDocType = submission.docType;
+        issueUpdateData.proAuthorEmail = submission.submitterEmail;
+      } else if (submission.stance === 'con') {
+        issueUpdateData.conUrl = submission.url;
+        issueUpdateData.conDocType = submission.docType;
+        issueUpdateData.conAuthorEmail = submission.submitterEmail;
+      }
+      const issueUpdateDataWithIssueId = {
+        issueId: submission.issueId,
+        // I think CoPilot is wrong here:  Required field, but not used in update
+        commentKey: latestCommentKey, // Placeholder, should be the latest comment key
+        ...issueUpdateData,
+      };
+      console.log('Updating Issue with data:', issueUpdateDataWithIssueId);
+
+      await dbClient.models.IssueP2.update(issueUpdateDataWithIssueId)
+
+      // If banUser is true, you would also update the user's status here
+      console.log('Submission accepted:', updatedSubmission);
+      alert('Submission accepted');
+      
+      // Reset states
+      setPreviewSubmission(false);
+      setChosenSubmission(null);
+      setBanUser(false);
+      
+      // Refresh the submissions list
+      const response = await dbClient.models.UrlSubmission.list();
+      setAllSubmissions(response.data);
+      } catch (error) {
+      console.error('Error accepting submission:', error);
+      alert('Failed to accept submission');
+      }
+    }
+
+    async function handleRejectSubmission(event: MouseEvent<HTMLButtonElement>) {
+      event.stopPropagation();
+      if (!submission) return;
+
+      try {
+          // First update the submission to mark it as reviewed and accepted
+          await dbClient.models.UrlSubmission.update({
+            id: submission.id,
+            reviewed: true,
+            accepted: false,
+            causedBanning: banUser,
+            lifePhase: 'Rejected',
+          });
+
+          // Then, if user is being bnned, update the entry in the RegisteredUser table
+          if (banUser) {
+
+              const result = await dbClient.models.RegisteredUserP2.update({
+                id: submission.submitterId,
+                isBanned: true,
+              });
+              const bannedUser = result.data;
+              console.log('User banned:', bannedUser);
+            }
+        } catch (error) {
+          console.error('Error accepting submission:', error);
+          alert('Failed to accept submission');
+        }
+    }
+
+    return (
+          <Flex className='previewAndButtonsFlex' direction='column' justifyContent='space-between' gap='0px'>
+            <Flex className='previewAndFeedbackFlex' direction='row' justifyContent='space-between' gap='1px'>
+              <div className='previewDiv'>
+
+        {
+          submission.docType === 'YouTube' && 
+          (
+                <iframe
+                  src={submission.url}
+                  width= "850px"
+                  height="660px"
+                  >
+                  </iframe>
+          )
+        }
+
+        {
+          submission.docType === 'GoogleDoc' && 
+          (
+                <iframe
+                  src={submission.url}
+                  width= "850px"
+                  height="660px"
+                  >
+                  </iframe>
+          )
+        }
+
+        {
+          (submission.docType === 'Pdf' || submission.docType === 'PDF') && 
+          (
+                <embed
+                  src={submission.url}
+                  type="application/pdf"
+                  width="832px"
+                  height="642px" />
+          )
+        }
+
+              </div>
+              <Flex className='previewButtonColumn' direction={'column'}>
+                <Button onClick={() => {setPreviewSubmission(false); setChosenSubmission(null);}}>Back to List</Button>
+                <div className='actionButtonsDiv'>
+                  <Button onClick={handleAcceptSubmission}>Accept</Button>
+                  <Button onClick={handleRejectSubmission}>Reject</Button>
+                  <div className='banCheckboxDiv'>
+                    <CheckboxField
+                      label='and ban submitter'
+                      labelPosition='end'
+                      name='markReviewed'
+                      // checked={justUnreviewed}
+                      onChange={handleBanStateChange}
+                    />
+                  </div>
+                </div>
+                <Button>Mark Reviewed</Button>
+                <Button>Mark Yucky</Button> 
+              </Flex>
+            </Flex>
+            <Flex className='feedbackFlex' direction='row' justifyContent='space-between' gap='1px'>
+              <div className='feedbackDiv'>
+                <TextAreaField
+                  label=''
+                  direction="column"
+                  placeholder='Enter feedback here...'
+                  rows={3}
+                  cols={93}
+                />
+              </div>
+              <div className='adminNotesDiv'>
+                <Button>Send Feedback</Button>
+              </div>
+            </Flex>
+          </Flex>
+    );
+  }
 
   return (
     <PageWrapper>
@@ -117,8 +309,8 @@ function AdminUrlSubmissionsPage() {
                     label='Just Unreviewed'
                     labelPosition='end'
                     name='justUnreviewed'
-                    checked={justUnreviewed}
-                    onChange={(e) => {setJustUnreviewed(e.target.checked)}}
+                    checked={banUser}
+                    onChange={handleBanStateChange}
                   />
                 </div>
               </Flex>
@@ -128,10 +320,8 @@ function AdminUrlSubmissionsPage() {
                 <MyTile
                   key={submission.id}
                   niceKey={submission.id}
-                  submitterEmail={submission.submitterEmail}
-                  submitterComment={submission.submitterComment}
-                  issueId={submission.issueId}
-                  issueClaim={submission.issueClaim} />
+                  submission={submission}
+                  />
                   ))
                 }
               </div>
@@ -155,16 +345,17 @@ function AdminUrlSubmissionsPage() {
               </Flex>
           </Flex>
           <div className='displayUiButtonDiv'>
-            <Button onClick={handleDisplaySubmissionButtonClicked}>Display Submission</Button>
+            <Button onClick={handlePreviewSubmissionButtonClicked}>Preview Submission</Button>
           </div>
         </div>
       )
     }
     {
-       displaySubmission &&
+       previewSubmission && chosenSubmission &&
       (
-        // UI to display if displaySubmission is true
-        <p>This is displayed when displaySubmission is true.</p>
+        <div className='adminSubmissionsPageRoot'>
+          <Preview submission={chosenSubmission} />
+        </div>
       )
     }
 
