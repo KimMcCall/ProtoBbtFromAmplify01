@@ -68,8 +68,6 @@ function AdminIssuesPage() {
     const struct = { issueId: issueId, claim: claim };
     idClaimPairs = idClaimPairs.concat(struct);
   });
-  console.log(`# idClaimPairs: ${idClaimPairs.length}`)
-  console.log(idClaimPairs);
 
   const handleNewIssueSubmission = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
