@@ -77,6 +77,7 @@ function IssuePage() {
   return (
     <PageWrapper>
       <div>
+        <div className="embedDiv">
         {
           showPro && proIsPdf && 
           (
@@ -159,6 +160,7 @@ function IssuePage() {
               </iframe>
           )
         }
+        </div>
         <div className="showContrastingViewButtonDiv">
           <Flex>
             <Button onClick={handleShowContrastingViewClick}>

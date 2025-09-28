@@ -3,3 +3,9 @@
 .showContrastingViewButtonDiv {
   margin-top: 20px;
 }
+
+.embedDiv {
+  border: 1px black solid;
+  margin-top: 2px;
+  width: 860px;
+} 
