@@ -61,8 +61,21 @@ function AdminUrlSubmissionsPage() {
       setChosenUserComment(submitterComment);
     }
 
+    let className = 'tileDiv';
+    if (submission.lifePhase === 'Under Review') {
+      className = 'tileDiv-underReview';
+    } else if (submission.lifePhase === 'Accepted') {
+      className = 'tileDiv-accepted';
+    } else if (submission.lifePhase === 'Rejected') {
+      className = 'tileDiv-rejected';
+    } else if (submission.lifePhase === 'Just Received') {
+      className = 'tileDiv-new';
+    } else if (submission.reviewed) {
+      className = 'tileDiv-reviewed';
+    }
+
     return(
-      <div key={niceKey} className='tileDiv' onClick={handleTileClick}>
+      <div key={niceKey} className={className} onClick={handleTileClick}>
         <Flex direction='row'>
           <div className='tileStanceDiv'>
             {stance}

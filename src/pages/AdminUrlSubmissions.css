@@ -6,7 +6,38 @@
 }
 
 .tileDiv {
-  padding: 4px;
+  padding: 6px;
+  border-bottom: 1px solid blue;
+}
+
+.tileDiv-new {
+  padding: 6px;
+  font-weight: bold;
+  border-bottom: 1px solid blue;
+}
+
+.tileDiv-underReview {
+  padding: 6px;
+  border-bottom: 1px solid blue;
+}
+
+.tileDiv-reviewed {
+  padding: 6px;
+  border-bottom: 1px solid blue;
+}
+
+.tileDiv-accepted {
+  padding: 6px;
+  text-decoration: line-through;
+  color: gold;
+  font-weight: bold;
+  border-bottom: 1px solid blue;
+}
+
+.tileDiv-rejected {
+  padding: 6px;
+  text-decoration: line-through;
+  border-bottom: 1px solid blue;
 }
 
 .tileEmailDiv {
