@@ -1,6 +1,6 @@
 // DoBetterPage.tsx
 
-import { Button, Flex, Radio, RadioGroupField, TextField } from '@aws-amplify/ui-react';
+import { Button, Flex, Radio, RadioGroupField, TextAreaField, TextField } from '@aws-amplify/ui-react';
 import PageWrapper from '../components/PageWrapper';
 import './DoBetterPage.css'
 import { ChangeEvent, useState } from 'react';
@@ -12,6 +12,7 @@ import { selectCurrentIssue } from '../features/issues/issues';
 function DoBetterPage() {
   const [instructionsUiChoice, setInstructionsUiChoice] = useState('NoChoice');
   const [specifiedUrl, setSpecifiedUrl] = useState('');
+  const [explanationText, setExplanationText] = useState('');
 
   const urlParams = new URLSearchParams(window.location.search);
   const queryStringStance = urlParams.get('stance'); // Should return "pro", "con", or null (which we hope to avoid)
@@ -38,6 +39,10 @@ function DoBetterPage() {
       console.log(`In handleInstructionsUiChange, choice is now: ${choice}`);
       setInstructionsUiChoice(choice);
     }
+
+  function handleExplanationChange(event: ChangeEvent<HTMLTextAreaElement>): void {
+    setExplanationText(event.target.value);
+  }
 
   function handleUrlChange(event: ChangeEvent<HTMLInputElement>): void {
     setSpecifiedUrl(event.target.value);
@@ -95,7 +100,7 @@ function DoBetterPage() {
       docType: showYouTubeUi ? 'YouTube' : showGoogleDocUi ? 'GoogleDoc' : 'Pdf',
       url: specifiedUrl,
       stance: stance,
-      submitterComment: 'Submitted via DoBetterPage. Should come from a yet-to-be-implemented textarea input.',
+      submitterComment: explanationText || 'NoComment_b8d50a00-4b4e-4a36-be4c-b7e1cecd5cc1',
       reviewed: false,
       accepted: false,
       yucky: false,
@@ -157,6 +162,13 @@ function DoBetterPage() {
             <div className='doBetterTextDiv'>
               It should also contain a textfield for the appropriate URL and buttons to Submit, Clear, and Return to Intro</div>
             <div className='doBetterUrlAndButtonsDiv'>
+              <TextAreaField
+                label="Explanation:"
+                value={explanationText}
+                onChange={handleExplanationChange}
+                rows={7}
+                placeholder="Please provide a brief explanation of why you believe this document does a better job than the current one."
+              />
               <TextField label="Google Doc URL" value={specifiedUrl} onChange={handleUrlChange} />
               <Flex className='doBetterButtonsRow' gap="1rem">
                 <Button onClick={handleSubmit}>Submit</Button>
