@@ -62,17 +62,18 @@ function AdminUrlSubmissionsPage() {
     }
 
     let className = 'tileDiv';
-    if (submission.lifePhase === 'Under Review') {
+    if (submission.lifePhase === 'Just Received') {
+      className = 'tileDiv-new';
+    } else if (submission.lifePhase === 'Under Review') {
       className = 'tileDiv-underReview';
     } else if (submission.lifePhase === 'Accepted') {
       className = 'tileDiv-accepted';
     } else if (submission.lifePhase === 'Rejected') {
       className = 'tileDiv-rejected';
-    } else if (submission.lifePhase === 'Just Received') {
-      className = 'tileDiv-new';
     } else if (submission.reviewed) {
       className = 'tileDiv-reviewed';
     }
+    // I think there's one more reasonable lifePhase value, namely 'Reviewed' 
 
     return(
       <div key={niceKey} className={className} onClick={handleTileClick}>
