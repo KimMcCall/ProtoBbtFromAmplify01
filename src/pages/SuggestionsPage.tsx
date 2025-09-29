@@ -30,7 +30,7 @@ function SuggestionsPage() {
   const handleSiteSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
     const havePermission = await checkForSubmissionPermission(currentUserId);
-    if (!havePermission){
+    if (!havePermission.granted){
       return;
     }
     await handleSubmitControlled('Site Suggestion', siteTitle, siteText);
@@ -41,7 +41,7 @@ function SuggestionsPage() {
   const handleTopicSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
     const havePermission = await checkForSubmissionPermission(currentUserId);
-    if (!havePermission){
+    if (!havePermission.granted){
       return;
     }
     await handleSubmitControlled('Topic Suggestion', topicTitle, topicText);

@@ -8,6 +8,7 @@ import { dbClient } from '../main';
 import { useAppSelector } from '../app/hooks';
 import { selectCurrentUserCanonicalEmail, selectCurrentUserId } from '../features/userInfo/userInfoSlice';
 import { selectCurrentIssue } from '../features/issues/issues';
+import { checkForPermissionOnGoogleDoc } from '../utils/utils';
 
 function DoBetterPage() {
   const [instructionsUiChoice, setInstructionsUiChoice] = useState('NoChoice');
@@ -83,14 +84,24 @@ function DoBetterPage() {
       return;
     }
 
+    let permissionQResult = { granted: true, explanation: '' };
+
+    if (showGoogleDocUi) {
+      permissionQResult = await checkForPermissionOnGoogleDoc(currentUserId, specifiedUrl);
+      if (!permissionQResult.granted) {
+        alert(`Google Doc permission denied: ${permissionQResult.explanation}`);
+        return;
+      }
+    }
+
     // PDF File URL validation
     // if (showPdfUi && !specifiedUrl.includes('.pdf')) {
     if (showPdfUi && !specifiedUrl.includes('docs.google.com/document')) {
-      alert('We only accept PDF files that have been uploaded to Google Docs');
+      alert('For now, we only accept PDF files that have been uploaded to Google Docs');
       return;
     }
+    
 
-    // TODO: Here you would typically send the URL to your backend
     console.log('Submitting URL:', specifiedUrl);
     await dbClient.models.UrlSubmission.create({
       issueId: currentIssue?.issueId || 'NoIssueId_8e2f3c1e-2d3b-4f7a-9f4e-1c2d3e4f5a6b',
@@ -106,6 +117,7 @@ function DoBetterPage() {
       yucky: false,
       causedBanning: false,
       lifePhase: 'Just Received',
+      isCloistered: false,
     });
     alert('Thank you for your submission!');
     handleReturnToIntro();

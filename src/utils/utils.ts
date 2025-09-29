@@ -34,6 +34,11 @@ type UserStatusAndUser = {
   user: DBUser
 }
 
+type PermissionQueryResult = {
+  granted: boolean
+  explanation: string
+}
+
 export type UserStatusType = UserStatus;
 
 export function getRandomIntegerInRange(min: number, max: number) {
@@ -41,6 +46,37 @@ export function getRandomIntegerInRange(min: number, max: number) {
   max = Math.floor(max); // Ensure max is an integer
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+export const checkForPermissionOnGoogleDoc = async (currentUserId: string, url: string) => {
+  // Simulate a permission check
+  console.log(`Checking Google Doc permission for user ${currentUserId} on document ${url}`);
+  const policyConformance: PermissionQueryResult = await checkForPolicyConformance(url);
+  if (!policyConformance.granted) {
+    console.warn(`Permission denied: ${policyConformance.explanation}`);
+    alert(`Permission denied: ${policyConformance.explanation}`);
+    return policyConformance;
+  }
+
+  const trustedConformance: PermissionQueryResult = await checkForTrustedPermission(currentUserId);
+  if (!trustedConformance.granted) {
+    const tallyConformance: PermissionQueryResult = await checkSubmissionTallyForPermission(currentUserId);
+    if (!tallyConformance.granted) {
+      console.warn(`Permission denied: ${tallyConformance.explanation}`);
+      alert(`Permission denied: ${tallyConformance.explanation}`);
+      return tallyConformance;
+    }
+  }
+
+  return { granted: true, explanation: "It's all good!" };  
+};
+
+const checkForPolicyConformance = async (url: string): Promise<PermissionQueryResult> => {
+  // Simulate a policy conformance check
+  console.log(`Checking policy conformance for document ${url}`);
+  // Should make a call to Google API to check for abusiveness, etc
+  // For now, we'll just approve all URLs
+  return { granted: true, explanation: "Policy conformance check passed." };
+};
 
 export const getLatestRowWithIssueId = async (issueId: string) => {
   const myFilter = {
@@ -198,11 +234,11 @@ const distanceToLookBack = 1000 * 60 * 60 * 24 * nSubmissionsAllowedPer24Hr;
 const submissionCountWarningThreashold = nSubmissionsAllowedPer24Hr - 1;
 
 export const checkForSubmissionPermission = async (userId: string) => {
-  console.log(`at top of checkForSubmissionPermission() calling checkForTrustedPermission()`)
   const haveTrustedPermission = await checkForTrustedPermission(userId);
-  if (haveTrustedPermission) {
+  if (haveTrustedPermission.granted) {
     console.log(`Allowing Submission because user ${userId} is trusted`)
-    return true;
+
+    return {granted: true, explanation: "User is trusted."};
   }
   console.log(`User ${userId} doesn't seem to be Trusted`);
   const haveTallyPermission = await checkSubmissionTallyForPermission(userId);
@@ -212,7 +248,7 @@ export const checkForSubmissionPermission = async (userId: string) => {
 }
 
 const checkForTrustedPermission = async (userId: string) => {
-  let retVal = false;
+  const retVal: PermissionQueryResult = { granted: false, explanation: 'No trusted permission' };
   const idStruct = {id: userId}
   const jsonString = JSON.stringify(idStruct);
   console.log(`at top of checkForTrustedPermission() calling get(${jsonString})`);
@@ -220,16 +256,21 @@ const checkForTrustedPermission = async (userId: string) => {
     (response) => {
       console.log(`in then() clause`)
       const user = response.data;
-      console.log(`user:`, user);
-      retVal = user?.isTrusted || false;
+      const isTrusted = user?.isTrusted || user?.isAdmin || user?.isSuperAdmin || false;
+      if (isTrusted) {
+        retVal.granted = true;
+        retVal.explanation = "User is trusted.";
+      } else {
+        retVal.explanation = "User is not trusted.";
+      }
     }
   )
   return retVal;
 }
 
 const checkSubmissionTallyForPermission = async (userId: string) => {
+  const retVal: PermissionQueryResult = { granted: false, explanation: 'No trusted permission' };
   const myArgStruct = { userId: userId};
-  let retVal = false;
   await dbClient.models.SubmissionTally.byUserId(myArgStruct).then(
     (result) => {
       const tallyRecords = result.data;
@@ -240,16 +281,19 @@ const checkSubmissionTallyForPermission = async (userId: string) => {
       const nRecents = recentRecords.length;
       console.log(`nRecents: ${nRecents}`)
       if (nRecents < submissionCountWarningThreashold) {
-        retVal = true;
+        retVal.granted = true;
+        retVal.explanation = "User has not exceeded submission limit.";
       } else if (nRecents === submissionCountWarningThreashold) {
         const msg = `To avoid an avalanche, we only permit ${nSubmissionsAllowedPer24Hr} submissions per 24 hour period. Just letting you know that since this is submission number ${nRecents + 1} for you, your next one is likely to be rejected unless you wait a while.`;
         alert(msg);
-        retVal = true;
+        retVal.granted = true;
+        retVal.explanation = "User is at submission limit.";
       } else {
         /* nRecents > submissionCountWarningThreashold */
         const msg = `To avoid an avalanche, we only permit ${nSubmissionsAllowedPer24Hr} submissions per 24 hour period. Since you're looking to exceed this, I'm afraid we have to reject your submission for now.`;
         alert(msg);
-        retVal = false;
+        retVal.granted = false;
+        retVal.explanation = "User has exceeded submission limit.";
       }
     }
   )

@@ -76,7 +76,7 @@ function CommentsPage() {
 
   const createCommentFromSubmission = async (text: string) => {
     const freeToProceed = await checkForSubmissionPermission(currentUserId);
-    if (!freeToProceed) {
+    if (!freeToProceed.granted) {
       return;
     }
     createCommentWithText(text);
@@ -86,7 +86,7 @@ function CommentsPage() {
   const handleAutoCommentButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     const freeToProceed = await checkForSubmissionPermission(currentUserId);
-    if (!freeToProceed) {
+    if (!freeToProceed.granted) {
       return;
     }
     const commentText = `This is an auto-generated comment that should show up in the dB.`;
