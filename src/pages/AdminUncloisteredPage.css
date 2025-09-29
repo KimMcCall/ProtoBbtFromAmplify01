@@ -1,0 +1,26 @@
+/* AdminUncloisteredPage.css */
+
+.adminUncloisteredListDiv {
+  height: 380px;
+  width: 800px;
+  border: 1px black solid;
+  overflow-y: auto; /* Enables vertical scrolling */
+  margin-top: 12px;
+}
+
+.myTile {
+  border: 1px black solid;
+  padding: 8px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+.adminUncloisteredUrlsDiv {
+  width: 800px;
+}
+
+.adminCloisteredUrlsDiv {
+  width: 800px;
+}
+
+

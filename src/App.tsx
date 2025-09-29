@@ -28,6 +28,7 @@ import NoConUrlPage from './pages/NoConUrlPage';
 import AdminUrlSubmissions from './pages/AdminUrlSubmissions';
 import AdminPage from './pages/AdminPage';
 import DoBetterPage from './pages/DoBetterPage';
+import AdminUncloisteredPage from './pages/AdminUncloisteredPage';
 
 function App() {
   return (
@@ -96,6 +97,14 @@ function App() {
           element={
             <ProtectedRoute>
               <AdminSubmissions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/adminUncloistered"
+          element={
+            <ProtectedRoute>
+              <AdminUncloisteredPage />
             </ProtectedRoute>
           }
         />

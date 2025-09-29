@@ -103,12 +103,14 @@ function DoBetterPage() {
     
 
     console.log('Submitting URL:', specifiedUrl);
+    const docType = showYouTubeUi ? 'YouTube' : showGoogleDocUi ? 'GoogleDoc' : 'Pdf';
+    // Submit the URL to the database
     await dbClient.models.UrlSubmission.create({
       issueId: currentIssue?.issueId || 'NoIssueId_8e2f3c1e-2d3b-4f7a-9f4e-1c2d3e4f5a6b',
       issueClaim: currentIssue?.claim || 'NoClaim_9f8e7d6c-5b4a-3c2d-1e0f-9a8b7c6d5e4f',
       submitterEmail: currentUserEmail,
       submitterId: currentUserId,
-      docType: showYouTubeUi ? 'YouTube' : showGoogleDocUi ? 'GoogleDoc' : 'Pdf',
+      docType: docType,
       url: specifiedUrl,
       stance: stance,
       submitterComment: explanationText || 'NoComment_b8d50a00-4b4e-4a36-be4c-b7e1cecd5cc1',
@@ -179,7 +181,7 @@ function DoBetterPage() {
                 value={explanationText}
                 onChange={handleExplanationChange}
                 rows={7}
-                placeholder="Please provide a brief explanation of why you believe this document does a better job than the current one."
+                placeholder="Please provide a brief explanation of why you believe this document does a better job than the current one...."
               />
               <TextField label="Google Doc URL" value={specifiedUrl} onChange={handleUrlChange} />
               <Flex className='doBetterButtonsRow' gap="1rem">
