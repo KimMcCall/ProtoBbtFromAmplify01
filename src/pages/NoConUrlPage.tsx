@@ -31,7 +31,7 @@ function NoConUrlPage() {
       <div className="noConUrlRoot">
         <Flex direction="column">
           <div className="noConUrlTextsDiv">
-            <h1>Default 'Con' Page</h1>
+            <h1>Placeholder 'Con' Page</h1>
             <div className="noConUrlTextDiv">
               This is your default image before we’ve accepted a video or PDF
 file to (respectfully) counter the claim made on the home page.
@@ -39,6 +39,16 @@ file to (respectfully) counter the claim made on the home page.
             <div className="noConUrlTextDiv">If you’re interested in creating a video or PDF document to refute
 that claim, please click on the “Let Me Try To Do Better!” button
 below for an explanation of the procedure
+            </div>
+            <ul>
+              <li>We prefer YouTube videos or Google Docs, but we can also accept PDFs</li>
+              <li>We insist that you be respectful and avoid inflammatory language</li>
+              <li>We ask that you avoid conspiracy theories and stick to verifiable facts</li>
+              <li>We ask that you avoid plagiarism and cite your sources</li>
+            </ul>
+            <div className="noConUrlTextDiv">
+              If you just want to see our view of the issue or read comments from other users,
+please click on the appropriate button below.
             </div>
 
           </div>
