@@ -25,11 +25,11 @@ function AdminPage() {
       <div className='adminPageRootDiv'>
           <h2>General Admin Page</h2>
         <Flex direction="row" justifyContent="center" alignItems="center" gap="1rem" wrap="wrap">
-          <Button onClick={handleAdminUrlsButtonClick}>
-            Admin URL Submissions
-          </Button>
           <Button onClick={handleAdminUncloisteredButtonClick}>
             Admin Uncloistered
+          </Button>
+          <Button onClick={handleAdminUrlsButtonClick}>
+            Admin URL Submissions
           </Button>
         </Flex>
         {/* Add your admin page content here */}
