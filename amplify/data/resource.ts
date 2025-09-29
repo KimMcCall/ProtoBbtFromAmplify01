@@ -55,7 +55,7 @@ const schema = a.schema({
     .authorization((allow) => [allow.publicApiKey()]),
   Submission: a
     .model({
-      userId: a.string(),
+      userId: a.string().required(),
       category: a.string().required().default(''),
       title: a.string().default(''),
       content: a.string().required(),
