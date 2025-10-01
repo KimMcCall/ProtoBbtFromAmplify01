@@ -1,11 +1,11 @@
 /* AdminUncloisteredPage.css */
 
 .adminUncloisteredListDiv {
-  height: 380px;
+  height: 410px;
   width: 800px;
   border: 1px black solid;
   overflow-y: auto; /* Enables vertical scrolling */
-  margin-top: 12px;
+  margin-top: -16px;
 }
 
 .myTile {
@@ -21,6 +21,24 @@
 
 .adminCloisteredUrlsDiv {
   width: 800px;
+}
+
+.adminUncloisteredInstructionsDiv {
+  height: 592px;
+  width: 220px;
+  border: 1px black solid;
+  margin-top: 16px; /* Aligns with the list div */
+  padding: 4px;
+}
+
+.instuctionsTitle {
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.instructionsStepDiv {
+  margin-bottom: 16px;
 }
 
 

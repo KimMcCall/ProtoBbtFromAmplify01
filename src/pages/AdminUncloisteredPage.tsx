@@ -109,35 +109,66 @@ function AdminUncloisteredPage() {
     <PageWrapper>
       <div>
         <Flex direction="column" justifyContent="center" alignItems="center" gap="1rem" wrap="wrap">
-          <h2>Admin Uncloistered Page</h2>
-          <div className="adminUncloisteredListDiv">
-            {
-            uncloisteredUrlSubmissions.map(sub => (
-              <MyTile
-                key={sub.id}
-                niceKey={sub.id}
-                submission={sub}
-              />
-          ))}
-          </div>
-          <div className="adminUncloisteredUrlsDiv">
-            <TextField
-              label='Uncloistered URL:'
-              value={chosenUncloisteredUrl}
-              readOnly
-            />
-          </div>
-          <div className="adminCloisteredUrlsDiv">
-            <TextField
-              label='Cloistered URL:'
-              value={cloisteredUrl}
-              onChange={(e) => setCloisteredUrl(e.target.value)}
-            /> {/* TextField for cloistered URL input */}
-          </div>
-          <div className="adminCloisteredButtonsDiv">
-            {/* Action buttons for cloistered URL */}
-            <Button onClick={handleSubmitCloisteredUrlClick}>Submit</Button>
-          </div>
+          <Flex direction="row" justifyContent="center" alignItems="center" gap="1rem" wrap="wrap">
+            <Flex direction="column" justifyContent="center" alignItems="center" gap="1rem" wrap="wrap">
+              <h2>Admin Uncloistered Google Docs</h2>
+              <div className="adminUncloisteredListDiv">
+                {
+                uncloisteredUrlSubmissions.map(sub => (
+                  <MyTile
+                    key={sub.id}
+                    niceKey={sub.id}
+                    submission={sub}
+                  />
+              ))}
+              </div>
+              <div className="adminUncloisteredUrlsDiv">
+                <TextField
+                  label='Uncloistered URL:'
+                  value={chosenUncloisteredUrl}
+                  readOnly
+                />
+              </div>
+              <div className="adminCloisteredUrlsDiv">
+                <TextField
+                  label='Cloistered URL:'
+                  value={cloisteredUrl}
+                  onChange={(e) => setCloisteredUrl(e.target.value)}
+                /> {/* TextField for cloistered URL input */}
+              </div>
+              <div className="adminCloisteredButtonsDiv">
+                {/* Action buttons for cloistered URL */}
+                <Button onClick={handleSubmitCloisteredUrlClick}>Submit</Button>
+              </div>
+            </Flex>
+            <div className="adminUncloisteredInstructionsDiv">
+              <div className="instuctionsTitle">Instructions</div>
+              <div className="instructionsStepDiv">
+                1. Open Uncloistered Url in browser.
+              </div>
+              <div className="instructionsStepDiv">
+                2. File &gt; Make a copy, naming it "Cloistered - [Original Name]" and placing it in a nice folder
+              </div>
+              <div className="instructionsStepDiv">
+                3. File &gt; Share &gt; Share with others, setting it to Viewable by anyone with the link
+              </div>
+              <div className="instructionsStepDiv">
+                4. File &gt; Share &gt; Publish to web
+              </div>
+              <div className="instructionsStepDiv">
+                5. Click the Publish button
+              </div>
+              <div className="instructionsStepDiv">
+                6. Copy the link provided (between quuote marks)
+              </div>
+              <div className="instructionsStepDiv">
+                7. Paste that link into the "Cloistered URL" field.
+              </div>
+              <div className="instructionsStepDiv">
+                8. Click the Submit button.
+              </div>
+            </div>
+          </Flex>
         </Flex>
         {/* Add your admin uncloistered page content here */}
       </div>
