@@ -10,34 +10,34 @@ import { useAppSelector } from "../app/hooks";
 import { IssueType, selectAllIssues } from "../features/issues/issues";
 import { getLatestRowWithIssueId } from "../utils/utils";
 import { dbClient } from "../main";
+import { UpdateTemplateCommand } from "@aws-sdk/client-ses";
 
 // Claim: There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive.
 // Priority: 999000
 // ProURL: {ProxyForNoUrl}
 // ConURL: {ProxyForNoUrl}
 
-interface ImageTilePropsType {
-  issueId: string
-  claim: string
-  selectionCallback: (e: SyntheticEvent<HTMLDivElement>, issueId: string) => void
+interface IssueTilePropsType {
+  issue: IssueType
+  selectionCallback: (e: SyntheticEvent<HTMLDivElement>, issue: IssueType) => void
 }
 
-interface IdClaimPairType {
+interface IdIssuePairType {
   issueId: string
-  claim: string
+  issue: IssueType
 }
 
-function IssueTile(props: ImageTilePropsType) {
-  const { issueId, claim, selectionCallback } = props;
+function IssueTile(props: IssueTilePropsType) {
+  const { issue, selectionCallback } = props;
 
   const handleTileClick = (event: SyntheticEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    selectionCallback(event, issueId);
+    selectionCallback(event, issue);
   }
 
   return(
-    <div key={issueId} className="issueTileRoot" onClick={handleTileClick}>
-      {claim}
+    <div key={issue.issueId} className="issueTileRoot" onClick={handleTileClick}>
+      {issue.claim}
     </div>
   )
 }
@@ -54,19 +54,22 @@ function AdminIssuesPage() {
   const [activityChoice, setActivityChoice] = useState('manageOtherFields');
   const [issueIdText, setIssueIdText] = useState('');
   const [claimText, setClaimText] = useState('');
+  const [originalClaimText, setOriginalClaimText] = useState('');
   const [priorityText, setPriorityText] = useState('');
+  const [originalPriorityText, setOriginalPriorityText] = useState('');
   const [availabilityChoice, setAvailabilityChoice] = useState('noChoiceYet');
+  const [originalAvailabilityChoice, setOriginalAvailabilityChoice] = useState('noChoiceYet');
 
   const currentUserEmail = useAppSelector(selectCurrentUserCanonicalEmail)
   const allIssues: IssueType[] = useAppSelector(selectAllIssues);
   const issueMap = new Map();
-  allIssues.forEach((issue) => issueMap.set(issue.issueId, issue.claim))
-  let idClaimPairs: IdClaimPairType[] = [];
+  allIssues.forEach((issue) => issueMap.set(issue.issueId, issue))
+  let idIssuePairs: IdIssuePairType[] = [];
   issueMap.forEach((value, key) => {
     const issueId = key;
-    const claim = value;
-    const struct = { issueId: issueId, claim: claim };
-    idClaimPairs = idClaimPairs.concat(struct);
+    const issue = value;
+    const struct = { issueId: issueId, issue: issue };
+    idIssuePairs = idIssuePairs.concat(struct);
   });
 
   const handleNewIssueSubmission = async (event: SyntheticEvent<HTMLButtonElement>) => {
@@ -143,9 +146,19 @@ function AdminIssuesPage() {
     setActivityChoice(choice)
   }
 
-  const handleIssueTileClick = (event: SyntheticEvent<HTMLDivElement>, issueId: string) => {
-    event.stopPropagation();
-    setIssueIdText(issueId);
+  const handleIssueUrlsTileClick = (issue: IssueType) => {
+    setIssueIdText(issue.issueId);
+  }
+
+  const handleIssueOtherFieldsTileClick = (issue: IssueType) => {
+    setIssueIdText(issue.issueId);
+    setClaimText(issue.claim)
+    setOriginalClaimText(issue.claim);
+    setPriorityText(issue.priority.toString());
+    setOriginalPriorityText(issue.priority.toString());
+    const availability = issue.isAvailable ? 'available' : 'unavailable';
+    setAvailabilityChoice(availability);
+    setOriginalAvailabilityChoice(availability);
   }
 
   const handleAvailabilityRadioButtonChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -159,31 +172,43 @@ function AdminIssuesPage() {
     event.stopPropagation();
     setIssueIdText('');
     setClaimText('');
+    setOriginalClaimText('');
     setPriorityText('');
-    setAvailabilityChoice('noChoiceYet')
+    setOriginalPriorityText('');
+    setAvailabilityChoice('noChoiceYet');
+    setOriginalAvailabilityChoice('noChoiceYet'); 
   }
   
     const handleOtherFieldsSubmitButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
       event.stopPropagation();
-      console.log("Should now update the DB")
+      console.log("Should now update the DB if anything changed")
       const issueId = issueIdText;
       if (!issueId) {
         alert('You can\'t submit without selecting an issue');
         return;
       }
   
-      const availability = availabilityChoice; // 'available', 'unavailable', or 'noChoiceYet'
-      if (availability === 'noChoiceYet') {
-        alert('You have to choose either "Make Available" or "Make Unavailable"');
+      const availabilityChanged = availabilityChoice !== originalAvailabilityChoice;
+      const claimChanged = claimText !== originalClaimText;
+      const priorityChanged = priorityText !== originalPriorityText;
+      const somethingChanged = availabilityChanged || claimChanged || priorityChanged;
+      if (!somethingChanged) {
+        alert('You haven\'t changed anything');
         return;
       }
   
-      const claim = claimText;
-      const priorityString = priorityText;
-      const haveClaim = claim.length > 0;
-      const havePriorityString = priorityString.length > 0;
-      const priority = havePriorityString ?  parseInt(priorityString): -1;
-      const shouldBeAvailable = availability === 'available';
+      const haveClaim = claimText.length > 0;
+      if (!haveClaim) {
+        alert('You can\'t clear the claim. If you want to delete the issue, use the Delete button on the main Issues page');
+        return;
+      }
+      const havePriorityString = priorityText.length > 0;
+      if (!havePriorityString) {
+        alert('You can\'t clear the priority. You must have a priority number');
+        return;
+      }
+      const priorityAsInt = havePriorityString ?  parseInt(priorityText): -1;
+      const shouldBeAvailable = availabilityChoice === 'available';
       const latestRow: IssueType = await getLatestRowWithIssueId(issueId);
       if (!latestRow) {
         alert("big screwup. getLatestRowWithIssueId() didn't return a row")
@@ -194,14 +219,18 @@ function AdminIssuesPage() {
       let myUpdate =  {
         issueId: issueId,
         commentKey: commentKey,
-        isAvailable: shouldBeAvailable,
+        updatedT: new Date().toISOString(),
       };
-      if (haveClaim) {
-        const addition = {claim: claim};
+      if (availabilityChanged) {
+        const addition = { isAvailable: shouldBeAvailable};
         myUpdate = { ...myUpdate, ...addition }
       }
-      if (havePriorityString) {
-        const addition = { priority: priority};
+      if (claimChanged) {
+        const addition = {claim: claimText};
+        myUpdate = { ...myUpdate, ...addition }
+      }
+      if (priorityChanged) {
+        const addition = { priority: priorityAsInt};
         myUpdate = { ...myUpdate, ...addition}
       }
   
@@ -212,6 +241,16 @@ function AdminIssuesPage() {
               const { issueId, commentKey } = modifiedIssue;
               // dispatch(setDesignatedUserId(id));
               console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
+              alert('Still need to modify Redux representation of issues');
+              setToastMessage('Your update has been received');
+              setShouldShowAcceptanceToast(true);
+              setIssueIdText('');
+              setClaimText('');
+              setOriginalClaimText('');
+              setPriorityText('');
+              setOriginalPriorityText('');
+              setAvailabilityChoice('noChoiceYet');
+              setOriginalAvailabilityChoice('noChoiceYet');
             }
           );
     }
@@ -248,12 +287,14 @@ function AdminIssuesPage() {
             <Flex direction="column" className="otherFieldsFormDiv">
               <Flex direction="row">
                 <div className="issueScrollDiv">{
-                  idClaimPairs.map(pair => (
+                  idIssuePairs.map(pair => (
                     <IssueTile
                       key={pair.issueId}
-                      issueId={pair.issueId}
-                      claim={pair.claim}
-                      selectionCallback={handleIssueTileClick} />
+                      issue={pair.issue}
+                      selectionCallback={(event: SyntheticEvent<HTMLDivElement>) => {
+                        event.stopPropagation();
+                        handleIssueUrlsTileClick(pair.issue)
+                      }} />
                     ))}
                 </div>
                 <Flex direction="column" gap="0px">
@@ -408,12 +449,14 @@ function AdminIssuesPage() {
             <Flex direction="column" className="otherFieldsFormDiv">
               <Flex direction="row">
                 <div className="issueScrollDiv">{
-                  idClaimPairs.map(pair => (
+                  idIssuePairs.map(pair => (
                     <IssueTile
                       key={pair.issueId}
-                      issueId={pair.issueId}
-                      claim={pair.claim}
-                      selectionCallback={handleIssueTileClick} />
+                      issue={pair.issue}
+                      selectionCallback={(event: SyntheticEvent<HTMLDivElement>) => {
+                        event.stopPropagation();
+                        handleIssueOtherFieldsTileClick(pair.issue)
+                      }} />
                     ))}
                 </div>
                 <Flex direction="column" gap="0px">
