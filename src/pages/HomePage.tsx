@@ -21,7 +21,6 @@ function ClaimCard(props: ClaimCardProps) {
 
   const handleCardClick = (event: SyntheticEvent<HTMLDivElement>) => {
     event.stopPropagation();
-    console.log(`Now saving state and navigating to the IssuePage`)
     dispatch(setCurrentIssueId(struct.issueId));
     navigate('/issue?stance=pro');
   }

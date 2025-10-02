@@ -49,7 +49,6 @@ function CommentsPage() {
   const queryStringStance = urlParams.get('stance'); // Should return "pro", "con", or null (which we hope to avoid)
   const explicitlyAskedForPro = queryStringStance === 'pro';
   const stance = explicitlyAskedForPro ? 'pro' : 'con';
-  console.log(`With queryStringStance='${queryStringStance}' we have stance: '${stance}'`);
 
   const showPro = stance === 'pro';
 
