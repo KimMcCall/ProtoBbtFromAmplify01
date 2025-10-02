@@ -46,7 +46,9 @@ function AdminIssuesPage() {
   const [shouldShowAcceptanceToast, setShouldShowAcceptanceToast] = useState(false);
   const [proDocTypeChoice, setProDocTypeChoice] = useState(docType_Unknown);
   const [conDocTypeChoice, setConDocTypeChoice] = useState(docType_Unknown);
+  const [originalIssueProUrl, setOriginalIssueProUrl] = useState('');
   const [newIssueProUrl, setNewIssueProUrl] = useState('');
+  const [originalIssueConUrl, setOriginalIssueConUrl] = useState('');
   const [newIssueConUrl, setNewIssueConUrl] = useState('');
   const [newIssueClaim, setNewIssueClaim] = useState('');
   const [newIssuePriority, setNewIssuePriority] = useState('400000')
@@ -81,16 +83,13 @@ function AdminIssuesPage() {
       return;
     }
     // GATOR: guard against setting a pro/conDocType when ther's no pro/conUrl
-    const profferedProUrl = newIssueProUrl;
-    const profferedConUrl = newIssueConUrl;
-    const proUrl = profferedProUrl || PlaceholderForEmptyUrl;
-    const conUrl = profferedConUrl || PlaceholderForEmptyUrl;
+    const proUrl = newIssueProUrl || PlaceholderForEmptyUrl;
+    const conUrl = newIssueConUrl || PlaceholderForEmptyUrl;
     const proDocType = proDocTypeChoice;
     const conDocType = conDocTypeChoice;
     const proAuthorEmail = '';
     const conAuthorEmail = '';
     const commentAuthorEmail = currentUserEmail;
-
 
     await createIssue(
       priority,
@@ -147,6 +146,12 @@ function AdminIssuesPage() {
 
   const handleIssueUrlsTileClick = (issue: IssueType) => {
     setIssueIdText(issue.issueId);
+    setOriginalIssueProUrl(issue.proUrl);
+    setNewIssueProUrl(issue.proUrl);
+    setOriginalIssueConUrl(issue.conUrl);
+    setNewIssueConUrl(issue.conUrl);
+    setProDocTypeChoice(issue.proDocType);
+    setConDocTypeChoice(issue.conDocType);
   }
 
   const handleIssueOtherFieldsTileClick = (issue: IssueType) => {
@@ -177,83 +182,153 @@ function AdminIssuesPage() {
     setAvailabilityChoice('noChoiceYet');
     setOriginalAvailabilityChoice('noChoiceYet'); 
   }
+
+  const handleUrlsClearButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setIssueIdText('');
+    setOriginalIssueProUrl('');
+    setNewIssueProUrl('');
+    setOriginalIssueConUrl('');
+    setNewIssueConUrl('');
+    setProDocTypeChoice(docType_Unknown);
+    setConDocTypeChoice(docType_Unknown);
+  }
   
-    const handleOtherFieldsSubmitButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
-      event.stopPropagation();
-      console.log("Should now update the DB if anything changed")
-      const issueId = issueIdText;
-      if (!issueId) {
-        alert('You can\'t submit without selecting an issue');
-        return;
-      }
-  
-      const availabilityChanged = availabilityChoice !== originalAvailabilityChoice;
-      const claimChanged = claimText !== originalClaimText;
-      const priorityChanged = priorityText !== originalPriorityText;
-      const somethingChanged = availabilityChanged || claimChanged || priorityChanged;
-      if (!somethingChanged) {
-        alert('You haven\'t changed anything');
-        return;
-      }
-  
-      const haveClaim = claimText.length > 0;
-      if (!haveClaim) {
-        alert('You can\'t clear the claim. If you want to delete the issue, use the Delete button on the main Issues page');
-        return;
-      }
-      const havePriorityString = priorityText.length > 0;
-      if (!havePriorityString) {
-        alert('You can\'t clear the priority. You must have a priority number');
-        return;
-      }
-      const priorityAsInt = havePriorityString ?  parseInt(priorityText): -1;
-      const shouldBeAvailable = availabilityChoice === 'available';
-      const latestRow: IssueType = await getLatestRowWithIssueId(issueId);
-      if (!latestRow) {
-        alert("big screwup. getLatestRowWithIssueId() didn't return a row")
-        throw new Error("big screwup. getLatestRowWithIssueId() didn't return a rpw");
-      }
-  
-      const commentKey = latestRow.commentKey;
-      let myUpdate =  {
-        issueId: issueId,
-        commentKey: commentKey,
-        updatedT: new Date().toISOString(),
-      };
-      if (availabilityChanged) {
-        const addition = { isAvailable: shouldBeAvailable};
-        myUpdate = { ...myUpdate, ...addition }
-      }
-      if (claimChanged) {
-        const addition = {claim: claimText};
-        myUpdate = { ...myUpdate, ...addition }
-      }
-      if (priorityChanged) {
-        const addition = { priority: priorityAsInt};
-        myUpdate = { ...myUpdate, ...addition}
-      }
-  
-      console.log(`DBM: calling  IssueP2.update() at ${Date.now() % 10000}`);
-      await dbClient.models.IssueP2.update(myUpdate).then(
-            (response) => {
-              // @ts-expect-error It will not be undefined if the .update() succeeded!
-              const modifiedIssue: IssueType = response.data;
-              const { issueId, commentKey } = modifiedIssue;
-              // dispatch(setDesignatedUserId(id));
-              console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
-              alert('Still need to modify Redux representation of issues');
-              setToastMessage('Your update has been received');
-              setShouldShowAcceptanceToast(true);
-              setIssueIdText('');
-              setClaimText('');
-              setOriginalClaimText('');
-              setPriorityText('');
-              setOriginalPriorityText('');
-              setAvailabilityChoice('noChoiceYet');
-              setOriginalAvailabilityChoice('noChoiceYet');
-            }
-          );
+  const handleOtherFieldsSubmitButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    console.log("Should now update the DB if anything changed")
+    const issueId = issueIdText;
+    if (!issueId) {
+      alert('You can\'t submit without selecting an issue');
+      return;
     }
+
+    const availabilityChanged = availabilityChoice !== originalAvailabilityChoice;
+    const claimChanged = claimText !== originalClaimText;
+    const priorityChanged = priorityText !== originalPriorityText;
+    const somethingChanged = availabilityChanged || claimChanged || priorityChanged;
+    if (!somethingChanged) {
+      alert('You haven\'t changed anything');
+      return;
+    }
+
+    const haveClaim = claimText.length > 0;
+    if (!haveClaim) {
+      alert('You can\'t clear the claim. If you want to delete the issue, use the Delete button on the main Issues page');
+      return;
+    }
+    const havePriorityString = priorityText.length > 0;
+    if (!havePriorityString) {
+      alert('You can\'t clear the priority. You must have a priority number');
+      return;
+    }
+    const priorityAsInt = havePriorityString ?  parseInt(priorityText): -1;
+    const shouldBeAvailable = availabilityChoice === 'available';
+    const latestRow: IssueType = await getLatestRowWithIssueId(issueId);
+    if (!latestRow) {
+      alert("big screwup. getLatestRowWithIssueId() didn't return a row")
+      throw new Error("big screwup. getLatestRowWithIssueId() didn't return a rpw");
+    }
+
+    const commentKey = latestRow.commentKey;
+    let myUpdate =  {
+      issueId: issueId,
+      commentKey: commentKey,
+      updatedT: new Date().toISOString(),
+    };
+    if (availabilityChanged) {
+      const addition = { isAvailable: shouldBeAvailable};
+      myUpdate = { ...myUpdate, ...addition }
+    }
+    if (claimChanged) {
+      const addition = {claim: claimText};
+      myUpdate = { ...myUpdate, ...addition }
+    }
+    if (priorityChanged) {
+      const addition = { priority: priorityAsInt};
+      myUpdate = { ...myUpdate, ...addition}
+    }
+
+    console.log(`DBM: calling  IssueP2.update() at ${Date.now() % 10000}`);
+    await dbClient.models.IssueP2.update(myUpdate).then(
+          (response) => {
+            // @ts-expect-error It will not be undefined if the .update() succeeded!
+            const modifiedIssue: IssueType = response.data;
+            const { issueId, commentKey } = modifiedIssue;
+            // dispatch(setDesignatedUserId(id));
+            console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
+            alert('Still need to modify Redux representation of issues');
+            setToastMessage('Your update has been received');
+            setShouldShowAcceptanceToast(true);
+            setIssueIdText('');
+            setClaimText('');
+            setOriginalClaimText('');
+            setPriorityText('');
+            setOriginalPriorityText('');
+            setAvailabilityChoice('noChoiceYet');
+            setOriginalAvailabilityChoice('noChoiceYet');
+          }
+        );
+  }
+  
+  const handleUrlsSubmitButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    console.log("Should now update the DB if anything changed")
+    const issueId = issueIdText;
+    if (!issueId) {
+      alert('You can\'t submit without selecting an issue');
+      return;
+    }
+
+    const proUrlChanged = newIssueProUrl !== originalIssueProUrl;
+    const conUrlChanged = newIssueConUrl !== originalIssueConUrl;
+    const somethingChanged = proUrlChanged || conUrlChanged;
+    if (!somethingChanged) {
+      alert('You haven\'t changed anything');
+      return;
+    }
+    const latestRow: IssueType = await getLatestRowWithIssueId(issueId);
+    if (!latestRow) {
+      alert("big screwup. getLatestRowWithIssueId() didn't return a row")
+      throw new Error("big screwup. getLatestRowWithIssueId() didn't return a rpw");
+    }
+
+    const commentKey = latestRow.commentKey;
+    let myUpdate =  {
+      issueId: issueId,
+      commentKey: commentKey,
+      updatedT: new Date().toISOString(),
+    };
+    if (proUrlChanged) {
+      const addition = { proUrl: newIssueProUrl || PlaceholderForEmptyUrl};
+      myUpdate = { ...myUpdate, ...addition }
+    }
+    if (conUrlChanged) {
+      const addition = { conUrl: newIssueConUrl || PlaceholderForEmptyUrl };
+      myUpdate = { ...myUpdate, ...addition }
+    }
+
+    console.log(`DBM: calling  IssueP2.update() at ${Date.now() % 10000}`);
+    await dbClient.models.IssueP2.update(myUpdate).then(
+          (response) => {
+            // @ts-expect-error It will not be undefined if the .update() succeeded!
+            const modifiedIssue: IssueType = response.data;
+            const { issueId, commentKey } = modifiedIssue;
+            // dispatch(setDesignatedUserId(id));
+            console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
+            alert('Still need to modify Redux representation of issues');
+            setToastMessage('Your update has been received');
+            setShouldShowAcceptanceToast(true);
+            setOriginalIssueProUrl('');
+            setOriginalIssueConUrl('');
+            setNewIssueProUrl('');
+            setNewIssueConUrl('');
+            setIssueIdText('');
+            setProDocTypeChoice(docType_Unknown);
+            setConDocTypeChoice(docType_Unknown);
+          }
+        );
+  }
 
   const showNewIssueUi = activityChoice === 'createNewIssue';
   const showUrlsUi = activityChoice === 'manageUrls';
@@ -356,10 +431,10 @@ function AdminIssuesPage() {
               </Flex>
               <Flex direction="row">
                 <div className="otherFieldsFormButtonsDiv">
-                  <Button className="otherFieldsFormButton" onClick={handleOtherFieldsClearButtonClick}>
+                  <Button className="otherFieldsFormButton" onClick={handleUrlsClearButtonClick}>
                     Clear
                   </Button>
-                  <Button className="otherFieldsFormButton" onClick={handleOtherFieldsSubmitButtonClick}>
+                  <Button className="otherFieldsFormButton" onClick={handleUrlsSubmitButtonClick}>
                     Submit
                   </Button>
                 </div>
