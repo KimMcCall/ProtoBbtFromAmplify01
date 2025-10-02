@@ -89,7 +89,8 @@ function PlayPage02() {
   const checkDbForCorruption = async () => {
     let retVal = 'retVal never got overidden';
     let haveResetRetVal = false;
-    await dbClient.models.RegisteredUserP2.list().then(
+    console.log(`DBM: calling RegisteredUserP2.listByCanonicalEmailXP2() at ${Date.now() % 10000}`);
+    await dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({ canonicalEmail: expectedCEmail }).then(
       (response) => {
         const allRecords = response.data;
         const authIds: string[] = [];
@@ -102,6 +103,7 @@ function PlayPage02() {
               subject: 'DB Corruption',
               content: memoContent,
             };
+            console.log(`DBM: calling Memo.create() at ${Date.now() % 10000}`);
             dbClient.models.Memo.create(memoData);
             console.log(`found multiple records with authId: ${thisAuthId}`);
             retVal = `found multiple records with authId: ${thisAuthId}`;
@@ -127,6 +129,7 @@ function PlayPage02() {
     const match = cEmail === expectedCEmail;
     console.log(`match in simpleTest: ${match}`);
     let retVal = -1;
+    console.log(`DBM: calling RegisteredUserP2.listByCanonicalEmailXP2() at ${Date.now() % 10000}`);
      await dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({ canonicalEmail: cEmail }).then(
       //?
       (response) => {
@@ -241,7 +244,7 @@ function PlayPage02() {
     console.log("We're short-circuiting the migration, since it's alreaddy happened!");
     return;
     /*
-    console.log("Now I have to migrate the data");
+    console.log(`DBM: calling RegisteredUserP2.list() at ${Date.now() % 10000}`);
     dbClient.models.RegisteredUser.list().then(
       (response) => {
         // @ts-expect-error It will not be undefined if the .update() succeeded!
@@ -267,6 +270,7 @@ function PlayPage02() {
       isBanned: oldUser.isBanned,
       isTrusted: false,
     }
+    console.log(`DBM: calling RegisteredUserP2.create() at ${Date.now() % 10000}`);
     dbClient.models.RegisteredUserP2.create(createStruct).then(
       (response) => {
         const newUser = response.data;
@@ -351,6 +355,7 @@ function PlayPage02() {
       myUpdate = { ...myUpdate, ...addition}
     }
 
+    console.log(`DBM: calling IssueP2.update() at ${Date.now() % 10000}`);
     await dbClient.models.IssueP2.update(myUpdate).then(
           (response) => {
             // @ts-expect-error It will not be undefined if the .update() succeeded!

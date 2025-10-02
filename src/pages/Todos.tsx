@@ -8,16 +8,19 @@ function Todos() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
   useEffect(() => {
+    console.log(`DBM: calling Todo.observeQuery() at ${Date.now() % 10000}`);
     dbClient.models.Todo.observeQuery().subscribe({
       next: (data) => setTodos([...data.items]),
     });
   }, []);
 
   function createTodo() {
+    console.log(`DBM: calling Todo.create() at ${Date.now() % 10000}`);
     dbClient.models.Todo.create({ content: window.prompt("Todo content") });
   }  
   
   function deleteTodo(id: string) {
+    console.log(`DBM: calling Todo.delete() at ${Date.now() % 10000}`);
     dbClient.models.Todo.delete({ id })
   }
 

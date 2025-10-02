@@ -29,7 +29,7 @@ const showDiv = {
 };
 
 const testGet = () => {
-  console.log("running test!")
+  console.log(`DBM: calling RegisteredUserP2.get() at ${Date.now() % 10000}`);
   dbClient.models.RegisteredUserP2.get({id: 'a9262597-4129-4b84-84a3-a0b991eeb052'})
   .then((response) => {
     const user = response.data;
@@ -40,6 +40,7 @@ const testGet = () => {
 };
 
 const testSecondaryIndex = () => {
+  console.log(`DBM: calling RegisteredUserP2.listByCanonicalEmailXP2() at ${Date.now() % 10000}`);
   dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({
     canonicalEmail: 'mccall.kim@gmail.com',
   })
@@ -58,6 +59,7 @@ function PlayPage01() {
   const [ userList, setUserList ] = useState("");
 
   const listSuperAdmins = () => {
+    console.log(`DBM: calling RegisteredUserP2.list() at ${Date.now() % 10000}`);
     dbClient.models.RegisteredUserP2.list()
     .then((response) => {
       const allUsers = response.data;

@@ -41,6 +41,7 @@ function LoggedInPage(user: AuthUser) {
         subject: 'LoginInfo',
         content: memoContent,
       };
+      console.log(`DBM: calling Memo.create() at ${Date.now() % 10000}`);
       dbClient.models.Memo.create(memoData);
 
       const returning = status === 'returningRegistrant' || status === 'superAdmin' || status === 'admin';
@@ -85,6 +86,7 @@ function LoggedInPage(user: AuthUser) {
         subject: 'BadUserStatus',
         content: memoContent,
       };
+      console.log(`DBM: calling Memo.create() at ${Date.now() % 10000}`);
       dbClient.models.Memo.create(memoData);
       navigate('/uninitializedUserStatus', { replace: true });
     } else if (status === 'corrupted DB') {
@@ -96,6 +98,7 @@ function LoggedInPage(user: AuthUser) {
         subject: 'BadUserStatus',
         content: memoContent,
       };
+      console.log(`DBM: calling Memo.create() at ${Date.now() % 10000}`);
       dbClient.models.Memo.create(memoData);
       navigate('/corruptedDb', { replace: true });
     } else if (status === 'newRegistrant') {
@@ -111,8 +114,8 @@ function LoggedInPage(user: AuthUser) {
         isTrusted: false,
         withholdWelcome: false,
       };
+      console.log(`DBM: calling RegisteredUserP2.create() at ${Date.now() % 10000}`);
       dbClient.models.RegisteredUserP2.create(stuctToCreate).then((newUser) => {
-        console.log("Created new RegisteredUser with canonicalEmail", cEmail, newUser);
         const returnedUserRecord = newUser.data;
         if (returnedUserRecord) {
           const newReduxUser = {

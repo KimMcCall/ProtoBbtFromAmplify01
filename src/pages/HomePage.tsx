@@ -58,6 +58,7 @@ function HomePage() {
   
   useEffect(() => {
     const fetchIssues = async () => {
+      console.log('At top of fetchIssues() in HomePage useEffect()');
       await getAllIssueRecords().then(
       (result) => {
         const iterable: Iterable<IssueType> = result.values();

@@ -106,6 +106,7 @@ function GMailTile(props: TilePropType) {
       isStarred: newState,
     };
     setStarred(newState);
+    console.log(`DBM: calling Submission.update() at ${Date.now() % 10000}`);
     dbClient.models.Submission.update(myUpdate);
   };
 
@@ -117,6 +118,7 @@ function GMailTile(props: TilePropType) {
       isImportant: newState,
     };
     setImportant(newState);
+    console.log(`DBM: calling Submission.update() at ${Date.now() % 10000}`);
     dbClient.models.Submission.update(myUpdate);
   };
 
@@ -130,6 +132,7 @@ function GMailTile(props: TilePropType) {
         id: id,
         isRead: true,
       };
+      console.log(`DBM: calling Submission.update() at ${Date.now() % 10000}`);
       dbClient.models.Submission.update(myUpdate);
     }
   };
@@ -287,7 +290,7 @@ function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
     };
     setIsStarred(newState);
     submission.isStarred = newState;
-    console.log(`setting isStarred: ${newState}`);
+    console.log(`DBM: calling Submission.update() at ${Date.now() % 10000}`);
     dbClient.models.Submission.update(myUpdate);
   }
 
@@ -300,7 +303,7 @@ function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
     };
     setIsImportant(newState);
     submission.isImportant = newState;
-    console.log(`setting isImportant: ${newState}`);
+    console.log(`DBM: calling Submission.update() at ${Date.now() % 10000}`);
     dbClient.models.Submission.update(myUpdate);
   }
 
@@ -313,7 +316,7 @@ function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
     };
     setIsArchived(newState);
     submission.isArchived = newState;
-    console.log(`setting isArchived: ${newState}`);
+    console.log(`DBM: calling Submission.update() at ${Date.now() % 10000}`);
     dbClient.models.Submission.update(myUpdate);
   }
 
@@ -326,7 +329,7 @@ function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
     };
     setIsBanned(newState);
     submission.isBanned = newState;
-    console.log(`setting isBanned: ${newState}`);
+    console.log(`DBM: calling Submission.update() at ${Date.now() % 10000}`);
     dbClient.models.Submission.update(myUpdate);
   }
 
@@ -339,7 +342,7 @@ function SingleSubmissionUI(props: SingleSubmissionUiPropType) {
     };
     setIsTrashed(newState);
     submission.isTrashed = newState;
-    console.log(`setting isTrashed: ${newState}`);
+    console.log(`DBM: calling Submission.update() at ${Date.now() % 10000}`);
     dbClient.models.Submission.update(myUpdate);
   }
 
@@ -385,11 +388,13 @@ function AdminSubmissionsPage() {
 
   useEffect(() => {
       const fetchSubmissions = async () => {
+        console.log(`DBM: calling Submission.list() at ${Date.now() % 10000}`);
         await dbClient.models.Submission.list().then(
         (submissionsResponse) => {
           const submissions: SubmissionWithDateType[] = submissionsResponse.data;
           const filteredSubmissions = filterSubmissionsForCategory(submissions, chosenCategory);
           // now build the userId2EmailMap
+          console.log(`DBM: calling RegisteredUserP2.list() at ${Date.now() % 10000}`);
           dbClient.models.RegisteredUserP2.list().then(
             (usersResponse) => {
               const allUsers = usersResponse.data;

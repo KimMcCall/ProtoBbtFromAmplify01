@@ -233,6 +233,7 @@ function AdminIssuesPage() {
         myUpdate = { ...myUpdate, ...addition}
       }
   
+      console.log(`DBM: calling  IssueP2.update() at ${Date.now() % 10000}`);
       await dbClient.models.IssueP2.update(myUpdate).then(
             (response) => {
               // @ts-expect-error It will not be undefined if the .update() succeeded!

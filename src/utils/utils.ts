@@ -87,6 +87,7 @@ export const getLatestRowWithIssueId = async (issueId: string) => {
   // @ts-expect-error By the time I use this it won't be null
   let latestSoFar: IssueTypes = null;
 
+  console.log(`DBM: calling IssueP2.list(filter) at ${Date.now() % 10000}`);
   await dbClient.models.IssueP2.list(myFilter)
   .then((response) => {
     const allRowsWithThisIssueId = response.data;
@@ -224,6 +225,7 @@ export const tallySubmission = (userId: string)=> {
     userId: userId,
     timestamp: zeroed,
   };
+  console.log(`DBM: calling IssueP2.create() at ${Date.now() % 10000}`);
   dbClient.models.SubmissionTally.create(createStruct).then(
     (response) => {console.log("SubmissionTally.create() response: ", response)}
   )
@@ -250,8 +252,7 @@ export const checkForSubmissionPermission = async (userId: string) => {
 const checkForTrustedPermission = async (userId: string) => {
   const retVal: PermissionQueryResult = { granted: false, explanation: 'No trusted permission' };
   const idStruct = {id: userId}
-  const jsonString = JSON.stringify(idStruct);
-  console.log(`at top of checkForTrustedPermission() calling get(${jsonString})`);
+  console.log(`DBM: calling RegisteredUserP2.get() at ${Date.now() % 10000}`);
   await dbClient.models.RegisteredUserP2.get(idStruct).then(
     (response) => {
       console.log(`in then() clause`)
@@ -271,6 +272,7 @@ const checkForTrustedPermission = async (userId: string) => {
 const checkSubmissionTallyForPermission = async (userId: string) => {
   const retVal: PermissionQueryResult = { granted: false, explanation: 'No trusted permission' };
   const myArgStruct = { userId: userId};
+  console.log(`DBM: calling SubmissionTally.byUserId() at ${Date.now() % 10000}`);
   await dbClient.models.SubmissionTally.byUserId(myArgStruct).then(
     (result) => {
       const tallyRecords = result.data;
@@ -316,6 +318,7 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
     updatedAt: '',
   };
 
+  console.log(`DBM: calling RegisteredUserP2.listByAuthIdXP2() at ${Date.now() % 10000}`);
   await dbClient.models.RegisteredUserP2.listByAuthIdXP2({
     authId: submittedAuthId,
   }).then (
@@ -361,6 +364,7 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
                 subject: 'Login Issue',
                 content: feebackStr,
               };
+              console.log(`DBM: calling Memo.create() at ${Date.now() % 10000}`);
               dbClient.models.Memo.create(memoData);
 
               console.log(feebackStr);
@@ -392,6 +396,7 @@ const innerComputeStatus = async (email: string): Promise<UserStatus>  => {
   const cEmail = toCanonicalEmail(email);
   // if there's a record with this canonicalEmal, then we're dealing with an alias
   console.log(`2) listing records with canonicalEmail: ${cEmail}`);
+  console.log(`DBM: calling RegisteredUserP2.listByAuthIdXP2() at ${Date.now() % 10000}`);
   await dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({ canonicalEmail: cEmail }).then(
     (response) => {
       console.log('3) Back from call to listByCanonicalEmail()')

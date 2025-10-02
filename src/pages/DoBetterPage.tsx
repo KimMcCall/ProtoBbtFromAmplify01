@@ -105,6 +105,7 @@ function DoBetterPage() {
     console.log('Submitting URL:', specifiedUrl);
     const docType = showYouTubeUi ? 'YouTube' : showGoogleDocUi ? 'GoogleDoc' : 'Pdf';
     // Submit the URL to the database
+    console.log(`DBM: calling UrlSubmission.create() at ${Date.now() % 10000}`);
     await dbClient.models.UrlSubmission.create({
       issueId: currentIssue?.issueId || 'NoIssueId_8e2f3c1e-2d3b-4f7a-9f4e-1c2d3e4f5a6b',
       issueClaim: currentIssue?.claim || 'NoClaim_9f8e7d6c-5b4a-3c2d-1e0f-9a8b7c6d5e4f',

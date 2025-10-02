@@ -7,6 +7,7 @@ import { dbClient } from '../main';
 // Query all comments for an issue (both PRO and CON)
 async function getIssue(issueId: string) {
   try {
+    console.log(`DBM: calling IssueP1.list() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP1.list({
       filter: {
         issueId: { eq: issueId }
@@ -41,6 +42,7 @@ async function getIssue(issueId: string) {
 // Query all comments for an issue (both PRO and CON)
 async function getAllComments(issueId: string) {
   try {
+    console.log(`DBM: calling IssueP1.list() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP1.list({
       filter: {
         issueId: { eq: issueId }
@@ -67,6 +69,7 @@ async function getAllComments(issueId: string) {
 // Update a specific comment
 async function updateComment(issueId: string, commentKey: string, newText: string) {
   try {
+    console.log(`DBM: calling Todo.observeQuery() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP2.update({
       issueId: issueId,
       commentKey: commentKey,
@@ -85,6 +88,7 @@ async function updateComment(issueId: string, commentKey: string, newText: strin
 // Delete a specific comment
 async function deleteComment(issueId: string, commentKey: string) {
   try {
+    console.log(`DBM: calling IssueP2.delete() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP2.delete({
       issueId: issueId,
       commentKey: commentKey,

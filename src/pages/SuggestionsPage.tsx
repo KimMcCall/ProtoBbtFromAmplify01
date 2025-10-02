@@ -62,6 +62,7 @@ function SuggestionsPage() {
       isBanned: false,
       isTrashed: false,
     };
+    console.log(`DBM: calling Submission.create() at ${Date.now() % 10000}`);
     await dbClient.models.Submission.create(structToCreate);
     setToastMessage('Your suggestion has been received');
     setShouldShowAcceptanceToast(true);

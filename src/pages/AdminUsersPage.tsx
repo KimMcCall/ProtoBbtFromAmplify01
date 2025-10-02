@@ -96,7 +96,7 @@ function AdminUsersPage() {
   designatedUser = useAppSelector(selectDesgnatedUser); // currentUser, which is SuperAdmin
   
     useEffect(() => {
-      console.log('calling list()');
+      console.log(`DBM: calling RegisteredUserP2.list() at ${Date.now() % 10000}`);
       dbClient.models.RegisteredUserP2.list().then(
         (result) => { 
           const allUsers = result.data;
@@ -141,7 +141,7 @@ function AdminUsersPage() {
       id: designatedUserId,
       isBanned: newState,
     };
-    console.log(`setting isBanned: ${newState}`);
+    console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
     await dbClient.models.RegisteredUserP2.update(myUpdate).then(
       (response) => {
         console.log(' back from update()');
@@ -169,7 +169,7 @@ function AdminUsersPage() {
       id: designatedUserId,
       isAdmin: newState,
     };
-    console.log(`setting isAdmin: ${newState}`);
+    console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
     await dbClient.models.RegisteredUserP2.update(myUpdate).then(
       (response) => {
         console.log(' back from update()');

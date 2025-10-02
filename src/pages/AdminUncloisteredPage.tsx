@@ -72,7 +72,7 @@ function AdminUncloisteredPage() {
       }
 
       // TODO: Add API call to save cloistered URL
-      console.log('Submitting cloistered URL:', cloisteredUrl);
+      console.log(`DBM: calling UrlSubmission.update() at ${Date.now() % 10000}`);
       dbClient.models.UrlSubmission.update({
         id: chosenSubmissionId,
         url: cloisteredUrl,
@@ -92,6 +92,7 @@ function AdminUncloisteredPage() {
   useEffect(() => {
     const doFetchAndSort = async () => {
       // TODO: Fetch existing cloistered URLs on component mount
+      console.log(`DBM: calling UrlSubmission.list() at ${Date.now() % 10000}`);
       const response = await dbClient.models.UrlSubmission.list();
       const allSubmissions = response?.data || [];
       console.log(`Fetched ${allSubmissions.length} total submissions from the database.`);

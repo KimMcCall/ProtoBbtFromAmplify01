@@ -37,6 +37,7 @@ function SuggestionsPanel() {
 
   useEffect(() => {
     const fetchSubmissions = async () => {
+      console.log(`DBM: calling  Submission.listByUserId() at ${Date.now() % 10000}`);
       await dbClient.models.Submission.listByUserId({ userId: userId }).then(
       (response) => {
         const submissions = response.data;

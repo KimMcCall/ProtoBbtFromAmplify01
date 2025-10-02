@@ -29,9 +29,8 @@ function SubmissionEditor(props: SubmissionEditorProps) {
           title: title,
           content: content,
         };
-        console.log(`calling   update() at ${Date.now() % 10000}`);
+        console.log(`DBM: calling   update() at ${Date.now() % 10000}`);
         await dbClient.models.Submission.update(myUpdate);
-        console.log(`back from update() at ${Date.now() % 10000}`);
         submission.title = title;
         submission.content= content;
         editorShowOrHide(false);

@@ -98,13 +98,13 @@ function AdminUrlSubmissionsPage() {
       alert('Please select a submission from the list first.');
       return;
     }
-    console.log('should display submission w/ issueId:', chosenIssueId);
     setPreviewSubmission(true);
   }
 
   useEffect(
     () => {
       const fetchData = async () => {
+        console.log(`DBM: calling UrlSubmission.list() at ${Date.now() % 10000}`);
         await dbClient.models.UrlSubmission.list().then((response) => {
           console.log('Fetched UrlSubmissions:', response.data);
           setAllSubmissions(response.data);
@@ -137,6 +137,7 @@ function AdminUrlSubmissionsPage() {
 
       try {
         // First update the submission to mark it as reviewed and accepted
+      console.log(`DBM: calling UrlSubmission.update() at ${Date.now() % 10000}`);
       const updatedSubmission = await dbClient.models.UrlSubmission.update({
         id: submission.id,
         reviewed: true,
@@ -167,8 +168,7 @@ function AdminUrlSubmissionsPage() {
         commentKey: latestCommentKey, // Placeholder, should be the latest comment key
         ...issueUpdateData,
       };
-      console.log('Updating Issue with data:', issueUpdateDataWithIssueId);
-
+      console.log(`DBM: calling IssueP2.update() at ${Date.now() % 10000}`);
       await dbClient.models.IssueP2.update(issueUpdateDataWithIssueId)
 
       // If banUser is true, you would also update the user's status here
@@ -181,6 +181,7 @@ function AdminUrlSubmissionsPage() {
       setBanUser(false);
       
       // Refresh the submissions list
+      console.log(`DBM: calling UrlSubmission.list() at ${Date.now() % 10000}`);
       const response = await dbClient.models.UrlSubmission.list();
       setAllSubmissions(response.data);
       } catch (error) {
@@ -195,6 +196,7 @@ function AdminUrlSubmissionsPage() {
 
       try {
           // First update the submission to mark it as reviewed and accepted
+          console.log(`DBM: calling UrlSubmission.update() at ${Date.now() % 10000}`);
           await dbClient.models.UrlSubmission.update({
             id: submission.id,
             reviewed: true,
@@ -205,7 +207,7 @@ function AdminUrlSubmissionsPage() {
 
           // Then, if user is being bnned, update the entry in the RegisteredUser table
           if (banUser) {
-
+              console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
               const result = await dbClient.models.RegisteredUserP2.update({
                 id: submission.submitterId,
                 isBanned: true,

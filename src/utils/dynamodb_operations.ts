@@ -15,6 +15,7 @@ async function createIssue(
   ) {
   const nowStr = new Date().toISOString();
   try {
+    console.log(`DBM: calling IssueP2.create() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP2.create({
       issueId: 'ISSUE#' + nowStr,
       priority: priority,
@@ -56,6 +57,7 @@ async function createIssueWithComment(
     isPro: boolean) {
   const nowStr = new Date().toISOString();
   try {
+    console.log(`DBM: calling IssueP1.create() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP1.create({
       issueId: 'ISSUE-001',
       commentId: `${isPro ? 'PRO' : 'CON'}#COMMENT#${nowStr}`, // This acts as a unique identifier for this comment
@@ -97,6 +99,7 @@ async function addCommentToIssue(
     const nowStr = new Date().toISOString();
     const commentKey = 'ISSUE#COMMENT#' + nowStr; // Composite sort key
 
+    console.log(`DBM: calling IssueP2.create() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP2.create({
       issueId,
       priority,
@@ -126,6 +129,7 @@ async function addCommentToIssue(
 // Another UPDATE - If you want to modify an existing comment
 async function updateExistingComment(issueId: string, commentKey: string, newText: string) {
   try {
+    console.log(`DBM: calling IssueP2.ujpdate() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP2.update({
       issueId: issueId,
       commentKey: commentKey,
@@ -142,9 +146,9 @@ async function updateExistingComment(issueId: string, commentKey: string, newTex
   }
 }
 
-// QUERY Operation - Get all Issue records
 async function getAllIssueRecords() {
   try {
+    console.log(`DBM: calling IssueP2.list() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP2.list();
     const returnedIssues = result.data;
     const nonNullIssues = returnedIssues.filter((issue) => issue !== null);    
