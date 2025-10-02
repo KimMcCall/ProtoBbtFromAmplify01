@@ -1,5 +1,13 @@
 /* HomePage.css */
 
+.loaderContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 200px; /* Adjust based on your layout */
+  margin-top: 200px; /* Adjust based on your layout */
+}
+
 .claimCardRoot {
   margin-top: 10px;
   border: 3px black solid;

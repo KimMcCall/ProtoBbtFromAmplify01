@@ -9,6 +9,8 @@ import './HomePage.css'
 import { useAppDispatch } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
 import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
+import { ClipLoader } from 'react-spinners';
+
 
 interface ClaimCardProps {
   struct: IssueBlockForRenderingType;
@@ -35,24 +37,11 @@ function ClaimCard(props: ClaimCardProps) {
   )
 }
 
-const basicStruct: IssueBlockForRenderingType = {
-  issueId: '',
-  claim: '',
-  proUrl: '',
-  conUrl: '',
-  proDocType: '',
-  conDocType: '',
-  comments: [{
-    commentKey: '',
-    commentAuthorEmail: '',
-    time: '',
-    text: ''}],
-}
-
-const arryOfStucts = [basicStruct];
+const arrayOfStructs: IssueBlockForRenderingType[] = [];
 
 function HomePage() {
-  const [structuredForRendering, setStructuredForRendering] = useState(arryOfStucts);
+  const [loading, setLoading] = useState(true);
+  const [structuredForRendering, setStructuredForRendering] = useState(arrayOfStructs);
   const dispatch = useAppDispatch();
   
   useEffect(() => {
@@ -67,6 +56,7 @@ function HomePage() {
         const structured = structurePerIssue(sortedAndRepairedIssues);
         setStructuredForRendering(structured);
         dispatch(setDisplayBlocks(structured));
+        setLoading(false);
       }
     )
     };
@@ -78,14 +68,20 @@ function HomePage() {
 
   return (
     <PageWrapper>
-      <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
-        {
-          structuredForRendering.map(struct => (
-            <ClaimCard key={struct.issueId} struct={struct} />
-          )
-        )
-        }
-      </Flex>
+          {loading ? (
+            <div className="loaderContainer">
+              <ClipLoader color="#36D7B7" loading={loading} size={300} />
+            </div>
+          ) : (
+          <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
+            {
+              structuredForRendering.map(struct => (
+                <ClaimCard key={struct.issueId} struct={struct} />
+              )
+            )
+            }
+          </Flex>
+          )}
     </PageWrapper>
   );
 }
