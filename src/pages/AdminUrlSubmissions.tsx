@@ -38,6 +38,8 @@ function AdminUrlSubmissionsPage() {
   const [chosenSubmission , setChosenSubmission] = useState<UrlSubmission | null>(null);
   const [chosenUserComment, setChosenUserComment] = useState('');
   const [allSubmissions, setAllSubmissions] = useState<UrlSubmission[]>([]);
+  const [filteredSubmissions, setFilteredSubmissions] = useState<UrlSubmission[]>([]);
+  const [justUnreviewed, setJustUnreviewed] = useState(true);
   const [previewSubmission, setPreviewSubmission] = useState(false);
   const [banUser, setBanUser] = useState(false);
 
@@ -107,7 +109,7 @@ function AdminUrlSubmissionsPage() {
         console.log(`DBM: calling UrlSubmission.list() at ${Date.now() % 10000}`);
         await dbClient.models.UrlSubmission.list().then((response) => {
           console.log('Fetched UrlSubmissions:', response.data);
-          setAllSubmissions(response.data);
+          setAndFilterSubmissions(response.data);
         }).catch((error) => {
           console.error('Error fetching UrlSubmissions:', error);
         });
@@ -119,13 +121,50 @@ function AdminUrlSubmissionsPage() {
 
   const showChooseUri = !previewSubmission;
 
+  const setAndFilterSubmissions = (submissions: UrlSubmission[]) => {
+    setAllSubmissions(submissions);
+    console.log(`justUnreviewed is: ${justUnreviewed}`);
+    console.log(`filterText is: '${filterText}'`);
+    console.log(`Total submissions count: ${submissions.length}`);
+    // Apply filtering based on justUnreviewed and filterText
+    let filtered = submissions;
+    if (justUnreviewedVar) {
+      filtered = filtered.filter((submission) => !submission.reviewed);
+    }
+    console.log(`Submissions count after justUnreviewed filter: ${filtered.length}`);
+    if (filterText.trim() !== '') {
+      const lowerFilterText = filterText.toLowerCase();
+      filtered = filtered.filter((submission) =>
+        submission.submitterEmail.toLowerCase().includes(lowerFilterText) ||
+        submission.issueId.toLowerCase().includes(lowerFilterText) ||
+        submission.issueClaim.toLowerCase().includes(lowerFilterText)
+      );
+    }
+    console.log(`Submissions count after filterText filter: ${filtered.length}`);
+    setFilteredSubmissions(filtered);
+  }
+
   function handleBanStateChange(event: ChangeEvent<HTMLInputElement>): void {
     event.stopPropagation();
-    // This would typically update some state variable to track if the ban checkbox is checked
     const shouldBanUser = event.target.checked;
-    console.log('Ban state changed:', shouldBanUser);
-    // You might want to add state management here, for example:
     setBanUser(shouldBanUser);
+  }
+
+  let justUnreviewedVar = justUnreviewed;
+
+  function handleJustUnreviewedChange(event: ChangeEvent<HTMLInputElement>): void {
+    event.stopPropagation();
+    // This would typically update some state variable to track if the justUnreviewed checkbox is checked
+    const newJustUnreviewedState = event.target.checked;
+    console.log(`Just Unreviewed checkbox changed to: ${newJustUnreviewedState}`);
+    console.log(`Calling setJustUnreviewed(${newJustUnreviewedState})`);
+    setJustUnreviewed(newJustUnreviewedState);
+    justUnreviewedVar = newJustUnreviewedState;
+    // Note: React state updates are asynchronous, so justUnreviewed won't reflect the new value immediately after setJustUnreviewed
+    // Hence, we use justUnreviewedVar to hold the intended new state for filtering
+    console.log(`After call to setJustUnreviewed, justUnreviewed is: ${justUnreviewedVar}`);
+    // Re-filter the submissions based on the new state
+    setAndFilterSubmissions(allSubmissions);
   }
 
   function Preview(props: PreviewUiProps) {
@@ -171,7 +210,7 @@ function AdminUrlSubmissionsPage() {
       console.log(`DBM: calling IssueP2.update() at ${Date.now() % 10000}`);
       await dbClient.models.IssueP2.update(issueUpdateDataWithIssueId)
 
-      // If banUser is true, you would also update the user's status here
+      // GATOR: If banUser is true, you would also update the user's status here
       console.log('Submission accepted:', updatedSubmission);
       alert('Submission accepted');
       
@@ -179,11 +218,12 @@ function AdminUrlSubmissionsPage() {
       setPreviewSubmission(false);
       setChosenSubmission(null);
       setBanUser(false);
+      setJustUnreviewed(true);
       
       // Refresh the submissions list
       console.log(`DBM: calling UrlSubmission.list() at ${Date.now() % 10000}`);
       const response = await dbClient.models.UrlSubmission.list();
-      setAllSubmissions(response.data);
+      setAndFilterSubmissions(response.data);
       } catch (error) {
       console.error('Error accepting submission:', error);
       alert('Failed to accept submission');
@@ -271,8 +311,8 @@ function AdminUrlSubmissionsPage() {
                     <CheckboxField
                       label='and ban submitter'
                       labelPosition='end'
-                      name='markReviewed'
-                      // checked={justUnreviewed}
+                      name='markBanned'
+                      checked={banUser}
                       onChange={handleBanStateChange}
                     />
                   </div>
@@ -325,20 +365,21 @@ function AdminUrlSubmissionsPage() {
                     label='Just Unreviewed'
                     labelPosition='end'
                     name='justUnreviewed'
-                    checked={banUser}
-                    onChange={handleBanStateChange}
+                    checked={justUnreviewed}
+                    onChange={handleJustUnreviewedChange}
                   />
                 </div>
               </Flex>
               <div className='urlSubmissionListDiv'>
                 {
-                  allSubmissions.map((submission) => (
-                <MyTile
-                  key={submission.id}
-                  niceKey={submission.id}
-                  submission={submission}
-                  />
-                  ))
+                  filteredSubmissions.map((submission) => (
+                    <MyTile
+                      key={submission.id}
+                      niceKey={submission.id}
+                      submission={submission}
+                      />
+                    )
+                  )
                 }
               </div>
             </Flex>
@@ -374,8 +415,6 @@ function AdminUrlSubmissionsPage() {
         </div>
       )
     }
-
-
     </PageWrapper>
   )
 }
