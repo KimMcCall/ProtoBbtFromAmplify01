@@ -70,6 +70,7 @@ export interface IssueBlockForRenderingType {
 
 export interface IssuesSliceType {
   issues: IssueType[]
+  availableIssues: IssueType[]  // Issues that are marked isAvailable=true
   displayBlocks: IssueBlockForRenderingType[]
   currentIssueId: string
 }
@@ -108,6 +109,7 @@ const initialDisplayBlockInstance: IssueBlockForRenderingType = {
 
 const initialState: IssuesSliceType = {
   issues: [initialIssueInstance],
+  availableIssues: [initialIssueInstance],
   displayBlocks: [initialDisplayBlockInstance],
   currentIssueId: '',
 };
@@ -117,9 +119,15 @@ export const issuesSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    setIssues: (state, action: PayloadAction<IssueType[]>) => {
+    setAllIssues: (state, action: PayloadAction<IssueType[]>) => {
       const newIssues = action.payload;
+      console.log(`issuesSlice: setting all issues; count = ${newIssues.length}`);
       state.issues = newIssues;
+    },
+    setAvailableIssues: (state, action: PayloadAction<IssueType[]>) => {
+      const someIssues = action.payload;
+      console.log(`issuesSlice: setting available issues; count = ${someIssues.length}`);
+      state.availableIssues = someIssues;
     },
     setDisplayBlocks: (state, action: PayloadAction<IssueBlockForRenderingType[]>) => {
       const newBlocks = action.payload;
@@ -132,13 +140,15 @@ export const issuesSlice = createSlice({
 })
 
 export const {
-  setIssues,
+  setAllIssues,
+  setAvailableIssues,
   setDisplayBlocks,
   setCurrentIssueId,
 } = issuesSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectAllIssues =  (state: RootState) => state.persistedReducer.issues.issues;
+export const selectAllAvailableIssues =  (state: RootState) => state.persistedReducer.issues.availableIssues;
 export const selectCurrentIssueId =  (state: RootState) => state.persistedReducer.issues.currentIssueId;
 export const selectCurrentIssue =  (state: RootState) => {
   const issueId = state.persistedReducer.issues.currentIssueId;

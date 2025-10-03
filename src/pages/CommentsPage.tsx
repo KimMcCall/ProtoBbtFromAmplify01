@@ -7,7 +7,7 @@ import { CommentBlockType,
   selectDisplayBlockForCurrentIssue,
   selectSomeRecordForCurrentIssue,
   setDisplayBlocks,
-  setIssues } from "../features/issues/issues";
+  setAllIssues } from "../features/issues/issues";
 import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
 import { checkForSubmissionPermission, sortAndRepairIssues, structurePerIssue, tallySubmission } from "../utils/utils";
@@ -107,7 +107,7 @@ function CommentsPage() {
     const augmentedIssues = allIssues.concat(clonedRecord);
     const sortedAndRepairedIssues = sortAndRepairIssues(augmentedIssues);
     const structured = structurePerIssue(sortedAndRepairedIssues);
-    dispatch(setIssues(sortedAndRepairedIssues));
+    dispatch(setAllIssues(sortedAndRepairedIssues));
     dispatch(setDisplayBlocks(structured));
 
     const copiedIssueId = clonedRecord.issueId;

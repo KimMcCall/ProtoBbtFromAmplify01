@@ -4,7 +4,7 @@ import PageWrapper from "../components/PageWrapper";
 import { useEffect, SyntheticEvent, useState } from 'react';
 import { getAllIssueRecords } from '../utils/dynamodb_operations';
 // import { useAppDispatch } from '../app/hooks';
-import { setCurrentIssueId, IssueType, setIssues, IssueBlockForRenderingType, setDisplayBlocks } from '../features/issues/issues';
+import { setCurrentIssueId, IssueType, setAllIssues, IssueBlockForRenderingType, setDisplayBlocks, setAvailableIssues } from '../features/issues/issues';
 import './HomePage.css'
 import { useAppDispatch } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
@@ -52,8 +52,11 @@ function HomePage() {
         const iterable: Iterable<IssueType> = result.values();
         const allIssues = Array.from(iterable);
         const sortedAndRepairedIssues = sortAndRepairIssues(allIssues);
-        dispatch(setIssues(sortedAndRepairedIssues));
-        const structured = structurePerIssue(sortedAndRepairedIssues);
+        dispatch(setAllIssues(sortedAndRepairedIssues));
+        const filteredForAvailable = sortedAndRepairedIssues.filter(issue => issue.isAvailable);
+        dispatch(setAvailableIssues(filteredForAvailable));
+        // Structure per issue for rendering
+        const structured = structurePerIssue(filteredForAvailable);
         setStructuredForRendering(structured);
         dispatch(setDisplayBlocks(structured));
         setLoading(false);
