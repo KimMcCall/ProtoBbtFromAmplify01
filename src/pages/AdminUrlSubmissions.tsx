@@ -115,8 +115,7 @@ function AdminUrlSubmissionsPage() {
         });
       };
       fetchData();
-    },
-    []
+    }
   );
 
   const showChooseUri = !previewSubmission;
@@ -273,6 +272,7 @@ function AdminUrlSubmissionsPage() {
                   src={submission.url}
                   width= "850px"
                   height="660px"
+                  title='YouTube Video'
                   >
                   </iframe>
           )
@@ -285,6 +285,7 @@ function AdminUrlSubmissionsPage() {
                   src={submission.url}
                   width= "850px"
                   height="660px"
+                  title='Google Document'
                   >
                   </iframe>
           )
