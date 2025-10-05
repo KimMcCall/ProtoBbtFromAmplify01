@@ -163,11 +163,24 @@ export const selectDisplayBlockForCurrentIssue =  (state: RootState) => {
   const foundBlock = allBlocks.find((block) => block.issueId === issueId);
   return foundBlock;
 }
-export const selectSomeRecordForCurrentIssue =  (state: RootState) => {
+export const selectLatestRecordForCurrentIssue =  (state: RootState) => {
   const issueId = state.persistedReducer.issues.currentIssueId;
   const allIssues = state.persistedReducer.issues.issues;
-  const foundIssue = allIssues.find((issue) => issue.issueId === issueId);
-  return foundIssue;
+  const issuesForThisId = allIssues.filter((issue) => issue.issueId === issueId);
+  let latestRecord: IssueType = issuesForThisId[0];
+  // If none found, return an empty record
+  if (issuesForThisId.length === 0) {
+    return latestRecord;
+  }
+  // There should always be at least one record here
+  // Find the latest by createdT
+  // Sort by createdT descending
+  issuesForThisId.forEach(issue => {
+    if (issue.createdT > latestRecord.createdT) {
+      latestRecord = issue;
+    }
+  });
+  return latestRecord;
 }
 
 export default issuesSlice.reducer

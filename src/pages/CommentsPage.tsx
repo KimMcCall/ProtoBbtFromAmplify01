@@ -5,7 +5,7 @@ import { CommentBlockType,
   IssueType,
   selectAllIssues,
   selectDisplayBlockForCurrentIssue,
-  selectSomeRecordForCurrentIssue,
+  selectLatestRecordForCurrentIssue,
   setDisplayBlocks,
   setAllIssues } from "../features/issues/issues";
 import './CommentsPage.css';
@@ -54,7 +54,7 @@ function CommentsPage() {
 
   const allIssues = useAppSelector(selectAllIssues);
   console.log(`All ${allIssues.length} issues: `, allIssues);
-  const aRecord = useAppSelector(selectSomeRecordForCurrentIssue);
+  const aRecord = useAppSelector(selectLatestRecordForCurrentIssue);
   const authorEmail = useAppSelector(selectCurrentUser).canonicalEmail;
   const issueBlock = useAppSelector(selectDisplayBlockForCurrentIssue);
   // @ts-expect-error I'm pretty sure issueBlock is not undefined
