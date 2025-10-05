@@ -25,12 +25,14 @@ function DoBetterPage() {
   const showGoogleDocUi = instructionsUiChoice === 'GoogleDoc';
   const showPdfUi = instructionsUiChoice === 'PDF';
   const showIntro = !showYouTubeUi && !showGoogleDocUi && !showPdfUi;
+  const showDocTypeChoice =!(showYouTubeUi || showGoogleDocUi || showPdfUi);
+  console.log(`In DoBetterPage, showYouTubeUi: ${showYouTubeUi}, showGoogleDocUi: ${showGoogleDocUi}, showPdfUi: ${showPdfUi}, showIntro: ${showIntro}, showDocTypeChoice: ${showDocTypeChoice}`);
+
+  // Get current user info and current issue info from Redux store
 
   const currentUserId = useAppSelector(selectCurrentUserId);
   const currentUserEmail = useAppSelector(selectCurrentUserCanonicalEmail);
   const currentIssue = useAppSelector(selectCurrentIssue);
-``
-  console.log(`In DoBetterPage, currentUserId is ${currentUserId}, currentUserEmail is ${currentUserEmail}, currentIssueId is ${currentIssue}`);
 
   function handleInstructionsUiChange(event: ChangeEvent<HTMLInputElement>): void {
     event.stopPropagation();
@@ -60,6 +62,11 @@ function DoBetterPage() {
   async function handleSubmit(): Promise<void> {
     if (!specifiedUrl) {
       alert('Please enter a URL before submitting');
+      return;
+    }
+
+    if (!explanationText) {
+      alert('Please enter an explanation before submitting');
       return;
     }
 
@@ -172,18 +179,27 @@ function DoBetterPage() {
           <h2>Let's Do Better</h2>
           <div className="doBetterIntroText">
             <div className='doBetterTextDiv'>
-              This page should explain how to create a Google Doc and prepare it for sharing with us</div>
-            <div className='doBetterTextDiv'>
-              It should also contain a textfield for the appropriate URL and buttons to Submit, Clear, and Return to Intro</div>
+              This page lets you submit a Google Doc that you believe does a better job than the current offering. Here's how:</div>
+            <div className='doBetterInstructionsDiv'>
+              <ol>
+                <li><b>Create a Google Doc:</b> Go to Google Docs and create a new document. Write your content, ensuring it is well-structured and clearly presents your perspective on the issue.</li>
+                <li><b>Set Sharing Permissions:</b> Click the "Share" button in the top right corner of the Google Docs interface. In the sharing settings, set the document to "Anyone with the link" and ensure they have "Viewer" access. This allows us to view your document without needing special permissions.</li>
+                <li><b>Copy the Shareable Link:</b> After setting the appropriate permissions, copy the shareable link provided in the sharing settings.</li>
+                <li><b>Paste the Link Below:</b> Paste the copied link into the "Google Doc URL" field below. Make sure to also provide a brief explanation of why you believe this document does a better job than the current one.</li>
+                <li><b>Submit Your Contribution:</b> Click the "Submit" button to send us your Google Doc link along with your explanation. We appreciate your effort in helping us improve our content!</li>
+              </ol>
+            </div>
             <div className='doBetterUrlAndButtonsDiv'>
               <TextAreaField
                 label="Explanation:"
                 value={explanationText}
                 onChange={handleExplanationChange}
-                rows={7}
+                rows={4}
                 placeholder="Please provide a brief explanation of why you believe this document does a better job than the current one...."
               />
-              <TextField label="Google Doc URL" value={specifiedUrl} onChange={handleUrlChange} />
+              <div className='doBetterUrlDiv'>
+                <TextField label="Google Doc URL:" value={specifiedUrl} onChange={handleUrlChange} />
+              </div>
               <Flex className='doBetterButtonsRow' gap="1rem">
                 <Button onClick={handleSubmit}>Submit</Button>
                 <Button onClick={handleClear}>Clear</Button>
@@ -263,27 +279,32 @@ function DoBetterPage() {
         </div>
       ) : null
     }
-        <div className='doBetterRadioGroupDiv'>
-          <RadioGroupField
-            legend="Choose a doc type:"
-            name="docTypeGroup"
-            direction="row"
-            value={instructionsUiChoice}
-            onChange={handleInstructionsUiChange}>
-            <div className='doBetterRadioDiv'>
-              <Radio value="YouTube">&nbsp;YouTube Video</Radio>
-            </div>
-            <div className='doBetterRadioDiv'>
-              <Radio value="GoogleDoc">&nbsp;Google Doc</Radio>
-            </div>
-            <div className='doBetterRadioDiv'>
-              <Radio value="PDF">&nbsp;PDF Document</Radio>
-            </div>
-            <div className='doBetterRadioDiv'>
-              <Radio value="NoChoice">&nbsp;Review Intro</Radio>
-            </div>
-          </RadioGroupField>
-        </div>
+    {
+    showDocTypeChoice &&
+    (
+      <div className='doBetterRadioGroupDiv'>
+        <RadioGroupField
+          legend="Choose a doc type:"
+          name="docTypeGroup"
+          direction="row"
+          value={instructionsUiChoice}
+          onChange={handleInstructionsUiChange}>
+          <div className='doBetterRadioDiv'>
+            <Radio value="YouTube">&nbsp;YouTube Video</Radio>
+          </div>
+          <div className='doBetterRadioDiv'>
+            <Radio value="GoogleDoc">&nbsp;Google Doc</Radio>
+          </div>
+          <div className='doBetterRadioDiv'>
+            <Radio value="PDF">&nbsp;PDF Document</Radio>
+          </div>
+          <div className='doBetterRadioDiv'>
+            <Radio value="NoChoice">&nbsp;Review Intro</Radio>
+          </div>
+        </RadioGroupField>
+      </div>
+  )
+}
       </div>
     </PageWrapper>
   );
