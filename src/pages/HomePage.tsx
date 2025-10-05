@@ -43,6 +43,20 @@ function HomePage() {
   const [loading, setLoading] = useState(true);
   const [structuredForRendering, setStructuredForRendering] = useState(arrayOfStructs);
   const dispatch = useAppDispatch();
+
+  const filterForUltimateAvailability = (issues: IssueType[]) => {
+    const issueAvailablityMap = new Map<string, boolean>();
+    issues.forEach(issue => {
+      issueAvailablityMap.set(issue.issueId, issue.isAvailable);
+    });
+    let issuesToShow: IssueType[] = [];
+    issues.forEach(issue => {
+      if (issueAvailablityMap.get(issue.issueId)) {
+        issuesToShow = issuesToShow.concat(issue);
+      }
+    });
+    return issuesToShow;
+  } 
   
   useEffect(() => {
     const fetchIssues = async () => {
@@ -52,8 +66,9 @@ function HomePage() {
         const iterable: Iterable<IssueType> = result.values();
         const allIssues = Array.from(iterable);
         const sortedAndRepairedIssues = sortAndRepairIssues(allIssues);
+        console.log(`All ${sortedAndRepairedIssues.length} issues: `, sortedAndRepairedIssues);
         dispatch(setAllIssues(sortedAndRepairedIssues));
-        const filteredForAvailable = sortedAndRepairedIssues.filter(issue => issue.isAvailable);
+        const filteredForAvailable = filterForUltimateAvailability(sortedAndRepairedIssues);
         dispatch(setAvailableIssues(filteredForAvailable));
         // Structure per issue for rendering
         const structured = structurePerIssue(filteredForAvailable);

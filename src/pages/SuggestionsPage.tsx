@@ -7,15 +7,7 @@ import { dbClient } from '../main';
 import { SyntheticEvent, useState } from 'react';
 import ToastNotifier from '../components/ToastNotifier';
 import { checkForSubmissionPermission, tallySubmission } from '../utils/utils';
-
-const policyP: React.CSSProperties = {
-  fontStyle: 'italic',
-  fontSize: '85%',
-  width: '800px',
-  border: '1px solid gray',
-  padding: '4px',
-  backgroundColor: '#f0f0f0',
-};
+import './SuggestionsPage.css'
 
 function SuggestionsPage() {
   const [siteTitle, setSiteTitle] = useState('');
@@ -82,7 +74,7 @@ function SuggestionsPage() {
             <h2>Suggestion for Site</h2>
             <p>Please share with us any suggestions you have about how to improve this web site.
               Thank you!<br />&nbsp;</p>
-            <p  style={policyP}>
+            <p className='policyP'>
               Note: We insist that all postings on this site be respectful and non-abusive.
               Site administrotrs reserve the right to summarily ban anyone who submits
               vulgar, hateful, name-calling, or otherwise abusive content.
@@ -116,7 +108,7 @@ function SuggestionsPage() {
             <br />
             Click <a>here</a>&nbsp;
               if you want to compose a brief essay yourself.</p>
-            <p  style={policyP}>
+            <p className='policyP'>
               Note: We insist that all postings on this site be respectful and non-abusive.
               Site administrotrs reserve the right to summarily ban anyone who submits
               vulgar, hateful, name-calling, or otherwise abusive content.

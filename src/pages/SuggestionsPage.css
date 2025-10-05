@@ -1,0 +1,10 @@
+/* SuggestionsPage.css */
+
+.policyP {
+  font-style: 'italic';
+  font-size: '85%';
+  width: '800px';
+  border: '1px solid gray';
+  padding: '4px';
+  background-color: '#f0f0f0';
+}
