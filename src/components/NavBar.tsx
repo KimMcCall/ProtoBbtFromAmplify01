@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { Flex } from '@aws-amplify/ui-react';
 import { useAppSelector } from "../app/hooks";
-import { selectCurrentUserIsAdmin, selectCurrentUserIsSuperAdmin } from "../features/userInfo/userInfoSlice";
+import { selectCurrentUserIsAdmin, selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin } from "../features/userInfo/userInfoSlice";
 import './NavBar.css';
 
 /*
@@ -37,6 +37,7 @@ function NavBarItem({ dest, label }: NavBarItemProps) {
 function NavBar() {
   const isSuperAdmin =  useAppSelector(selectCurrentUserIsSuperAdmin);
   const isAdmin = useAppSelector(selectCurrentUserIsAdmin);
+  const isLoggedIn = useAppSelector(selectCurrentUserIsLoggedIn)
 
   return (
     <div className='bar'>
@@ -51,7 +52,7 @@ function NavBar() {
         <NavBarItem dest="/" label="Issues" />
         <NavBarItem dest="/mission" label='Mission' />
         <NavBarItem dest="/suggest" label='Suggest' />
-        <NavBarItem dest="/finances" label="Finances" />
+        {isLoggedIn && <NavBarItem dest="/finances" label="Finances" />}
         {isAdmin && <NavBarItem  dest="/admin"  label="Admin" />}
         {isAdmin && <NavBarItem  dest="/adminUsers"  label="Admin Users" />}
         {isAdmin && <NavBarItem  dest="/adminIssues"  label="Admn Issues" />}

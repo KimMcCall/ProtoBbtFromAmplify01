@@ -2,21 +2,19 @@ import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css'; // Import default styles
 import PageWrapper from '../components/PageWrapper';
 import LoggedInPage from './LoggedInPage';
-
-const spacer: React.CSSProperties = {
-  margin: '120px',
-};
-
-const hideButton: React.CSSProperties = {
-  display: 'none',
-};
+import './LoginPage.css';
+import { useAppDispatch } from '../app/hooks';
+import { setNextPath } from '../features/navigation/navigationSlice';
 
 const shouldShowUserInfo = false;
 
 function LoginPage() {
+  const dispatch = useAppDispatch();
+  dispatch(setNextPath('/')); // After login, go to home page
+  
   return (
     <PageWrapper>
-      <div style={spacer}>
+      <div className='spacer'>
         <Authenticator>
           {({ signOut, user }) => (
             shouldShowUserInfo || !user
@@ -26,7 +24,7 @@ function LoginPage() {
                 <h1>Hello!</h1>
                 <h1>LoginId: {user?.signInDetails?.loginId}</h1>
                 <h1>UserId: {user?.userId}</h1>
-                <button onClick={signOut} style={hideButton}>Sign Out</button>
+                <button className='hiddenButton' onClick={signOut}>Sign Out</button>
               </div>
               )
             :

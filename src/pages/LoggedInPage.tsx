@@ -18,6 +18,7 @@ function LoggedInPage(user: AuthUser) {
   const submittedEmail = signInDetails?.loginId || '';
   const newPath = useAppSelector(selecNext);
   const cEmail = toCanonicalEmail(submittedEmail);
+  const showInfo = false;
 
   const isRepeated = useAppSelector(selectNowIsWithinRecencyHorizon);
   console.log(`isRepeated: ${isRepeated}; dispatching '${isRepeated ? 'cacheAbortedCallFrom' : 'setLastLoginTimeToNow'}'`)
@@ -142,6 +143,10 @@ function LoggedInPage(user: AuthUser) {
     handleLoginInfo();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!showInfo){
+    return <div>Loading...</div>;
+  }
 
   return (
     <div>

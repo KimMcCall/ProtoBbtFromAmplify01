@@ -29,6 +29,7 @@ import AdminUrlSubmissions from './pages/AdminUrlSubmissions';
 import AdminPage from './pages/AdminPage';
 import DoBetterPage from './pages/DoBetterPage';
 import AdminUncloisteredPage from './pages/AdminUncloisteredPage';
+import AutoTimeout from './components/AutoTimeout.tsx';
 
 function App() {
   return (
@@ -39,12 +40,23 @@ function App() {
         <Route path="/logout" element={<LogoutPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/issue" element={<IssuePage />} />
-        <Route path="/comments" element={<CommentsPage />} />
+        <Route
+          path="/comments"
+          element={
+            <ProtectedRoute>
+              <AutoTimeout>
+                <CommentsPage />
+              </AutoTimeout>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/suggest"
           element={
             <ProtectedRoute>
-              <SuggestionPage />
+              <AutoTimeout>
+                <SuggestionPage />
+              </AutoTimeout>
             </ProtectedRoute>
           }
         />
@@ -52,7 +64,9 @@ function App() {
           path="/doBetter"
           element={
             <ProtectedRoute>
-              <DoBetterPage />
+              <AutoTimeout>
+                <DoBetterPage />
+              </AutoTimeout>
             </ProtectedRoute>
           }
         />
@@ -64,7 +78,9 @@ function App() {
           path="/admin"
           element={
             <ProtectedRoute>
-              <AdminPage />
+              <AutoTimeout>
+                <AdminPage />
+              </AutoTimeout>
             </ProtectedRoute>
           }
         />
@@ -72,7 +88,9 @@ function App() {
           path="/adminUrlSubmissions"
           element={
             <ProtectedRoute>
-              <AdminUrlSubmissions />
+              <AutoTimeout>
+                <AdminUrlSubmissions />
+              </AutoTimeout>
             </ProtectedRoute>
           }
         />
@@ -80,7 +98,9 @@ function App() {
           path="/adminUsers"
           element={
             <ProtectedRoute>
-              <AdminUsersPage />
+              <AutoTimeout>
+                <AdminUsersPage />
+              </AutoTimeout>
             </ProtectedRoute>
           }
         />
@@ -88,7 +108,9 @@ function App() {
           path="/adminIssues"
           element={
             <ProtectedRoute>
-              <AdminIssuesPage />
+              <AutoTimeout>
+                <AdminIssuesPage />
+              </AutoTimeout>
             </ProtectedRoute>
           }
         />
@@ -96,7 +118,9 @@ function App() {
           path="/adminSubmissions"
           element={
             <ProtectedRoute>
-              <AdminSubmissions />
+              <AutoTimeout>
+                <AdminSubmissions />
+              </AutoTimeout>
             </ProtectedRoute>
           }
         />
@@ -104,7 +128,9 @@ function App() {
           path="/adminUncloistered"
           element={
             <ProtectedRoute>
-              <AdminUncloisteredPage />
+              <AutoTimeout>
+                <AdminUncloisteredPage />
+              </AutoTimeout>
             </ProtectedRoute>
           }
         />

@@ -23,15 +23,22 @@ async function handleSignOut(setSignedOut: { (value: SetStateAction<boolean>): v
 }
 
 function LogoutPage() {
-  const [signedOut, setSignedOut] = useState(false);
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  handleSignOut(setSignedOut);
-  if (logoutSucceded) {
-    dispatch(clearCurrentUserInfo());
-  }
+  const [signedOut, setSignedOut] = useState(false);
+  
   const newPath = useAppSelector(selecNext);
+
+useEffect(() => {
+  const initiateSignOut = async () => {
+    await handleSignOut(setSignedOut);
+    if (logoutSucceded) {
+      dispatch(clearCurrentUserInfo());
+    }
+  };
+  initiateSignOut();
+}, [dispatch]);
 
   useEffect(() => {
     if (signedOut) {
