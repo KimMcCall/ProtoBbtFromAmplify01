@@ -12,6 +12,16 @@
   border-radius: 0px 18px 18px 00px; /* Different radius for each corner */
 }
 
+.categoryButtonSelected {
+  cursor: pointer;
+  font-size: 120%;
+  font-weight: bold;
+  margin-bottom: 12px;
+  padding-left: 4px;
+  border-radius: 0px 18px 18px 00px; /* Different radius for each corner */
+  background-color: #818080ff;
+}
+
 .categoryButton:hover {
   background-color: #cecbcb;
 }
@@ -78,4 +88,17 @@
 .urlSubmissionListDiv {
   width: 606px;
   padding-top: 10px;
+}
+
+.aspTileContent {
+  width: 720px;
+  padding-left: 12px;
+}
+
+.aspTileContentUnread {
+  font-weight: bold;
+}
+
+.aspTileContentRead {
+  font-weight: normal;
 }

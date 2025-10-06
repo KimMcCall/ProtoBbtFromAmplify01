@@ -1,0 +1,28 @@
+/* PlayPage01.css */
+
+.pp01MuDiv {
+  border: 1px solid black;
+  padding: "10px";
+  margin: "10px";
+  width: "1000px";
+  height: "420px";
+  background-color: "#fff0f0";
+}
+
+.pp01ListDiv {
+  border: "1px solid black";
+  padding: "10px";
+  margin: "10px";
+  width: "980px";
+  height: "140px";
+  background-color: "#fff0f0";
+}
+
+.pp01ShowDiv {
+  border: "1px solid black";
+  padding: "10px";
+  margin: "10px";
+  width: "580px";
+  height: "64px";
+  background-color: "#fff0f0";
+}

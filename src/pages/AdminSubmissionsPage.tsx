@@ -137,6 +137,8 @@ function GMailTile(props: TilePropType) {
     }
   };
 
+  const contentDivStyle = isRead ? "aspTileContentRead" : "aspTileContentUnread";
+
   return (
     <div key={id} onClick={showSingleSibmissionUI}>
       <Flex className='tileDiv' direction="row" gap="8px">
@@ -146,7 +148,7 @@ function GMailTile(props: TilePropType) {
         { important ?
           (<MdLabelImportant color='#ffbb00eb' size='22px' onClick={toggleImportant} />) :
           (<MdLabelImportantOutline size='22px' onClick={toggleImportant} />)}
-        <div style={{ fontWeight: isRead ? 'normal' : 'bold' }}>
+        <div className={contentDivStyle}>
           <Flex direction="row" >
             <div className='senderDiv'>{sender}</div>
             <div className='titleDiv'>
@@ -161,8 +163,6 @@ function GMailTile(props: TilePropType) {
     </div>
   );
 }
-
-const selectedColor = '#818080ff';
 
 type CategoryButtonPropType = {
   label: string
@@ -183,14 +183,10 @@ function CategoryButton (props: CategoryButtonPropType) {
     showSingle(false);
   }
 
-  const conditionalStyle = {
-    backgroundColor: selectedColor,
-  };
+  const clName = isSelected ? 'categoryButtonSelected' : 'categoryButton';
 
   return (
-    <div className='categoryButton'
-        onClick={handleButtonClick}
-        style={isSelected ? conditionalStyle : {}} >
+    <div className={clName} onClick={handleButtonClick}>
       {label}
     </div>
   );

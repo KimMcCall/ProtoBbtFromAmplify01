@@ -98,7 +98,6 @@ function CommentsPage() {
     const nowStr = new Date().toISOString();
     const commenntKey = `ISSUE#COMMENT#${nowStr}`;
     const commentText = text;
-    // @ts-expect-error I'm pretty sure there are no fields here with 'undefined' content
     const clonedRecord: IssueType = { ...aRecord };
     clonedRecord.commentKey = commenntKey;
     clonedRecord.commentText = commentText;

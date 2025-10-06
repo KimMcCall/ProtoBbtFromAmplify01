@@ -3,27 +3,6 @@ import { Flex, Menu, MenuItem, Avatar } from '@aws-amplify/ui-react';
 import { selectCurrentUserIsLoggedIn } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
 
-const box: React.CSSProperties = {
-  height: '46px',
-  width: '1206px',
-  border: '2px solid blue',
-  padding: '4px',
-  backgroundColor: '#d0e0ff',
-  paddingRight: '20px',
-};
-
-const logoSpan: React.CSSProperties = {
-  cursor: 'pointer',
-  fontWeight: 'bold',
-  fontSize: '150%',
-};
-
-const loginDiv: React.CSSProperties = {
-  cursor: 'pointer',
-  fontWeight: 'bold',
-  fontSize: '120%',
-};
-
 function BannerBox() {
   const navigate = useNavigate();
 
@@ -46,7 +25,7 @@ function BannerBox() {
   const isLoggeddIn = useAppSelector(selectCurrentUserIsLoggedIn);
 
   return (
-    <div id="banner-box" style={box}>
+    <div className='bbBox' id="banner-box">
       <Flex
         direction="row"
         justifyContent="space-between"
@@ -55,10 +34,10 @@ function BannerBox() {
         wrap="nowrap"
         gap="1rem"
       >
-        <span onClick={goHome} style={logoSpan}>TruthSquad.com</span>
+        <span className='bbLogoSpan' onClick={goHome}>TruthSquad.com</span>
         
         {!isLoggeddIn ?
-          <div onClick={() => goToLogInPage()} style={loginDiv}>Log In</div>
+          <div className='bbLoginDiv' onClick={() => goToLogInPage()}>Log In</div>
         :
           <Menu menuAlign="center"
             trigger={

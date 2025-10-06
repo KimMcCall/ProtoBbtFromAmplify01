@@ -3,31 +3,6 @@ import { Flex, TextAreaField } from '@aws-amplify/ui-react';
 import PageWrapper from "../components/PageWrapper";
 import { useState } from 'react';
 
-const muDiv = {
-  border: "1px solid black",
-  padding: "10px",
-  margin: "10px",
-  width: "1000px",
-  height: "420px",
-  backgroundColor: "#fff0f0",
-};
-const listDiv = {
-  border: "1px solid black",
-  padding: "10px",
-  margin: "10px",
-  width: "980px",
-  height: "140px",
-  backgroundColor: "#fff0f0",
-};
-const showDiv = {
-  border: "1px solid black",
-  padding: "10px",
-  margin: "10px",
-  width: "580px",
-  height: "64px",
-  backgroundColor: "#fff0f0",
-};
-
 const testGet = () => {
   console.log(`DBM: calling RegisteredUserP2.get() at ${Date.now() % 10000}`);
   dbClient.models.RegisteredUserP2.get({id: 'a9262597-4129-4b84-84a3-a0b991eeb052'})
@@ -85,8 +60,8 @@ function PlayPage01() {
     <PageWrapper>
       <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
         <h1>Play Page 01</h1>
-        <div style={muDiv}>
-          <div style={listDiv}>
+        <div className="pp01MuDiv">
+          <div className="pp01ListDiv">
              <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
               <button onClick={() => listSuperAdmins()}>List SuperAdmins</button>
               <TextAreaField
@@ -98,7 +73,7 @@ function PlayPage01() {
                 height="180px" />
             </Flex>
           </div>
-          <div style={showDiv}>
+          <div className="pp01ShowDiv">
              <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
               <button onClick={() => testGet()}>Test get()</button>
               <button onClick={() => testSecondaryIndex()}>Test Secondary Index()</button>

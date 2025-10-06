@@ -108,6 +108,7 @@ function IssuePage() {
           (
             <iframe
               src={proUrl}
+              title="GoogleDocProIFrame"
               width= "850px"
               height="660px"
               >
@@ -153,6 +154,7 @@ function IssuePage() {
           (
             <iframe
               src={conUrl}
+              title="GoogleDocConIFrame"
               width= "850px"
               height="660px"
               >
