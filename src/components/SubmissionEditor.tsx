@@ -30,7 +30,8 @@ function SubmissionEditor(props: SubmissionEditorProps) {
       return;
     }
 
-    const permissionQResult = await checkForPermissionToSubmitText(submission.userId, content);
+    const activity = 'Revising Submission';
+    const permissionQResult = await checkForPermissionToSubmitText(activity, submission.userId, content);
     if (!permissionQResult.granted) {
       return;
     }

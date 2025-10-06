@@ -21,7 +21,8 @@ function SuggestionsPage() {
 
   const handleSiteSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
-    const permissionQResult = await checkForPermissionToSubmitText(currentUserId, siteText);
+    const activity = 'Suggesting Site';
+    const permissionQResult = await checkForPermissionToSubmitText(activity, currentUserId, siteText);
     if (!permissionQResult.granted){
       return;
     }
@@ -32,7 +33,8 @@ function SuggestionsPage() {
 
   const handleTopicSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
-    const permissionQResult = await checkForPermissionToSubmitText(currentUserId, topicText);
+    const activity = 'Suggesting Topic';
+    const permissionQResult = await checkForPermissionToSubmitText(activity, currentUserId, topicText);
     if (!permissionQResult.granted){
       return;
     }

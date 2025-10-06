@@ -98,7 +98,7 @@ const createBanningRecordForGoogleDocPolicyViolation = (userId: string, url: str
   });
 };
 
-export const checkForPermissionToSubmitText = async (currentUserId: string, str: string) => {
+export const checkForPermissionToSubmitText = async (activity: string, currentUserId: string, str: string) => {
   const trustedConformance: PermissionQueryResult = await checkForTrustedPermission(currentUserId);
   if (trustedConformance.granted) {
     console.log(`Allowing Submission because user ${currentUserId} is trusted`)
@@ -116,10 +116,38 @@ export const checkForPermissionToSubmitText = async (currentUserId: string, str:
   if (!policyConformance.granted) {
     console.warn(`Permission denied: ${policyConformance.explanation}`);
     alert(`Permission denied: ${policyConformance.explanation}`);
+    banUserForTextPolicyViolation(activity, currentUserId, str);
     return policyConformance;
   }
 
   return { granted: true, explanation: "It's all good!" };
+};
+
+const banUserForTextPolicyViolation = async (activity: string, userId: string, text: string) => {
+  console.log(`Banning user ${userId} for text policy violation`);
+  const banningStruct = {id: userId, isBanned: true};
+  console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
+  await dbClient.models.RegisteredUserP2.update(banningStruct);
+  createBanningRecordForTextPolicyViolation(activity, userId, text);
+  await signOut();
+  };
+
+const createBanningRecordForTextPolicyViolation = (activity: string, userId: string, text: string) => {
+  console.log(`Creating banning record for user ${userId} for text policy violation`);
+  const banningRecord = {
+    userId,
+    reason: "Text policy violation",
+    activity,
+    docType: "Text",
+    badText: text,
+    badGdUrl: "",
+  };
+  console.log(`DBM: calling Banning.create() at ${Date.now() % 10000}`);
+  dbClient.models.Banning.create(banningRecord).then(() => {
+    console.log(`DBM: Successfully created banning record for user ${userId}`);
+  }).catch((error) => {
+    console.error(`DBM: Failed to create banning record for user ${userId}: ${error}`);
+  });
 };
 
 const checkGoogleDocUrlForPolicyConformance = async (currentUserId: string, url: string): Promise<PermissionQueryResult> => {

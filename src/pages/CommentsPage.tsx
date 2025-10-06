@@ -75,7 +75,8 @@ function CommentsPage() {
   }
 
   const createCommentFromSubmission = async (text: string) => {
-    const permissionQResult = await checkForPermissionToSubmitText(currentUserId, text);
+    const activity = 'Submitting Comment';
+    const permissionQResult = await checkForPermissionToSubmitText(activity, currentUserId, text);
     if (!permissionQResult.granted) {
       return;
     }
