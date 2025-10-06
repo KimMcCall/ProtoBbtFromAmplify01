@@ -18,27 +18,11 @@ const printDocument = () => {
 }
 
 function SketchPage() {
-  const outerBoxStyle: React.CSSProperties = {
-    width: '600px',
-    height: '440px',
-    background: 'linear-gradient(to top right, #ed1515ff, #1a2cf1ff)', // Example linear gradient
-    border: '2px solid black',
-    padding: '20px',
-    margin: '20px',
-  };
-
-  const innerBoxStyle: React.CSSProperties = {
-    height: '320px',
-    border: '2px solid blue',
-    padding: '10px',
-    margin: '10px',
-    backgroundColor: '#d0e0ff',
-  };
 
   return (
     <main>
-      <div id='flierDiv' style={outerBoxStyle}>
-        <div style={innerBoxStyle}>
+      <div className='sketchOuterBox' id='flierDiv'>
+        <div className='sketchInnerBox'>
             This is the text inside the inner box.
         </div>
       </div>

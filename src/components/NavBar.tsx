@@ -4,14 +4,6 @@ import { useAppSelector } from "../app/hooks";
 import { selectCurrentUserIsAdmin, selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin } from "../features/userInfo/userInfoSlice";
 import './NavBar.css';
 
-/*
-const buttonDiv: React.CSSProperties = {
-  cursor: 'pointer',
-  fontWeight: 'bold',
-  fontSize: '140%',
-};
-*/
-
 type NavBarItemProps = {
   dest: string;
   label: string;

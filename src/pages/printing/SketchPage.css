@@ -1,0 +1,18 @@
+/* SketchPage.css */
+
+.sketchOuterBox {
+    width: 600px;
+    height: 440px;
+    background: linear-gradient(to top right, #ed1515ff, #1a2cf1ff); /* Example linear gradient */
+    border: 2px solid black;
+    padding: 20px;
+    margin: 20px;
+}
+
+.sketchInnerBox {
+    height: 320px;
+    border: 2px solid blue;
+    padding: 10px;
+    margin: 10px;
+    background-color: #d0e0ff;
+}
