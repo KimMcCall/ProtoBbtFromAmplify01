@@ -1,6 +1,7 @@
 import { Flex } from '@aws-amplify/ui-react';
-import BannerBox from "../components/BannerBox.";
+import BannerBox from "./BannerBox";
 import NavBar from '../components/NavBar';
+import './PageWrapper.css';
 
 function PageWrapper(children: { children: React.ReactNode } ) {
   return (

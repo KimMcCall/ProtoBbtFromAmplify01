@@ -82,17 +82,6 @@ function CommentsPage() {
     createCommentWithText(text);
     tallySubmission(currentUserId);
   }
-  
-  const handleAutoCommentButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    const freeToProceed = await checkForSubmissionPermission(currentUserId);
-    if (!freeToProceed.granted) {
-      return;
-    }
-    const commentText = `This is an auto-generated comment that should show up in the dB.`;
-    createCommentWithText(commentText);
-    tallySubmission(currentUserId);
-  }
 
   const createCommentWithText = async (text: string) => {
     const nowStr = new Date().toISOString();
@@ -168,14 +157,6 @@ function CommentsPage() {
             <Button onClick={handleCommentButtonClick}>
               Make your own Comment
             </Button>
-            {
-              false && 
-              (
-                <Button onClick={handleAutoCommentButtonClick}>
-                  Test AutoComment
-                </Button>
-              )
-            }
           </Flex>
         </div>
         {

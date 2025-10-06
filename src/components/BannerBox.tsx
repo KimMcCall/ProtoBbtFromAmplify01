@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Flex, Menu, MenuItem, Avatar } from '@aws-amplify/ui-react';
 import { selectCurrentUserIsLoggedIn } from '../features/userInfo/userInfoSlice';
 import { useAppSelector } from '../app/hooks';
+import './BannerBox.css';
 
 function BannerBox() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function BannerBox() {
         wrap="nowrap"
         gap="1rem"
       >
-        <span className='bbLogoSpan' onClick={goHome}>TruthSquad.com</span>
+        <div className='bbLogoDiv' onClick={goHome}>TruthSquad.com</div>
         
         {!isLoggeddIn ?
           <div className='bbLoginDiv' onClick={() => goToLogInPage()}>Log In</div>
@@ -47,7 +48,7 @@ function BannerBox() {
             <MenuItem onClick={() => {goToProfile()}}>Profile</MenuItem>
             <MenuItem onClick={() => {logOff()}}>Log Off</MenuItem>
           </Menu>
-          }
+        }
       </Flex>
     </div>
   );

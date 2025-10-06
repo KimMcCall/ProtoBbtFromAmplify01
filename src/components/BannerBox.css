@@ -11,12 +11,11 @@
 
 .bbLoginDiv {
   cursor: pointer;
-  font-weight: bold;
   font-size: 120%;
 }
 
-.bbLogoSpan {
-  cursor: 'pointer';  
-  font-weight: 'bold';
-  font-size: '150%';
+.bbLogoDiv {
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 150%;
 }
