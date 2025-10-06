@@ -222,7 +222,7 @@ if (category === "inbox") {
 
 export type SubmissionWithDateType = {
     id: string;
-    userId: string | null;
+    userId: string;
     // sender: string;
     category: string;
     title: string | null;

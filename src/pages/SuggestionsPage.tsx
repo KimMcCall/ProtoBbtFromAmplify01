@@ -6,7 +6,7 @@ import { useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
 import { SyntheticEvent, useState } from 'react';
 import ToastNotifier from '../components/ToastNotifier';
-import { checkForSubmissionPermission, tallySubmission } from '../utils/utils';
+import { checkForPermissionToSubmitText, tallySubmission } from '../utils/utils';
 import './SuggestionsPage.css'
 
 function SuggestionsPage() {
@@ -21,8 +21,8 @@ function SuggestionsPage() {
 
   const handleSiteSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
-    const havePermission = await checkForSubmissionPermission(currentUserId);
-    if (!havePermission.granted){
+    const permissionQResult = await checkForPermissionToSubmitText(currentUserId, siteText);
+    if (!permissionQResult.granted){
       return;
     }
     await handleSubmitControlled('Site Suggestion', siteTitle, siteText);
@@ -32,8 +32,8 @@ function SuggestionsPage() {
 
   const handleTopicSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
-    const havePermission = await checkForSubmissionPermission(currentUserId);
-    if (!havePermission.granted){
+    const permissionQResult = await checkForPermissionToSubmitText(currentUserId, topicText);
+    if (!permissionQResult.granted){
       return;
     }
     await handleSubmitControlled('Topic Suggestion', topicTitle, topicText);
@@ -64,7 +64,7 @@ function SuggestionsPage() {
   return (
     <PageWrapper>
       <Tabs.Container defaultValue="1">
-        <Tabs.List spacing='equal' >
+        <Tabs.List justifyContent="space-around">
           <Tabs.Item value="1">Suggestion for Site</Tabs.Item>
           <Tabs.Item value="2">Suggest New Topic</Tabs.Item>
           <Tabs.Item value="3">Review/Edit your Suggestions</Tabs.Item>

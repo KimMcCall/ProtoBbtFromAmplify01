@@ -10,7 +10,7 @@ import { CommentBlockType,
   setAllIssues } from "../features/issues/issues";
 import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
-import { checkForSubmissionPermission, sortAndRepairIssues, structurePerIssue, tallySubmission } from "../utils/utils";
+import { checkForPermissionToSubmitText, sortAndRepairIssues, structurePerIssue, tallySubmission } from "../utils/utils";
 import { selectCurrentUser, selectCurrentUserId } from "../features/userInfo/userInfoSlice";
 import { addCommentToIssue } from "../utils/dynamodb_operations";
 import CommentSubmissionForm from "../components/CommentSubmissionForm";
@@ -75,8 +75,8 @@ function CommentsPage() {
   }
 
   const createCommentFromSubmission = async (text: string) => {
-    const freeToProceed = await checkForSubmissionPermission(currentUserId);
-    if (!freeToProceed.granted) {
+    const permissionQResult = await checkForPermissionToSubmitText(currentUserId, text);
+    if (!permissionQResult.granted) {
       return;
     }
     createCommentWithText(text);

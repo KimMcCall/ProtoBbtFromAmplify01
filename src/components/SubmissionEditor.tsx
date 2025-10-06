@@ -5,6 +5,7 @@ import { Flex, Button, TextField, TextAreaField } from '@aws-amplify/ui-react';
 import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissionsPage'
 import { dbClient } from "../main";
 import './SubmissionEditor.css'
+import { checkForPermissionToSubmitText, tallySubmission } from '../utils/utils';
 
 type SubmissionEditorProps = {
   submission: SubmissionType;
@@ -24,16 +25,30 @@ function SubmissionEditor(props: SubmissionEditorProps) {
 
   const handleSubmitButtonClick = async (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
-        const myUpdate =  {
-          id: submission.id,
-          title: title,
-          content: content,
-        };
-        console.log(`DBM: calling   update() at ${Date.now() % 10000}`);
-        await dbClient.models.Submission.update(myUpdate);
-        submission.title = title;
-        submission.content= content;
-        editorShowOrHide(false);
+    if (title.trim() === '' || content.trim() === '') {
+      alert('Neither Title nor Content can be empty.');
+      return;
+    }
+
+    const permissionQResult = await checkForPermissionToSubmitText(submission.userId, content);
+    if (!permissionQResult.granted) {
+      return;
+    }
+
+    // Prepare the updated submission object
+    const myUpdate =  {
+      id: submission.id,
+      title: title,
+      content: content,
+    };
+
+    console.log(`DBM: calling update() at ${Date.now() % 10000}`);
+    await dbClient.models.Submission.update(myUpdate);
+    submission.title = title;
+    submission.content= content;
+    editorShowOrHide(false);
+    alert('Submission updated successfully!');
+    tallySubmission(submission.userId);
   }
 
   useEffect(() => {

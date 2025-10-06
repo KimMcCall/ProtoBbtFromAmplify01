@@ -8,7 +8,7 @@ import { dbClient } from '../main';
 import { useAppSelector } from '../app/hooks';
 import { selectCurrentUserCanonicalEmail, selectCurrentUserId } from '../features/userInfo/userInfoSlice';
 import { selectCurrentIssue } from '../features/issues/issues';
-import { checkForPermissionOnGoogleDoc } from '../utils/utils';
+import { checkForPermissionToSubmitGoogleDoc, tallySubmission } from '../utils/utils';
 
 function DoBetterPage() {
   const [instructionsUiChoice, setInstructionsUiChoice] = useState('NoChoice');
@@ -93,7 +93,7 @@ function DoBetterPage() {
     let permissionQResult = { granted: true, explanation: '' };
 
     if (showGoogleDocUi) {
-      permissionQResult = await checkForPermissionOnGoogleDoc(currentUserId, specifiedUrl);
+      permissionQResult = await checkForPermissionToSubmitGoogleDoc(currentUserId, specifiedUrl);
       if (!permissionQResult.granted) {
         alert(`Google Doc permission denied: ${permissionQResult.explanation}`);
         return;
@@ -129,6 +129,12 @@ function DoBetterPage() {
       isCloistered: false,
     });
     alert('Thank you for your submission!');
+    tallySubmission(currentUserId);
+    setSpecifiedUrl('');
+    setExplanationText('');
+    setInstructionsUiChoice('NoChoice');
+
+    // Navigate back to the intro view
     handleReturnToIntro();
   }
 

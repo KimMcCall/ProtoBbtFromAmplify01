@@ -36,3 +36,7 @@ export const docType_Pdf = 'Pdf';
 export const docType_YouTube = 'YouTube';
 export const docType_GoogleDoc = 'GoogleDoc';
 export const docType_Unknown = 'UnknownDocType_5e3209b0-adca-456f-b632-c4c6469fc008';
+
+export const nSubmissionsAllowedPer24Hr = 3;
+export const msToLookBackForTallyCount = 1000 * 60 * 60 * 24 * nSubmissionsAllowedPer24Hr;
+export const submissionCountWarningThreashold = nSubmissionsAllowedPer24Hr - 1;

@@ -2,7 +2,7 @@
 import { getCurrentUser } from "aws-amplify/auth";
 import { dbClient } from "../main";
 import { CommentBlockType, IssueBlockForRenderingType, IssueType } from "../features/issues/issues";
-import { PlaceholderForEmptyComment, PlaceholderForEmptyUrl } from "./constants";
+import { msToLookBackForTallyCount, nSubmissionsAllowedPer24Hr, PlaceholderForEmptyComment, PlaceholderForEmptyUrl, submissionCountWarningThreashold } from "./constants";
 
 type UserStatus =
 "returningRegistrant" |
@@ -47,32 +47,65 @@ export function getRandomIntegerInRange(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export const checkForPermissionOnGoogleDoc = async (currentUserId: string, url: string) => {
-  // Simulate a permission check
-  console.log(`Checking Google Doc permission for user ${currentUserId} on document ${url}`);
-  const policyConformance: PermissionQueryResult = await checkForPolicyConformance(url);
+export const checkForPermissionToSubmitGoogleDoc = async (currentUserId: string, url: string) => {
+  const trustedConformance: PermissionQueryResult = await checkForTrustedPermission(currentUserId);
+  if (trustedConformance.granted) {
+    console.log(`Allowing Submission because user ${currentUserId} is trusted`)
+    return { granted: true, explanation: "Submitter is trusted!" };  
+  }
+
+  const tallyConformance: PermissionQueryResult = await checkSubmissionTallyForPermission(currentUserId);
+  if (!tallyConformance.granted) {
+    console.warn(`Permission denied: ${tallyConformance.explanation}`);
+    alert(`Permission denied: ${tallyConformance.explanation}`);
+    return tallyConformance;
+  }
+
+  const policyConformance: PermissionQueryResult = await checkGoogleDocUrlForPolicyConformance(url);
+  if (!policyConformance.granted) {
+    console.warn(`Permission denied: ${policyConformance.explanation}`);
+    alert(`Permission denied: ${policyConformance.explanation}`);
+    return policyConformance;
+  }
+  return { granted: true, explanation: "It's all good!" };
+};
+
+export const checkForPermissionToSubmitText = async (currentUserId: string, str: string) => {
+  const trustedConformance: PermissionQueryResult = await checkForTrustedPermission(currentUserId);
+  if (trustedConformance.granted) {
+    console.log(`Allowing Submission because user ${currentUserId} is trusted`)
+    return { granted: true, explanation: "Submitter is trusted!" };  
+  }
+
+  const tallyConformance: PermissionQueryResult = await checkSubmissionTallyForPermission(currentUserId);
+  if (!tallyConformance.granted) {
+    console.warn(`Permission denied: ${tallyConformance.explanation}`);
+    alert(`Permission denied: ${tallyConformance.explanation}`);
+    return tallyConformance;
+  }
+
+  const policyConformance: PermissionQueryResult = await checkStringForPolicyConformance(str);
   if (!policyConformance.granted) {
     console.warn(`Permission denied: ${policyConformance.explanation}`);
     alert(`Permission denied: ${policyConformance.explanation}`);
     return policyConformance;
   }
 
-  const trustedConformance: PermissionQueryResult = await checkForTrustedPermission(currentUserId);
-  if (!trustedConformance.granted) {
-    const tallyConformance: PermissionQueryResult = await checkSubmissionTallyForPermission(currentUserId);
-    if (!tallyConformance.granted) {
-      console.warn(`Permission denied: ${tallyConformance.explanation}`);
-      alert(`Permission denied: ${tallyConformance.explanation}`);
-      return tallyConformance;
-    }
-  }
-
-  return { granted: true, explanation: "It's all good!" };  
+  return { granted: true, explanation: "It's all good!" };
 };
 
-const checkForPolicyConformance = async (url: string): Promise<PermissionQueryResult> => {
+const checkGoogleDocUrlForPolicyConformance = async (url: string): Promise<PermissionQueryResult> => {
   // Simulate a policy conformance check
   console.log(`Checking policy conformance for document ${url}`);
+  // Should make a call to Google API to check for abusiveness, etc
+  // For now, we'll just approve all URLs
+  return { granted: true, explanation: "Policy conformance check passed." };
+};
+
+const checkStringForPolicyConformance = async (str: string): Promise<PermissionQueryResult> => {
+  // Simulate a policy conformance check
+  const strToLog = str.length < 40 ? str : str.substring(0, 40) + '...';
+  console.log(`Policy conformance check for string: ${strToLog}`);
   // Should make a call to Google API to check for abusiveness, etc
   // For now, we'll just approve all URLs
   return { granted: true, explanation: "Policy conformance check passed." };
@@ -231,24 +264,6 @@ export const tallySubmission = (userId: string)=> {
   )
 }
 
-const nSubmissionsAllowedPer24Hr = 3;
-const distanceToLookBack = 1000 * 60 * 60 * 24 * nSubmissionsAllowedPer24Hr;
-const submissionCountWarningThreashold = nSubmissionsAllowedPer24Hr - 1;
-
-export const checkForSubmissionPermission = async (userId: string) => {
-  const haveTrustedPermission = await checkForTrustedPermission(userId);
-  if (haveTrustedPermission.granted) {
-    console.log(`Allowing Submission because user ${userId} is trusted`)
-
-    return {granted: true, explanation: "User is trusted."};
-  }
-  console.log(`User ${userId} doesn't seem to be Trusted`);
-  const haveTallyPermission = await checkSubmissionTallyForPermission(userId);
-  // Maybe do some other tests
-  console.log(`haveTallyPermission: ${haveTallyPermission}`)
-  return haveTallyPermission;
-}
-
 const checkForTrustedPermission = async (userId: string) => {
   const retVal: PermissionQueryResult = { granted: false, explanation: 'No trusted permission' };
   const idStruct = {id: userId}
@@ -278,7 +293,7 @@ const checkSubmissionTallyForPermission = async (userId: string) => {
       const tallyRecords = result.data;
       const now = Date.now();
       const truncatedNow = now % ourRadix;
-      const timeHorizon = truncatedNow - distanceToLookBack;
+      const timeHorizon = truncatedNow - msToLookBackForTallyCount;
       const recentRecords = tallyRecords.filter(record => Date.parse(record.createdAt) > timeHorizon)
       const nRecents = recentRecords.length;
       console.log(`nRecents: ${nRecents}`)
