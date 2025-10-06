@@ -110,6 +110,16 @@ const schema = a.schema({
       isCloistered: a.boolean().required().default(false),
     })
     .authorization((allow) => [allow.publicApiKey()]),
+  Banning: a
+    .model({
+      userId: a.string().required(),
+      reason: a.string().required(),
+      activity: a.string().required(),
+      docType: a.string().required(),
+      badText: a.string().required(),
+      badGdUrl: a.string().required(),
+    })
+    .authorization((allow) => [allow.publicApiKey()]),
 });
 
 export type Schema = ClientSchema<typeof schema>;

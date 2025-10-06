@@ -1,5 +1,5 @@
 // utils.ts
-import { getCurrentUser } from "aws-amplify/auth";
+import { getCurrentUser, signOut } from "aws-amplify/auth";
 import { dbClient } from "../main";
 import { CommentBlockType, IssueBlockForRenderingType, IssueType } from "../features/issues/issues";
 import { msToLookBackForTallyCount, nSubmissionsAllowedPer24Hr, PlaceholderForEmptyComment, PlaceholderForEmptyUrl, submissionCountWarningThreashold } from "./constants";
@@ -61,13 +61,41 @@ export const checkForPermissionToSubmitGoogleDoc = async (currentUserId: string,
     return tallyConformance;
   }
 
-  const policyConformance: PermissionQueryResult = await checkGoogleDocUrlForPolicyConformance(url);
+  const policyConformance: PermissionQueryResult = await checkGoogleDocUrlForPolicyConformance(currentUserId, url);
   if (!policyConformance.granted) {
     console.warn(`Permission denied: ${policyConformance.explanation}`);
     alert(`Permission denied: ${policyConformance.explanation}`);
+    banUserForGoogleDocPolicyViolation(currentUserId, url);
     return policyConformance;
   }
   return { granted: true, explanation: "It's all good!" };
+};
+
+const banUserForGoogleDocPolicyViolation = async (userId: string, url: string) => {
+  console.log(`Banning user ${userId} for GoogleDoc policy violation on ${url}`);
+  const banningStruct = {id: userId, isBanned: true};
+  console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
+  await dbClient.models.RegisteredUserP2.update(banningStruct);
+  createBanningRecordForGoogleDocPolicyViolation(userId, url);
+  await signOut();
+  };
+
+const createBanningRecordForGoogleDocPolicyViolation = (userId: string, url: string) => {
+  console.log(`Creating banning record for user ${userId} for GoogleDoc policy violation on ${url}`);
+  const banningRecord = {
+    userId,
+    reason: "GoogleDoc policy violation",
+    activity: "Submitting a GoogleDoc URL",
+    docType: "GoogleDoc",
+    badText: "",
+    badGdUrl: url,
+  };
+  console.log(`DBM: calling Banning.create() at ${Date.now() % 10000}`);
+  dbClient.models.Banning.create(banningRecord).then(() => {
+    console.log(`DBM: Successfully created banning record for user ${userId}`);
+  }).catch((error) => {
+    console.error(`DBM: Failed to create banning record for user ${userId}: ${error}`);
+  });
 };
 
 export const checkForPermissionToSubmitText = async (currentUserId: string, str: string) => {
@@ -94,12 +122,16 @@ export const checkForPermissionToSubmitText = async (currentUserId: string, str:
   return { granted: true, explanation: "It's all good!" };
 };
 
-const checkGoogleDocUrlForPolicyConformance = async (url: string): Promise<PermissionQueryResult> => {
+const checkGoogleDocUrlForPolicyConformance = async (currentUserId: string, url: string): Promise<PermissionQueryResult> => {
   // Simulate a policy conformance check
   console.log(`Checking policy conformance for document ${url}`);
   // Should make a call to Google API to check for abusiveness, etc
   // For now, we'll just approve all URLs
-  return { granted: true, explanation: "Policy conformance check passed." };
+  if (currentUserId === '138ebabb-a7ac-4982-8fe2-405d31ea7188') {
+    return { granted: false, explanation: "GoogleDoc policy conformance check failed." };
+  } else {
+    return { granted: true, explanation: "Policy conformance check passed." };
+  }
 };
 
 const checkStringForPolicyConformance = async (str: string): Promise<PermissionQueryResult> => {
