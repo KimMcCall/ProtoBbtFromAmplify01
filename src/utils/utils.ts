@@ -1,5 +1,5 @@
 // utils.ts
-import { getCurrentUser, signOut } from "aws-amplify/auth";
+import { getCurrentUser } from "aws-amplify/auth";
 import { dbClient } from "../main";
 import { CommentBlockType, IssueBlockForRenderingType, IssueType } from "../features/issues/issues";
 import { msToLookBackForTallyCount, nSubmissionsAllowedPer24Hr, PlaceholderForEmptyComment, PlaceholderForEmptyUrl, submissionCountWarningThreashold } from "./constants";
@@ -77,7 +77,6 @@ const banUserForGoogleDocPolicyViolation = async (userId: string, url: string) =
   console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
   await dbClient.models.RegisteredUserP2.update(banningStruct);
   createBanningRecordForGoogleDocPolicyViolation(userId, url);
-  await signOut();
   };
 
 const createBanningRecordForGoogleDocPolicyViolation = (userId: string, url: string) => {
@@ -112,7 +111,7 @@ export const checkForPermissionToSubmitText = async (activity: string, currentUs
     return tallyConformance;
   }
 
-  const policyConformance: PermissionQueryResult = await checkStringForPolicyConformance(str);
+  const policyConformance: PermissionQueryResult = await checkStringForPolicyConformance(currentUserId, str);
   if (!policyConformance.granted) {
     console.warn(`Permission denied: ${policyConformance.explanation}`);
     alert(`Permission denied: ${policyConformance.explanation}`);
@@ -129,7 +128,6 @@ const banUserForTextPolicyViolation = async (activity: string, userId: string, t
   console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
   await dbClient.models.RegisteredUserP2.update(banningStruct);
   createBanningRecordForTextPolicyViolation(activity, userId, text);
-  await signOut();
   };
 
 const createBanningRecordForTextPolicyViolation = (activity: string, userId: string, text: string) => {
@@ -155,6 +153,7 @@ const checkGoogleDocUrlForPolicyConformance = async (currentUserId: string, url:
   console.log(`Checking policy conformance for document ${url}`);
   // Should make a call to Google API to check for abusiveness, etc
   // For now, we'll just approve all URLs
+  console.log(`comparing currentUserId (${currentUserId}) to hardcoded banned value: 138ebabb-a7ac-4982-8fe2-405d31ea7188`);
   if (currentUserId === '138ebabb-a7ac-4982-8fe2-405d31ea7188') {
     return { granted: false, explanation: "GoogleDoc policy conformance check failed." };
   } else {
@@ -162,13 +161,18 @@ const checkGoogleDocUrlForPolicyConformance = async (currentUserId: string, url:
   }
 };
 
-const checkStringForPolicyConformance = async (str: string): Promise<PermissionQueryResult> => {
+const checkStringForPolicyConformance = async (currentUserId: string, str: string): Promise<PermissionQueryResult> => {
   // Simulate a policy conformance check
   const strToLog = str.length < 40 ? str : str.substring(0, 40) + '...';
   console.log(`Policy conformance check for string: ${strToLog}`);
   // Should make a call to Google API to check for abusiveness, etc
   // For now, we'll just approve all URLs
-  return { granted: true, explanation: "Policy conformance check passed." };
+  console.log(`comparing currentUserId (${currentUserId}) to hardcoded banned value: 138ebabb-a7ac-4982-8fe2-405d31ea7188`);
+  if (currentUserId === '138ebabb-a7ac-4982-8fe2-405d31ea7188') {
+    return { granted: false, explanation: "Text policy conformance check failed." };
+  } else {
+    return { granted: true, explanation: "Policy conformance check passed." };
+  }
 };
 
 export const getLatestRowWithIssueId = async (issueId: string) => {

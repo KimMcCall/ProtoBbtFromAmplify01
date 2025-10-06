@@ -11,10 +11,11 @@ import { CommentBlockType,
 import './CommentsPage.css';
 import { SyntheticEvent, useState } from "react";
 import { checkForPermissionToSubmitText, sortAndRepairIssues, structurePerIssue, tallySubmission } from "../utils/utils";
-import { selectCurrentUser, selectCurrentUserId } from "../features/userInfo/userInfoSlice";
+import { clearCurrentUserInfo, selectCurrentUser, selectCurrentUserId } from "../features/userInfo/userInfoSlice";
 import { addCommentToIssue } from "../utils/dynamodb_operations";
 import CommentSubmissionForm from "../components/CommentSubmissionForm";
 import { useNavigate } from "react-router-dom";
+import { signOut } from "aws-amplify/auth";
 
 interface CommentTileProps {
   block: CommentBlockType;
@@ -78,6 +79,11 @@ function CommentsPage() {
     const activity = 'Submitting Comment';
     const permissionQResult = await checkForPermissionToSubmitText(activity, currentUserId, text);
     if (!permissionQResult.granted) {
+      if (permissionQResult.explanation.includes('policy conformance check failed')) {
+        await signOut();
+        dispatch(clearCurrentUserInfo());
+        navigate('/banned');
+      }
       return;
     }
     createCommentWithText(text);

@@ -1,13 +1,15 @@
 import { Button, Flex, Tabs, TextAreaField, TextField } from '@aws-amplify/ui-react';
 import PageWrapper from '../components/PageWrapper';
 import SuggestionsPanel from '../components/SuggestionsPanel';
-import { selectCurrentUserId } from '../features/userInfo/userInfoSlice';
-import { useAppSelector } from '../app/hooks';
+import { clearCurrentUserInfo, selectCurrentUserId } from '../features/userInfo/userInfoSlice';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
 import { SyntheticEvent, useState } from 'react';
 import ToastNotifier from '../components/ToastNotifier';
 import { checkForPermissionToSubmitText, tallySubmission } from '../utils/utils';
 import './SuggestionsPage.css'
+import { signOut } from 'aws-amplify/auth';
+import { useNavigate } from 'react-router-dom';
 
 function SuggestionsPage() {
   const [siteTitle, setSiteTitle] = useState('');
@@ -17,13 +19,21 @@ function SuggestionsPage() {
   const [shouldShowAcceptanceToast,setShouldShowAcceptanceToast ] = useState(false);
   const [toastMessage, setToastMessage] = useState('Your suggestion has been received');
 
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const currentUserId =  useAppSelector(selectCurrentUserId);
 
   const handleSiteSubmitControlled = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.preventDefault(); // Prevent default form submission behavior (which might not matter, now that we're controlled)
-    const activity = 'Suggesting Site';
+    const activity = 'Making Site Suggestion';
     const permissionQResult = await checkForPermissionToSubmitText(activity, currentUserId, siteText);
     if (!permissionQResult.granted){
+      if (permissionQResult.explanation.includes('policy conformance check failed')) {
+        await signOut();
+        dispatch(clearCurrentUserInfo());
+        navigate('/banned');
+      }
       return;
     }
     await handleSubmitControlled('Site Suggestion', siteTitle, siteText);
@@ -36,6 +46,11 @@ function SuggestionsPage() {
     const activity = 'Suggesting Topic';
     const permissionQResult = await checkForPermissionToSubmitText(activity, currentUserId, topicText);
     if (!permissionQResult.granted){
+      if (permissionQResult.explanation.includes('policy conformance check failed')) {
+        await signOut();
+        dispatch(clearCurrentUserInfo());
+        navigate('/banned');
+      }
       return;
     }
     await handleSubmitControlled('Topic Suggestion', topicTitle, topicText);

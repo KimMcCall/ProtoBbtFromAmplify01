@@ -6,6 +6,10 @@ import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissio
 import { dbClient } from "../main";
 import './SubmissionEditor.css'
 import { checkForPermissionToSubmitText, tallySubmission } from '../utils/utils';
+import { signOut } from 'aws-amplify/auth';
+import { clearCurrentUserInfo } from '../features/userInfo/userInfoSlice';
+import { useAppDispatch } from '../app/hooks';
+import { useNavigate } from 'react-router';
 
 type SubmissionEditorProps = {
   submission: SubmissionType;
@@ -15,6 +19,9 @@ type SubmissionEditorProps = {
 function SubmissionEditor(props: SubmissionEditorProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const { submission, editorShowOrHide} = props;
 
@@ -33,6 +40,11 @@ function SubmissionEditor(props: SubmissionEditorProps) {
     const activity = 'Revising Submission';
     const permissionQResult = await checkForPermissionToSubmitText(activity, submission.userId, content);
     if (!permissionQResult.granted) {
+    if (permissionQResult.explanation.includes('policy conformance check failed')) {
+      await signOut();
+      dispatch(clearCurrentUserInfo());
+      navigate('/banned');
+    }
       return;
     }
 

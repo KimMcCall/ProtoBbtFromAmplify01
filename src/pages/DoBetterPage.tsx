@@ -5,15 +5,20 @@ import PageWrapper from '../components/PageWrapper';
 import './DoBetterPage.css'
 import { ChangeEvent, useState } from 'react';
 import { dbClient } from '../main';
-import { useAppSelector } from '../app/hooks';
-import { selectCurrentUserCanonicalEmail, selectCurrentUserId } from '../features/userInfo/userInfoSlice';
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+import { clearCurrentUserInfo, selectCurrentUserCanonicalEmail, selectCurrentUserId } from '../features/userInfo/userInfoSlice';
 import { selectCurrentIssue } from '../features/issues/issues';
 import { checkForPermissionToSubmitGoogleDoc, tallySubmission } from '../utils/utils';
+import { signOut } from 'aws-amplify/auth';
+import { useNavigate } from 'react-router-dom';
 
 function DoBetterPage() {
   const [instructionsUiChoice, setInstructionsUiChoice] = useState('NoChoice');
   const [specifiedUrl, setSpecifiedUrl] = useState('');
   const [explanationText, setExplanationText] = useState('');
+  
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   const urlParams = new URLSearchParams(window.location.search);
   const queryStringStance = urlParams.get('stance'); // Should return "pro", "con", or null (which we hope to avoid)
@@ -95,7 +100,11 @@ function DoBetterPage() {
     if (showGoogleDocUi) {
       permissionQResult = await checkForPermissionToSubmitGoogleDoc(currentUserId, specifiedUrl);
       if (!permissionQResult.granted) {
-        alert(`Google Doc permission denied: ${permissionQResult.explanation}`);
+        if (permissionQResult.explanation.includes('policy conformance check failed')) {
+          await signOut();
+          dispatch(clearCurrentUserInfo());
+          navigate('/banned');
+        }
         return;
       }
     }
