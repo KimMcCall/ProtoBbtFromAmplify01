@@ -257,7 +257,6 @@ function AdminIssuesPage() {
             const { issueId, commentKey } = modifiedIssue;
             // dispatch(setDesignatedUserId(id));
             console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
-            alert('Still need to modify Redux representation of issues');
             setToastMessage('Your update has been received');
             setShouldShowAcceptanceToast(true);
             setIssueIdText('');
