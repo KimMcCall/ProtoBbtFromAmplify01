@@ -54,7 +54,6 @@ function CommentsPage() {
   const showPro = stance === 'pro';
 
   const allIssues = useAppSelector(selectAllIssues);
-  console.log(`All ${allIssues.length} issues: `, allIssues);
   const aRecord = useAppSelector(selectLatestRecordForCurrentIssue);
   const authorEmail = useAppSelector(selectCurrentUser).canonicalEmail;
   const issueBlock = useAppSelector(selectDisplayBlockForCurrentIssue);
