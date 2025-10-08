@@ -86,15 +86,16 @@ function SuggestionsPage() {
           <Tabs.Item value="2">Suggest New Topic</Tabs.Item>
           <Tabs.Item value="3">Review/Edit your Suggestions</Tabs.Item>
         </Tabs.List>
-        <Tabs.Panel value="1">
+        <Tabs.Panel className='suggestionPanel' value="1">
           <div>
             <h2>Suggestion for Site</h2>
             <p>Please share with us any suggestions you have about how to improve this web site.
               Thank you!<br />&nbsp;</p>
             <p className='policyP'>
-              Note: We insist that all postings on this site be respectful and non-abusive.
-              Site administrotrs reserve the right to summarily ban anyone who submits
+              Note: We insist that all postings on or to this site be respectful and non-abusive.
+              Site administrators reserve the right to summarily ban anyone who submits
               vulgar, hateful, name-calling, or otherwise abusive content.
+              See our <a href="/policy">Non-abuse Policy</a>.
             </p>
             <Flex direction="column">
               <TextField
@@ -117,18 +118,17 @@ function SuggestionsPage() {
             </Flex>
           </div>
         </Tabs.Panel>
-        <Tabs.Panel value="2">
+        <Tabs.Panel className='suggestionPanel' value="2">
           <div>
             <h2>Suggest New Topic</h2>
             <p>Please share with us any suggestions for new topics on which we might fruitfully
-              promote a truth-based narrative.
+              promote a truth-based narrative.</p>
             <br />
-            Click <a>here</a>&nbsp;
-              if you want to compose a brief essay yourself.</p>
             <p className='policyP'>
-              Note: We insist that all postings on this site be respectful and non-abusive.
-              Site administrotrs reserve the right to summarily ban anyone who submits
+              Note: We insist that all postings on or to this site be respectful and non-abusive.
+              Site administrators reserve the right to summarily ban anyone who submits
               vulgar, hateful, name-calling, or otherwise abusive content.
+              See our <a href="/policy">Non-abuse Policy</a>.
             </p>
             <Flex direction="column">
               <TextField
