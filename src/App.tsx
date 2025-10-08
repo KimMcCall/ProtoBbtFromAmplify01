@@ -30,6 +30,7 @@ import AdminPage from './pages/AdminPage';
 import DoBetterPage from './pages/DoBetterPage';
 import AdminUncloisteredPage from './pages/AdminUncloisteredPage';
 import AutoTimeout from './components/AutoTimeout.tsx';
+import PolicyPage from './pages/PolicyPage.tsx';
 
 function App() {
   return (
@@ -147,6 +148,7 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route path="/policy" element={<PolicyPage />} />
         <Route path="/sketch" element={<SketchPage />} />
         <Route path="/play01" element={<PlayPage01 />} />
         <Route path="/play02" element={<PlayPage02 />} />
