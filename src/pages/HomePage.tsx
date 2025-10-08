@@ -4,12 +4,13 @@ import PageWrapper from "../components/PageWrapper";
 import { useEffect, SyntheticEvent, useState } from 'react';
 import { getAllIssueRecords } from '../utils/dynamodb_operations';
 // import { useAppDispatch } from '../app/hooks';
-import { setCurrentIssueId, IssueType, setAllIssues, IssueBlockForRenderingType, setDisplayBlocks, setAvailableIssues } from '../features/issues/issues';
+import { setCurrentIssueId, IssueType, setAllIssues, IssueBlockForRenderingType, setDisplayBlocks, setAvailableIssues, selectAllIssues } from '../features/issues/issues';
 import './HomePage.css'
-import { useAppDispatch } from "../app/hooks";
+import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
 import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 import { ClipLoader } from 'react-spinners';
+import { selectListIssuesCallTimeIsRecent, setListIssuesCallTime } from "../features/queryLimitation/queryLimitationSlice";
 
 
 interface ClaimCardProps {
@@ -37,11 +38,9 @@ function ClaimCard(props: ClaimCardProps) {
   )
 }
 
-const arrayOfStructs: IssueBlockForRenderingType[] = [];
-
 function HomePage() {
   const [loading, setLoading] = useState(true);
-  const [structuredForRendering, setStructuredForRendering] = useState(arrayOfStructs);
+  // const [structuredForRendering, setStructuredForRendering] = useState(arrayOfStructs);
   const dispatch = useAppDispatch();
 
   const filterForUltimateAvailability = (issues: IssueType[]) => {
@@ -57,6 +56,19 @@ function HomePage() {
     });
     return issuesToShow;
   } 
+
+  const nowIsWithinRecencyHorizon = useAppSelector(selectListIssuesCallTimeIsRecent);
+  const allIssuesInRedux = useAppSelector(selectAllIssues);
+  const nIssuesInRedux = allIssuesInRedux.length;
+  console.log(`HomePage: nIssuesInRedux = ${nIssuesInRedux}`);
+  // If we have issues in Redux and the last call time is recent, we can skip the fetch
+  const haveIssuesInRedux = useAppSelector(selectAllIssues).length > 0;
+  console.log(`HomePage: nowIsWithinRecencyHorizon = ${nowIsWithinRecencyHorizon}, haveIssuesInRedux = ${haveIssuesInRedux}`);
+
+  let structuredForRendering: IssueBlockForRenderingType[] = [];
+  if (haveIssuesInRedux) {
+    structuredForRendering = structurePerIssue(allIssuesInRedux);
+  }
   
   useEffect(() => {
     const fetchIssues = async () => {
@@ -72,16 +84,21 @@ function HomePage() {
         dispatch(setAvailableIssues(filteredForAvailable));
         // Structure per issue for rendering
         const structured = structurePerIssue(filteredForAvailable);
-        setStructuredForRendering(structured);
         dispatch(setDisplayBlocks(structured));
         setLoading(false);
       }
     )
     };
+    if (nowIsWithinRecencyHorizon && haveIssuesInRedux) {
+      const structured = structurePerIssue(allIssuesInRedux);
+      dispatch(setDisplayBlocks(structured));
+      setLoading(false);
+    } else {
+      dispatch(setListIssuesCallTime());
+      fetchIssues(); // Call the async function
+    }
 
-    fetchIssues(); // Call the async function
-
-  }, [dispatch]);
+  }, [nowIsWithinRecencyHorizon, haveIssuesInRedux, dispatch, allIssuesInRedux],);
 
 
   return (

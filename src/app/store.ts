@@ -8,6 +8,7 @@ import navigationReducer from '../features/navigation/navigationSlice'
 import userInfoReducer from '../features/userInfo/userInfoSlice'
 import loginTrackingReducer from  '../features/loginTracking/loginTracking'
 import issuesReducer from  '../features/issues/issues'
+import queryLimitationReducer from '../features/queryLimitation/queryLimitationSlice'
 
 
 const persistConfig = {
@@ -20,6 +21,7 @@ const combinedReducer = combineReducers({
   navigation: navigationReducer,
   loginTracking: loginTrackingReducer,
   issues: issuesReducer,
+  queryLimitation: queryLimitationReducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, combinedReducer);
