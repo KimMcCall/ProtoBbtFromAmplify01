@@ -69,7 +69,7 @@ async function getAllComments(issueId: string) {
 // Update a specific comment
 async function updateComment(issueId: string, commentKey: string, newText: string) {
   try {
-    console.log(`DBM: calling Todo.observeQuery() at ${Date.now() % 10000}`);
+    console.log(`DBM: calling IssueP2.update() at ${Date.now() % 10000}`);
     const result = await dbClient.models.IssueP2.update({
       issueId: issueId,
       commentKey: commentKey,
