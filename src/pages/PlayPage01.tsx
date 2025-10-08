@@ -1,7 +1,10 @@
 import { dbClient } from "../main";
-import { Flex, TextAreaField } from '@aws-amplify/ui-react';
+import { Button, Flex, TextAreaField } from '@aws-amplify/ui-react';
 import PageWrapper from "../components/PageWrapper";
 import { useState } from 'react';
+import { filterForUltimateAvailability, sortAndRepairIssues, structurePerIssue } from "../utils/utils";
+import { useAppDispatch } from "../app/hooks";
+import { setAllIssues, setAvailableIssues, setDisplayBlocks } from "../features/issues/issues";
 
 const testGet = () => {
   console.log(`DBM: calling RegisteredUserP2.get() at ${Date.now() % 10000}`);
@@ -33,6 +36,8 @@ const testSecondaryIndex = () => {
 function PlayPage01() { 
   const [ userList, setUserList ] = useState("");
 
+  const dispatch = useAppDispatch();
+
   const listSuperAdmins = () => {
     console.log(`DBM: calling RegisteredUserP2.list() at ${Date.now() % 10000}`);
     dbClient.models.RegisteredUserP2.list()
@@ -56,6 +61,23 @@ function PlayPage01() {
     });
   };
 
+  const fetchAndCacheIssues = async () => {
+    console.log(`DBM: calling IssueP2.list() at ${Date.now() % 10000}`);
+    const response = await dbClient.models.IssueP2.list();
+    const allIssues = response.data;
+    console.log(`Fetched ${allIssues.length} issues`);
+
+
+          const sortedAndRepairedIssues = sortAndRepairIssues(allIssues);
+          console.log(`All ${sortedAndRepairedIssues.length} issues: `, sortedAndRepairedIssues);
+          dispatch(setAllIssues(sortedAndRepairedIssues));
+          const filteredForAvailable = filterForUltimateAvailability(sortedAndRepairedIssues);
+          dispatch(setAvailableIssues(filteredForAvailable));
+          // Structure per issue for rendering
+          const structured = structurePerIssue(filteredForAvailable);
+          dispatch(setDisplayBlocks(structured));
+  };
+
   return (
     <PageWrapper>
       <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
@@ -75,8 +97,9 @@ function PlayPage01() {
           </div>
           <div className="pp01ShowDiv">
              <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
-              <button onClick={() => testGet()}>Test get()</button>
-              <button onClick={() => testSecondaryIndex()}>Test Secondary Index()</button>
+              <Button onClick={fetchAndCacheIssues}>SA: Fetch Issues</Button>
+              <Button onClick={testGet}>Test get()</Button>
+              <Button onClick={testSecondaryIndex}>Test Secondary Index()</Button>
             </Flex>
           </div>
         </div>

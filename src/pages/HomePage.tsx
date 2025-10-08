@@ -8,7 +8,7 @@ import { setCurrentIssueId, IssueType, setAllIssues, IssueBlockForRenderingType,
 import './HomePage.css'
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import { useNavigate } from "react-router-dom";
-import { sortAndRepairIssues, structurePerIssue } from "../utils/utils";
+import { filterForUltimateAvailability, sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 import { ClipLoader } from 'react-spinners';
 import { selectListIssuesCallTimeIsRecent, setListIssuesCallTime } from "../features/queryLimitation/queryLimitationSlice";
 
@@ -43,20 +43,7 @@ function HomePage() {
   // const [structuredForRendering, setStructuredForRendering] = useState(arrayOfStructs);
   const dispatch = useAppDispatch();
 
-  const filterForUltimateAvailability = (issues: IssueType[]) => {
-    const issueAvailablityMap = new Map<string, boolean>();
-    issues.forEach(issue => {
-      issueAvailablityMap.set(issue.issueId, issue.isAvailable);
-    });
-    let issuesToShow: IssueType[] = [];
-    issues.forEach(issue => {
-      if (issueAvailablityMap.get(issue.issueId)) {
-        issuesToShow = issuesToShow.concat(issue);
-      }
-    });
-    return issuesToShow;
-  } 
-
+  // const userIsSuperAdmin = useAppSelector(selectCurrentUserIsSuperAdmin);
   const nowIsWithinRecencyHorizon = useAppSelector(selectListIssuesCallTimeIsRecent);
   const allIssuesInRedux = useAppSelector(selectAllIssues);
   const nIssuesInRedux = allIssuesInRedux.length;
@@ -89,7 +76,7 @@ function HomePage() {
       }
     )
     };
-    if (nowIsWithinRecencyHorizon && haveIssuesInRedux) {
+    if (nowIsWithinRecencyHorizon && haveIssuesInRedux /*&& !userIsSuperAdmin*/) {
       const structured = structurePerIssue(allIssuesInRedux);
       dispatch(setDisplayBlocks(structured));
       setLoading(false);
@@ -98,7 +85,8 @@ function HomePage() {
       fetchIssues(); // Call the async function
     }
 
-  }, [nowIsWithinRecencyHorizon, haveIssuesInRedux, dispatch, allIssuesInRedux],);
+  }, [nowIsWithinRecencyHorizon, haveIssuesInRedux, dispatch, allIssuesInRedux/*, userIsSuperAdmin*/]
+);
 
 
   return (

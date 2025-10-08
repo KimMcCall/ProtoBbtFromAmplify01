@@ -47,6 +47,20 @@ export function getRandomIntegerInRange(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+export const filterForUltimateAvailability = (issues: IssueType[]) => {
+  const issueAvailablityMap = new Map<string, boolean>();
+  issues.forEach(issue => {
+    issueAvailablityMap.set(issue.issueId, issue.isAvailable);
+  });
+  let issuesToShow: IssueType[] = [];
+  issues.forEach(issue => {
+    if (issueAvailablityMap.get(issue.issueId)) {
+      issuesToShow = issuesToShow.concat(issue);
+    }
+  });
+  return issuesToShow;
+}
+
 export const checkForPermissionToSubmitGoogleDoc = async (currentUserId: string, url: string) => {
   const trustedConformance: PermissionQueryResult = await checkForTrustedPermission(currentUserId);
   if (trustedConformance.granted) {
