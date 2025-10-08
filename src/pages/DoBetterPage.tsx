@@ -197,10 +197,10 @@ function DoBetterPage() {
               This page lets you submit a Google Doc that you believe does a better job than the current offering. Here's how:</div>
             <div className='doBetterInstructionsDiv'>
               <ol>
-                <li><b>Create a Google Doc:</b> Go to Google Docs and create a new document. Write your content, ensuring it is well-structured and clearly presents your perspective on the issue.</li>
-                <li><b>Set Sharing Permissions:</b> Click the "Share" button in the top right corner of the Google Docs interface. In the sharing settings, set the document to "Anyone with the link" and ensure they have "Viewer" access. This allows us to view your document without needing special permissions.</li>
+                <li><b>Create a Google Doc:</b> Go to Google Docs and create a new document. Write your content, ensuring it is well-structured and clearly presents your perspective on the issue. [Please note and observe <a href="/policy">our non-abuse policy</a>]</li>
+                <li><b>Set Sharing Permissions:</b> Click the "Share" button in the top right corner of the Google Docs interface. In the sharing settings, set the document to "Anyone with the link" and ensure they have "Viewer" access. This allows us to view your document without asking you for special permissions.</li>
                 <li><b>Copy the Shareable Link:</b> After setting the appropriate permissions, copy the shareable link provided in the sharing settings.</li>
-                <li><b>Paste the Link Below:</b> Paste the copied link into the "Google Doc URL" field below. Make sure to also provide a brief explanation of why you believe this document does a better job than the current one.</li>
+                <li><b>Paste the Link Below:</b> Paste the copied link into the "Google Doc URL:" field below. Make sure to also provide a brief explanation of why you believe your new document does a better job than the current one.</li>
                 <li><b>Submit Your Contribution:</b> Click the "Submit" button to send us your Google Doc link along with your explanation. We appreciate your effort in helping us improve our content!</li>
               </ol>
             </div>
@@ -229,37 +229,33 @@ function DoBetterPage() {
         showYouTubeUi ?
       (
         <div>
-          <h2>Let's Do Better</h2>
           <div className="doBetterIntroText">
-            <div className='doBetterTextDiv'>
-              This page should explain how to create a YouTube Video and prepare it for sharing with us</div>
-            <div className='doBetterTextDiv'>
-              It should also contain a textfield for the appropriate URL and buttons to Submit, Clear, and Return to Intro</div>
-            <div className='doBetterTextDiv'>
-              YouTube videos should be uploaded to YouTube (or later marked) as "Unlisted" (not "Private")
-              so we can view them but they won't be publicly searchable.
-              You can mark a video as "Unlisted" in the video's "Visibility" settings on YouTube.
-              In your YouTube channel, select the checkbox next to the video you want to share.
-              In the actions bar that appears at the top, click Edit and select "Unlisted".
-              In the menu that appears, select "Visibility" and then in the dropdown select "Unlisted".
-              Finally, click "Update videos" button near the top right to apply the changes.
-              Confirm in the ensuing dialog by checking the checkbox and clicking "Update videos".
-              Here are some instructions for getting the URL we want</div>
-            <div className='doBetterTextDiv'>
-              Navigate to the YouTube video: Open the specific YouTube video you want to embed in your web browser.</div>
-            <div className='doBetterTextDiv'>
-              Access the Share options: Below the video player, locate and click the "Share" button.</div>
-            <div className='doBetterTextDiv'>
-              Select the Embed icon (a white disk with '$lt;' and '$gt;' symbols): In the popup window that appears.</div>
-            <div className='doBetterTextDiv'>
-              This will bring up another pop-up that will display an HTML code snippet. .
-              </div>
-            <div className='doBetterTextDiv'>
-              In the code, find the string (starting with 'https://www.youtube.com/') that contains the video URL. This is the we need. Copy this URL and paste it into the text field below.
-              </div>
-          </div>
-          <div className='doBetterTextDiv'>
-            Here's an example: https://www.youtube.com/embed/9n8j2rtRebY?si=ayEiRzDRD4uiEkiu
+              <h2>Preparing a YouTube Video for sharing with us</h2>
+
+              <ol className='doBetterInstructionsDiv'>
+                <li><b>Create a YouTube Video:</b> This probably involves having your own YouTube channel and uploading a video.
+                You can read about that <a href="https://support.google.com/youtube/answer/57407?hl=en">here</a>. 
+                [Note that YouTube lets you choose whether to upload from a computer, from an iPhone, or from an Android device.]
+                Record your content, ensuring it is well-structured and clearly
+                presents your perspective on the issue. [Please note and observe <a href="/policy">our non-abuse policy</a>]</li>
+                <li><b>Set its Visibility setting to "Unlisted":</b> In the video's "Visibility" settings on YouTube,
+                select "Unlisted". You can do this either when you upload the video or later in the video settings.
+                Doing this ensures that only people with the link can view the video and it won't be searchable on the web.</li>
+                <li><b>Confirm your choices:</b> Click "Update videos" button near the top right to apply the changes. 
+                Confirm in the ensuing dialog by checking the checkbox and clicking "Update videos". </li>
+                <li><b>Get the sharable link:</b> &nbsp;<b>(a)</b>Open the video in your browser and copy the URL from the address bar.
+                 &nbsp;<b>(b)</b>Below the video player, locate and click the "Share" button.
+                 &nbsp;<b>(c)</b>In the pop-up window that appears, select the Embed icon (a white disk with '$lt;' and '$gt;' symbols).
+                This will bring up another pop-up that will display an HTML code snippet.
+                 &nbsp;<b>(d)</b>In the code, find the string (starting with 'https://www.youtube.com/') that contains the video URL.
+                This is the link we need.  &nbsp;<b>(e)</b>Copy this URL.
+                [example: https://www.youtube.com/embed/9n8j2rtRebY?si=ayEiRzDRD4uiEkiu]</li>
+                <li><b>Fill in this form:</b> Paste the copied link into the "YouTube Video URL:" field below.
+                Make sure to also provide a brief explanation of why you believe your new video does a better job than
+                what we have now.</li>
+                <li><b>Submit Your Contribution:</b> Click the "Submit" button to send us your YouTube video link
+                along with your explanation. We appreciate your effort in helping us improve our content!</li>
+              </ol>
           </div>
           <div className='doBetterUrlAndButtonsDiv'>
             <TextField label="YouTube Video URL:" value={specifiedUrl} onChange={handleUrlChange} />
