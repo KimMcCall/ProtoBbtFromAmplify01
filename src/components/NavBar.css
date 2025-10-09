@@ -2,31 +2,32 @@
   height: 730px;
   width: 154px;
   border: 1px solid blue;
-  padding: 6px;
+  padding: 6px 2px 4px 0px;
   margin: 1px;
   background-color: #d0e0ff;
 }
 
 .navBarFlex {
-  width: 140px;
+  width: 144px;
 }
 
 .navBarItem {
-  padding-left: 4px;
+  padding-left: 2px;
   cursor: pointer;
   font-weight: bold;
   font-size: 140%;
+  border-radius: 0px 16px 16px 0px;
 }
 
 .navBarItem:hover {
-  background-color: #a2aff8;
-/*  background-color: #c5ccf5;*/
+  background-color: #a5acc5;
 }
 
 .stuckOnItem {
-  padding-left: 4px;
+  padding-left: 2px;
   cursor: pointer;
   font-weight: bold;
   font-size: 140%;
   background-color: #a2aff8;
+  border-radius: 0px 20px 20px 0px;
 }
