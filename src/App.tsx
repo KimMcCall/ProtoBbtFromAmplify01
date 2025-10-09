@@ -31,6 +31,7 @@ import DoBetterPage from './pages/DoBetterPage';
 import AdminUncloisteredPage from './pages/AdminUncloisteredPage';
 import AutoTimeout from './components/AutoTimeout.tsx';
 import PolicyPage from './pages/PolicyPage.tsx';
+import CritiquePage from './pages/CritiquePage.tsx';
 
 function App() {
   return (
@@ -67,6 +68,16 @@ function App() {
             <ProtectedRoute>
               <AutoTimeout>
                 <DoBetterPage />
+              </AutoTimeout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/critique"
+          element={
+            <ProtectedRoute>
+              <AutoTimeout>
+                <CritiquePage />
               </AutoTimeout>
             </ProtectedRoute>
           }
