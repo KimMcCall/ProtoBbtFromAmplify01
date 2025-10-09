@@ -1,42 +1,20 @@
-import { ChangeEvent, SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Button, Flex, Radio, RadioGroupField, TextField } from "@aws-amplify/ui-react";
+import { Button, Flex, TextField } from "@aws-amplify/ui-react";
 import { useAppDispatch, useAppSelector } from "../app/hooks";
 import PageWrapper from "../components/PageWrapper";
-import { selectCurrentUserIsLoggedIn, selectCurrentUserIsSuperAdmin, setCurrentUserAsSuperAdmin, setCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
+import { selectCurrentUserIsAdmin, selectCurrentUserIsSuperAdmin, setCurrentUserAsAdmin, setCurrentUserAsSuperAdmin } from "../features/userInfo/userInfoSlice";
 import { selecNext, setNextPath } from "../features/navigation/navigationSlice";
 import { dbClient } from "../main";
-import { computeUserStatus, getLatestRowWithIssueId, toCanonicalEmail, UserStatusType } from "../utils/utils";
+import { computeUserStatus, toCanonicalEmail, UserStatusType } from "../utils/utils";
 import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/loginTracking";
 import { sendClientEmail, sendServerEmail } from "../features/email/Email";
-import ToastNotifier from "../components/ToastNotifier";
 import './PlayPage02.css';
 import { IssueType, selectAllIssues } from "../features/issues/issues";
-
-interface ImageTilePropsType {
-  issueId: string
-  claim: string
-  selectionCallback: (e: SyntheticEvent<HTMLDivElement>, issueId: string) => void
-}
 
 interface IdClaimPairType {
   issueId: string
   claim: string
-}
-
-function IssueTile(props: ImageTilePropsType) {
-  const { issueId, claim, selectionCallback } = props;
-
-  const handleTileClick = (event: SyntheticEvent<HTMLDivElement>) => {
-    event.stopPropagation();
-    selectionCallback(event, issueId);
-  }
-
-  return(
-    <div key={issueId} className="issueTileRoot" onClick={handleTileClick}>
-      {claim}
-    </div>
-  )
 }
 
 function PlayPage02() {
@@ -44,16 +22,10 @@ function PlayPage02() {
   const [ userStatus, setUserStatus ] = useState("");
   const [ dbCheckFeedback, setDbCheckFeedback ] = useState("Waiting for czech");
   const [simpleTestResult, setSimpleTestResult] = useState(42)
-  const [showToast, setShowToast] = useState(false);
-  const [uiChoice, setUIChoice] = useState('randomUI');
-  const [activityChoice, setActivityChoice] = useState('manageOtherFields');
-  const [issueIdText, setIssueIdText] = useState('');
-  const [claimText, setClaimText] = useState('');
-  const [priorityText, setPriorityText] = useState('');
-  const [availabilityChoice, setAvailabilityChoice] = useState('noChoiceYet');
 
   const dispatch = useAppDispatch();
   const isNowSuperAdmin = useAppSelector(selectCurrentUserIsSuperAdmin);
+  const isNowAdmin = useAppSelector(selectCurrentUserIsAdmin);
   const newPath = useAppSelector(selecNext);
   const navigateTo = useNavigate();
 
@@ -70,8 +42,12 @@ function PlayPage02() {
   console.log(`# idClaimPairs: ${idClaimPairs.length}`)
   console.log(idClaimPairs);
 
-  const toggleIsAdmin = () => {
+  const toggleIsSuperAdmin = () => {
     dispatch(setCurrentUserAsSuperAdmin(!isNowSuperAdmin))
+  }
+
+  const toggleIsAdmin = () => {
+    dispatch(setCurrentUserAsAdmin(!isNowAdmin))
   }
 
   const goThere = () => { navigateTo(newPath); }
@@ -229,357 +205,84 @@ function PlayPage02() {
     sendClientEmail({toAddresses, subject, body } );
   }
 
-  const isLoggedIn = useAppSelector(selectCurrentUserIsLoggedIn)
-
-  const toggleCEmail = () => {
-    let newValue = '';
-    if (!isLoggedIn) {
-      newValue = 'random@example.com';
-    }
-    dispatch(setCurrentUserCanonicalEmail(newValue))
-  }
-
   const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     console.log("We're short-circuiting the migration, since it's alreaddy happened!");
     return;
-    /*
-    console.log(`DBM: calling RegisteredUserP2.list() at ${Date.now() % 10000}`);
-    dbClient.models.RegisteredUser.list().then(
-      (response) => {
-        // @ts-expect-error It will not be undefined if the .update() succeeded!
-        const oldUsers: SingleUserInfoType[] = response.data;
-        console.log("oldUsers: ", oldUsers)
-        oldUsers.forEach(oldUser => {
-          migrateUser(oldUser);
-        });
-      }
-    )
-     */ 
-  }
-
-  /*
-  const migrateUser = (oldUser: SingleUserInfoType) => {
-    const createStruct = {
-      authId: oldUser.authId,
-      name: oldUser.name || '',
-      canonicalEmail: oldUser.canonicalEmail,
-      initialEmail: oldUser.initialEmail,
-      isSuperAdmin: oldUser.isSuperAdmin,
-      isAdmin: oldUser.isAdmin,
-      isBanned: oldUser.isBanned,
-      isTrusted: false,
-    }
-    console.log(`DBM: calling RegisteredUserP2.create() at ${Date.now() % 10000}`);
-    dbClient.models.RegisteredUserP2.create(createStruct).then(
-      (response) => {
-        const newUser = response.data;
-        console.log(newUser);
-      }
-    )
 
   }
-  */
-
-  const clearOrFill = isLoggedIn ? 'Clear' : 'Fill';
-  const toastMessage = "This is a long enough text to stretch across multiple lines, I hope";
-
-  const handleUiRadioButtonChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.stopPropagation();
-    const choice = event.target.value;
-    console.log(`choice: '${choice}.`)
-    setUIChoice(choice)
-  }
-
-  const handleActivityRadioButtonChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.stopPropagation();
-    const choice = event.target.value;
-    console.log(`activity choice: '${choice}.`)
-    setActivityChoice(choice)
-  }
-
-  const handleAvailabilityRadioButtonChange = (event: ChangeEvent<HTMLInputElement>) => {
-    event.stopPropagation();
-    const choice = event.target.value;
-    console.log(`availabillity choice: '${choice}'.`)
-    setAvailabilityChoice(choice)
-  }
-
-  const handleOtherFieldsClearButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    setIssueIdText('');
-    setClaimText('');
-    setPriorityText('');
-    setAvailabilityChoice('noChoiceYet')
-  }
-
-  const handleOtherFieldsSubmitButtonClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
-    event.stopPropagation();
-    console.log("Should now update the DB")
-    const issueId = issueIdText;
-    if (!issueId) {
-      alert('You can\'t submit without selecting an issue');
-      return;
-    }
-
-    const availability = availabilityChoice; // 'available', 'unavailable', or 'noChoiceYet'
-    if (availability === 'noChoiceYet') {
-      alert('You have to choose either "Make Available" or "Make Unavailable"');
-      return;
-    }
-
-    const claim = claimText;
-    const priorityString = priorityText;
-    const haveClaim = claim.length > 0;
-    const havePriorityString = priorityString.length > 0;
-    const priority = havePriorityString ?  parseInt(priorityString): -1;
-    const shouldBeAvailable = availability === 'available';
-    const latestRow: IssueType = await getLatestRowWithIssueId(issueId);
-    if (!latestRow) {
-      alert("big screwup. getLatestRowWithIssueId() didn't return a row")
-      throw new Error("big screwup. getLatestRowWithIssueId() didn't return a rpw");
-    }
-
-    const commentKey = latestRow.commentKey;
-    let myUpdate =  {
-      issueId: issueId,
-      commentKey: commentKey,
-      isAvailable: shouldBeAvailable,
-    };
-    if (haveClaim) {
-      const addition = {claim: claim};
-      myUpdate = { ...myUpdate, ...addition }
-    }
-    if (havePriorityString) {
-      const addition = { priority: priority};
-      myUpdate = { ...myUpdate, ...addition}
-    }
-
-    console.log(`DBM: calling IssueP2.update() at ${Date.now() % 10000}`);
-    await dbClient.models.IssueP2.update(myUpdate).then(
-          (response) => {
-            // @ts-expect-error It will not be undefined if the .update() succeeded!
-            const modifiedIssue: IssueType = response.data;
-            const { issueId, commentKey } = modifiedIssue;
-            // dispatch(setDesignatedUserId(id));
-            console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
-          }
-        );
-  }
-
-  const handleIssueTileClick = (event: SyntheticEvent<HTMLDivElement>, issueId: string) => {
-    event.stopPropagation();
-    setIssueIdText(issueId);
-  }
-
-  const showUiMgmt = uiChoice === 'uiMgmt';
-  const showRandom = uiChoice === 'randomUI';
-  const showUrlUi = activityChoice === 'manageUrls';
-  const showOtherFieldsUi = activityChoice === 'manageOtherFields';
 
   return (
     <PageWrapper>
-      <Flex direction="column" gap="6px">
-        <RadioGroupField
-          legend="Choose What to See"
-          name="uiChoice"
-          direction="row"
-          value={uiChoice}
-          onChange={handleUiRadioButtonChange}
-        >
-          <Radio value="uiMgmt">IssueModification UI</Radio>
-          <Radio value="randomUI">random cool stuff</Radio>
-        </RadioGroupField>
+      <Flex className="play02page" direction="column" gap="6px">
+        <Flex direction="column" gap="12px">
+          <Flex direction={"row"}>
+            <button onClick={() => toggleIsSuperAdmin()}>Toggle isSuperAdmin</button>
+            <TextField
+              label="value:"
+              direction={"row"}
+              value={'' + isNowSuperAdmin}
+              readOnly
+              placeholder="??"
+              width="120px"
+            />
+            <button onClick={() => toggleIsAdmin()}>Toggle isAdmin</button>
+            <TextField
+              label="value:"
+              direction={"row"}
+              value={'' + isNowAdmin}
+              readOnly
+              placeholder="??"
+              width="120px"
+            />
+          </Flex>
+          <Flex direction={"row"}>
+            <button onClick={() => checkDbAndShowResult()}>Check DB for corruption</button>
+            <TextField
+              label=""
+              value={dbCheckFeedback}
+              readOnly
+              width="420px"
+            />
+          </Flex>
+          <Flex direction={"row"}>
+            <button onClick={() => dispatch(setNextPath(savedPath))}>Set as next path</button>
+            <TextField
+              label=""
+              value={savedPath}
+              onChange={(e) => setSavedPath(e.target.value)}
+              width="200px"
+            />
+            <button onClick={() => goThere()}>Go to the path</button>
+          </Flex>
+          <Flex direction={"row"}>
+            <button onClick={() => computeAndSetStatus()}>Compute Status</button>
+            <TextField
+              label=""
+              value={userStatus}
+              readOnly
+              width="400px"
+            />
+            <button onClick={() => setUserStatus('')}>Clear Status</button>
+          </Flex>
+          <Flex direction={"row"}>
+            <button onClick={() => runSimpleTest()}>Run Simple Test</button>
+            <TextField
+              label=""
+              value={simpleTestResult}
+              readOnly
+              width="60px"
+            />
+            <button onClick={() => resetLoginTracking()}>Reset Login Tracking</button>
+            <button onClick={() => addToLoginTracking()}>Add to Login Tracking</button>
+          </Flex>
 
-        {
-          showUiMgmt &&
-          (
-            <div className="activityChoiceDiv">
-              <RadioGroupField
-                legend="What do you want to do?"
-                name="activityChoice"
-                direction="row"
-                value={activityChoice}
-                onChange={handleActivityRadioButtonChange}
-              >
-                  
-                <div className="activityButtonsDiv">
-                  <Radio value="manageUrls">Manage pro/con URLs</Radio>
-                </div>
-                <div className="activityButtonsDiv">
-                  <Radio value="manageOtherFields">Manage other Issue properties</Radio>
-                </div>
-              </RadioGroupField>
-              {
-                showOtherFieldsUi &&
-                (
-                  // UI to display if showOtherFieldsUi is true
-                  <Flex direction="column" className="otherFieldsFormDiv">
-                    <Flex direction="row">
-                      <div className="issueScrollDiv">{
-                        idClaimPairs.map(pair => (
-                          <IssueTile
-                            key={pair.issueId}
-                            issueId={pair.issueId}
-                            claim={pair.claim}
-                            selectionCallback={handleIssueTileClick} />
-                         ))}
-                      </div>
-                      <Flex direction="column" gap="0px">
-                        <div className="chosenIssueLabel">
-                          chosen Issue ID:
-                        </div>
-                        <div className="chosenIssue">
-                          <TextField
-                            label=""
-                            name=""
-                            width="240px"
-                            value={issueIdText}
-                            readOnly
-                            />
-                      </div>
-                      </Flex>
-                    </Flex>
-                    <Flex direction="row">
-                      <div className="claimLabelDiv">
-                        claim:
-                      </div>
-                      <div className="claimDiv">
-                        <TextField
-                          label=""
-                          name=""
-                          value={claimText}
-                          onChange={(e) => setClaimText(e.target.value)}
-                          />
-                      </div>
-                    </Flex>
-                    <Flex direction="row">
-                      <div className="priorityLabelDiv">
-                        priority:
-                      </div>
-                      <div className="priorityDiv">
-                        <TextField
-                          label=""
-                          name=""
-                          value={priorityText}
-                          onChange={(e) => setPriorityText(e.target.value)}
-                          />
-                      </div>
-                    </Flex>
-                    <Flex direction="row">
-                      <div className="availabilityLabel">
-                        Availability:
-                      </div>
-                      <RadioGroupField
-                        className="availabilityButtons"
-                        legend=""
-                        name="activityChoice"
-                        direction="row"
-                        value={availabilityChoice}
-                        onChange={handleAvailabilityRadioButtonChange}
-                      >
-                        <div className="availabilityButtonDiv">
-                          <Radio value="available">&nbsp;Make Available</Radio>
-                        </div>
-                        <div className="availabilityButtonDiv">
-                          <Radio value="unavailable">&nbsp;Make Unavailable</Radio>
-                        </div>
-                      </RadioGroupField>
-                      <div className="otherFieldsFormButtonsDiv">
-                        <Button className="otherFieldsFormButton" onClick={handleOtherFieldsClearButtonClick}>
-                          Clear
-                        </Button>
-                        <Button className="otherFieldsFormButton" onClick={handleOtherFieldsSubmitButtonClick}>
-                          Submit
-                        </Button>
-                      </div>
-                    </Flex>
-
-                    <div>
-
-                    </div>
-                  </Flex>
-                )
-              }
-              {
-                showUrlUi &&
-                (
-                  // UI to display if showOtherFieldsUi is true
-                  <p>This is displayed to allow modifiction of URLs.</p>
-                )
-              }
-
-            </div>
-          )
-        }
-
-        {
-          showRandom &&
-          (
-            // UI to display if showRandom is true
-            <Flex direction="column" gap="12px">
-              <Flex direction={"row"}>
-                <button onClick={() => toggleIsAdmin()}>Toggle isSuperAdmin</button>
-                value:
-                <TextField
-                  label=""
-                  value={'' + isNowSuperAdmin}
-                  readOnly
-                  placeholder="??"
-                  width="120px"
-                />
-              </Flex>
-              <Flex direction={"row"}>
-                <button onClick={() => toggleCEmail()}>{String(clearOrFill)} cEmail</button>
-                <button onClick={() => checkDbAndShowResult()}>Czech DB for corruption</button>
-                <TextField
-                  label=""
-                  value={dbCheckFeedback}
-                  readOnly
-                  width="420px"
-                />
-              </Flex>
-              <Flex direction={"row"}>
-                <button onClick={() => dispatch(setNextPath(savedPath))}>Set as next path</button>
-                <TextField
-                  label=""
-                  value={savedPath}
-                  onChange={(e) => setSavedPath(e.target.value)}
-                  width="200px"
-                />
-                <button onClick={() => goThere()}>Go to the path</button>
-              </Flex>
-              <Flex direction={"row"}>
-                <button onClick={() => computeAndSetStatus()}>Compute Status</button>
-                <TextField
-                  label=""
-                  value={userStatus}
-                  readOnly
-                  width="400px"
-                />
-                <button onClick={() => setUserStatus('')}>Clear Status</button>
-              </Flex>
-              <Flex direction={"row"}>
-                <button onClick={() => runSimpleTest()}>Run Simple Test</button>
-                <TextField
-                  label=""
-                  value={simpleTestResult}
-                  readOnly
-                  width="60px"
-                />
-                <button onClick={() => resetLoginTracking()}>Reset Login Tracking</button>
-                <button onClick={() => addToLoginTracking()}>Add to Login Tracking</button>
-              </Flex>
-
-              <ToastNotifier message={toastMessage} shouldShow={showToast} showF={setShowToast}/>
-              <Flex>
-                <Button onClick={handleMigrateDbClick}> Migrate User DB </Button>
-                <button onClick={testServerEmail}>Test Server Email</button>
-                <button onClick={testClientEmail}>Test Client Email</button>
-              </Flex>
-            </Flex>
-          )
-        }
+          <Flex>
+            <Button onClick={handleMigrateDbClick} disabled> Migrate User DB </Button>
+            <button onClick={testServerEmail}>Test Server Email</button>
+            <button onClick={testClientEmail}>Test Client Email</button>
+          </Flex>
+        </Flex>
       </Flex>
     </PageWrapper>
   );
