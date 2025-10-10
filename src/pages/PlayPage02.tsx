@@ -205,6 +205,13 @@ function PlayPage02() {
     sendClientEmail({toAddresses, subject, body } );
   }
 
+  const testSayHelloFunction = async () => {
+    // This is how to call the function from the frontend
+    const name = "Kim";
+    const result = await dbClient.queries.sayHello({ name: name });
+    console.log(`result from sayHello: ${result}`);
+  }
+
 
   const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -218,7 +225,7 @@ function PlayPage02() {
       <Flex className="play02page" direction="column" gap="6px">
         <Flex direction="column" gap="12px">
           <Flex direction={"row"}>
-            <button onClick={() => toggleIsSuperAdmin()}>Toggle isSuperAdmin</button>
+            <Button onClick={() => toggleIsSuperAdmin()}>Toggle isSuperAdmin</Button>
             <TextField
               label="value:"
               direction={"row"}
@@ -227,7 +234,7 @@ function PlayPage02() {
               placeholder="??"
               width="120px"
             />
-            <button onClick={() => toggleIsAdmin()}>Toggle isAdmin</button>
+            <Button onClick={() => toggleIsAdmin()}>Toggle isAdmin</Button>
             <TextField
               label="value:"
               direction={"row"}
@@ -281,6 +288,7 @@ function PlayPage02() {
             <Button onClick={handleMigrateDbClick} disabled> Migrate User DB </Button>
             <button onClick={testServerEmail}>Test Server Email</button>
             <button onClick={testClientEmail}>Test Client Email</button>
+            <Button onClick={testSayHelloFunction}>Test Hello Function</Button>
           </Flex>
         </Flex>
       </Flex>

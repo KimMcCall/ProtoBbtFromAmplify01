@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { Provider as ReduxProvideer } from 'react-redux'
+import { Provider as ReduxProvider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react';
 import { Amplify } from "aws-amplify";
 import { generateClient } from "aws-amplify/data";
@@ -18,9 +18,9 @@ export const dbClient = generateClient<Schema>();
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <PersistGate loading={null} persistor={persistor}>
-      <ReduxProvideer store={store}>
+      <ReduxProvider store={store}>
         <App />
-      </ReduxProvideer>
+      </ReduxProvider>
     </PersistGate>
   </React.StrictMode>
 );
