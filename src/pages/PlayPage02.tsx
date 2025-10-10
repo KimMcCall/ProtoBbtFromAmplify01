@@ -11,6 +11,7 @@ import { cacheAbortedCallFrom, resetTracking } from "../features/loginTracking/l
 import { sendClientEmail, sendServerEmail } from "../features/email/Email";
 import './PlayPage02.css';
 import { IssueType, selectAllIssues } from "../features/issues/issues";
+import { secret } from "@aws-amplify/backend";
 
 interface IdClaimPairType {
   issueId: string
@@ -205,6 +206,12 @@ function PlayPage02() {
     sendClientEmail({toAddresses, subject, body } );
   }
 
+  const testSecret = async () => {
+    const mySecret = secret('SENDGRID_API_KEY');
+    console.log(`The secret is: ${mySecret}`);
+  }
+
+
   const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     console.log("We're short-circuiting the migration, since it's alreaddy happened!");
@@ -276,11 +283,13 @@ function PlayPage02() {
             <button onClick={() => resetLoginTracking()}>Reset Login Tracking</button>
             <button onClick={() => addToLoginTracking()}>Add to Login Tracking</button>
           </Flex>
-
           <Flex>
             <Button onClick={handleMigrateDbClick} disabled> Migrate User DB </Button>
             <button onClick={testServerEmail}>Test Server Email</button>
             <button onClick={testClientEmail}>Test Client Email</button>
+          </Flex>
+          <Flex>
+            <Button onClick={testSecret}>Test Secret</Button>
           </Flex>
         </Flex>
       </Flex>
