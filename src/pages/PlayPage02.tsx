@@ -227,7 +227,6 @@ function PlayPage02() {
       const nameOfSecret = "SENDGRID_API_KEY";
       const result = await dbClient.queries.getSecret({ name: nameOfSecret });
       console.log("getSecret() result:", result);
-      alert(`Function executed successfully: ${JSON.stringify(result)}`);
       const secretValue = result.data;
       setGetSecretResult(secretValue || "No result data");
       console.log(`Secret value: ${secretValue}`);
