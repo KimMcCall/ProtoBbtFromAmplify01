@@ -1,5 +1,4 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
-import { sayHello } from "../functions/say-hello/resource";
 
 const schema = a.schema({
   RegisteredUser: a
@@ -17,7 +16,6 @@ const schema = a.schema({
       index("canonicalEmail").queryField("listByCanonicalEmail"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
-    
   RegisteredUserP2: a
     .model({
       authId: a.string().required(),
@@ -35,7 +33,6 @@ const schema = a.schema({
       index("canonicalEmail").queryField("listByCanonicalEmailXP2"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
-
   IssueP2: a
     .model({
       issueId: a.string().required(),
@@ -56,7 +53,6 @@ const schema = a.schema({
     })
     .identifier(['issueId', 'commentKey']) // Composite primary key
     .authorization((allow) => [allow.publicApiKey()]),
-
   Submission: a
     .model({
       userId: a.string().required(),
@@ -74,21 +70,18 @@ const schema = a.schema({
       index("userId").queryField("listByUserId"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
-
   Memo: a
     .model({
       subject: a.string(),
       content: a.string(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
-
   Todo: a
     .model({
       content: a.string(),
       isDone: a.boolean().default(false),
     })
     .authorization((allow) => [allow.publicApiKey()]),
-
   SubmissionTally: a
     .model({
       id: a.id().required(),
@@ -99,7 +92,6 @@ const schema = a.schema({
       index("userId").queryField("byUserId"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
-
   UrlSubmission: a
     .model({
       issueId: a.string().required(),
@@ -118,7 +110,6 @@ const schema = a.schema({
       isCloistered: a.boolean().required().default(false),
     })
     .authorization((allow) => [allow.publicApiKey()]),
-
   Banning: a
     .model({
       userId: a.string().required(),
@@ -129,16 +120,6 @@ const schema = a.schema({
       badGdUrl: a.string().required(),
     })
     .authorization((allow) => [allow.publicApiKey()]),
-      
-  sayHello: a
-    .query()
-    .arguments({
-      name: a.string(),
-    })
-    .returns(a.string())
-    .authorization(allow => [allow.guest()])
-    .handler(a.handler.function(sayHello)),
-
 });
 
 export type Schema = ClientSchema<typeof schema>;
