@@ -21,7 +21,8 @@ function PlayPage02() {
   const [ savedPath, setSavedPath] = useState("/finances");
   const [ userStatus, setUserStatus ] = useState("");
   const [ dbCheckFeedback, setDbCheckFeedback ] = useState("Waiting for czech");
-  const [simpleTestResult, setSimpleTestResult] = useState(42)
+  const [simpleTestResult, setSimpleTestResult] = useState(42);
+  const [sayHelloResult, setSayHelloResult] = useState("");
 
   const dispatch = useAppDispatch();
   const isNowSuperAdmin = useAppSelector(selectCurrentUserIsSuperAdmin);
@@ -205,6 +206,20 @@ function PlayPage02() {
     sendClientEmail({toAddresses, subject, body } );
   }
 
+  async function testSayHello() {
+    try {
+      const result = await dbClient.queries.sayHello({
+        name: "Amplify",
+      })
+      console.log("Function result:", result);
+      alert(`Function executed successfully: ${JSON.stringify(result)}`);
+      setSayHelloResult(result.data || "No result data");
+    } catch (error) {
+      console.error("Function error:", error);
+      alert(`Function execution failed: ${error}`);
+    }
+  }
+
 
   const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -281,6 +296,16 @@ function PlayPage02() {
             <Button onClick={handleMigrateDbClick} disabled> Migrate User DB </Button>
             <button onClick={testServerEmail}>Test Server Email</button>
             <button onClick={testClientEmail}>Test Client Email</button>
+          </Flex>
+          <Flex>
+            <button onClick={testSayHello}>Test Say Hello</button>
+            <TextField
+              label="Result:"
+              direction={"row"}
+              value={sayHelloResult}
+              readOnly
+              width="266px"
+            />
           </Flex>
         </Flex>
       </Flex>
