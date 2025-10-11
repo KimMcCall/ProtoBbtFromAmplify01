@@ -16,7 +16,7 @@ function Todos() {
 
   function createTodo() {
     console.log(`DBM: calling Todo.create() at ${Date.now() % 10000}`);
-    dbClient.models.Todo.create({ content: window.prompt("Todo content") });
+    dbClient.models.Todo.create({ content: prompt("Todo content") });
   }  
   
   function deleteTodo(id: string) {
