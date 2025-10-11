@@ -32,6 +32,7 @@ import AdminUncloisteredPage from './pages/AdminUncloisteredPage';
 import AutoTimeout from './components/AutoTimeout.tsx';
 import PolicyPage from './pages/PolicyPage.tsx';
 import CritiquePage from './pages/CritiquePage.tsx';
+import ContactUsPage from './pages/ContactUsPage.tsx';
 
 function App() {
   return (
@@ -151,6 +152,7 @@ function App() {
         <Route path="/bannedAlias" element={<BannedAliasPage />} />
         <Route path="/corruptedDb" element={<CorruptedDbPage />} />
         <Route path="/uninitializedUserStatus" element={<UninitializedUserStatusPage />} />
+        <Route path="/contactUs" element={<ContactUsPage />} />
         <Route
           path="/todos"
           element={

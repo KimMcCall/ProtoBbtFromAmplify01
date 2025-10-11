@@ -40,7 +40,7 @@ function NavBar() {
         justifyContent="space-between"
         alignItems="left"
         wrap="nowrap"
-        gap="1rem"
+        gap="0.8rem"
       >
         <NavBarItem dest="/" label="Issues" />
         <NavBarItem dest="/mission" label='Mission' />
@@ -56,6 +56,7 @@ function NavBar() {
         {isSuperAdmin && <NavBarItem  dest="/play03"  label="Play 3" />}
         {isSuperAdmin && <NavBarItem  dest="/play04"  label="Play 4" />}
         {isSuperAdmin && <NavBarItem  dest="/todos"  label="ToDos" />}
+        <NavBarItem dest="/contactUs" label='Contact Us' />
       </Flex>
     </div>
   );
