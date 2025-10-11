@@ -23,6 +23,7 @@ function PlayPage02() {
   const [ dbCheckFeedback, setDbCheckFeedback ] = useState("Waiting for czech");
   const [simpleTestResult, setSimpleTestResult] = useState(42);
   const [sayHelloResult, setSayHelloResult] = useState("");
+  const [getSecretResult, setGetSecretResult] = useState("");
 
   const dispatch = useAppDispatch();
   const isNowSuperAdmin = useAppSelector(selectCurrentUserIsSuperAdmin);
@@ -220,6 +221,22 @@ function PlayPage02() {
     }
   }
 
+  async function testGetSecret() {
+    try {
+      // const secretName = prompt("Enter the name of the secret:");
+      const nameOfSecret = "SENDGRID_API_KEY";
+      const result = await dbClient.queries.getSecret({ name: nameOfSecret });
+      console.log("getSecret() result:", result);
+      alert(`Function executed successfully: ${JSON.stringify(result)}`);
+      const secretValue = result.data;
+      setGetSecretResult(secretValue || "No result data");
+      console.log(`Secret value: ${secretValue}`);
+    } catch (error) {
+      console.error("Function error:", error);
+      alert(`Function execution failed: ${error}`);
+    }
+  }
+
 
   const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
@@ -303,6 +320,14 @@ function PlayPage02() {
               label="Result:"
               direction={"row"}
               value={sayHelloResult}
+              readOnly
+              width="266px"
+            />
+            <button onClick={testGetSecret}>Test Get Secret</button>
+            <TextField
+              label="Result:"
+              direction={"row"}
+              value={getSecretResult}
               readOnly
               width="266px"
             />

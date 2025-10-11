@@ -1,5 +1,6 @@
 import { type ClientSchema, a, defineData } from "@aws-amplify/backend";
 import { sayHello } from "../functions/say-hello/resource";
+import { getSecret } from "../functions/get-secret/resource";
 
 const schema = a.schema({
   RegisteredUser: a
@@ -138,6 +139,16 @@ const schema = a.schema({
     .returns(a.string())
     .authorization(allow => [allow.publicApiKey()])
     .handler(a.handler.function(sayHello)),
+    
+  getSecret: a
+    .query()
+    .arguments({
+      name: a.string(),
+    })
+    .returns(a.string())
+    .authorization(allow => [allow.publicApiKey()])
+    .handler(a.handler.function(getSecret)),
+
 });
 
 export type Schema = ClientSchema<typeof schema>;
