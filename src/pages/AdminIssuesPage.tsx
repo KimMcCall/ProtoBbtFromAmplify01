@@ -3,13 +3,13 @@ import PageWrapper from "../components/PageWrapper";
 import './AdminIssuesPage.css'
 import { ChangeEvent, SyntheticEvent, useState } from "react";
 import { createIssue } from "../utils/dynamodb_operations";
-import ToastNotifier from "../components/ToastNotifier";
 import { docType_GoogleDoc, docType_Pdf, docType_Unknown, docType_YouTube, PlaceholderForEmptyUrl } from "../utils/constants";
 import { selectCurrentUserCanonicalEmail } from "../features/userInfo/userInfoSlice";
 import { useAppSelector } from "../app/hooks";
 import { IssueType, selectAllIssues } from "../features/issues/issues";
 import { getLatestRowWithIssueId } from "../utils/utils";
 import { dbClient } from "../main";
+import AlertDialog from "../components/AlertDialog";
 
 // Claim: There is no meaningful sense in which Tyler Robinson is left-wing. To claim that he is is irresponsible and intentionally divisive.
 // Priority: 999000
@@ -42,8 +42,9 @@ function IssueTile(props: IssueTilePropsType) {
 }
 
 function AdminIssuesPage() {
-  const [toastMessage, setToastMessage] = useState('Sorry! You need to fill in at least one URL');
-  const [shouldShowAcceptanceToast, setShouldShowAcceptanceToast] = useState(false);
+  const [shouldShowAlert, setShouldShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
   const [proDocTypeChoice, setProDocTypeChoice] = useState(docType_Unknown);
   const [conDocTypeChoice, setConDocTypeChoice] = useState(docType_Unknown);
   const [originalIssueProUrl, setOriginalIssueProUrl] = useState('');
@@ -78,8 +79,9 @@ function AdminIssuesPage() {
     const priority = Number(newIssuePriority);
     const claim = newIssueClaim;
     if (!claim) {
-      setToastMessage('You need to type a claim into the "Claim:" box');
-      setShouldShowAcceptanceToast(true);
+      setAlertMessage('You need to type a claim into the "Claim:" box');
+      setAlertTitle('Cannot Submit Issue');
+      setShouldShowAlert(true);
       return;
     }
     // GATOR: guard against setting a pro/conDocType when ther's no pro/conUrl
@@ -102,8 +104,9 @@ function AdminIssuesPage() {
       conAuthorEmail,
       commentAuthorEmail,
     );
-    setToastMessage('Your issue has been received');
-    setShouldShowAcceptanceToast(true);
+    setAlertMessage('Your issue has been received');
+    setAlertTitle('Notification');
+    setShouldShowAlert(true);
   };
 
   const handleClaimChange = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -257,8 +260,9 @@ function AdminIssuesPage() {
             const { issueId, commentKey } = modifiedIssue;
             // dispatch(setDesignatedUserId(id));
             console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
-            setToastMessage('Your update has been received');
-            setShouldShowAcceptanceToast(true);
+            setAlertMessage('Your update has been received');
+            setAlertTitle('Notification');
+            setShouldShowAlert(true);
             setIssueIdText('');
             setClaimText('');
             setOriginalClaimText('');
@@ -315,9 +319,9 @@ function AdminIssuesPage() {
             const { issueId, commentKey } = modifiedIssue;
             // dispatch(setDesignatedUserId(id));
             console.log(`back from update({issueId: ${issueId}, commentKey: ${commentKey}})`);
-            alert('URL change done. Still need to modify Redux representation of issues');
-            setToastMessage('Your update has been received');
-            setShouldShowAcceptanceToast(true);
+            setAlertMessage('URL change done. Still need to modify Redux representation of issues');
+            setAlertTitle('Notification');
+            setShouldShowAlert(true);
             setOriginalIssueProUrl('');
             setOriginalIssueConUrl('');
             setNewIssueProUrl('');
@@ -610,10 +614,12 @@ function AdminIssuesPage() {
           )
         }
       </div>
-      <ToastNotifier
-        message={toastMessage}
-        shouldShow={shouldShowAcceptanceToast}
-        showF={setShouldShowAcceptanceToast} />
+      <AlertDialog
+        open={shouldShowAlert}
+        title={alertTitle}
+        message={alertMessage}
+        onClose={() => setShouldShowAlert(false)}
+        />
     </PageWrapper>
   );
 }

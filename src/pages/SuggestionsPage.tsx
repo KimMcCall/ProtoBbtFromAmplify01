@@ -5,19 +5,20 @@ import { clearCurrentUserInfo, selectCurrentUserId } from '../features/userInfo/
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { dbClient } from '../main';
 import { SyntheticEvent, useState } from 'react';
-import ToastNotifier from '../components/ToastNotifier';
 import { checkForPermissionToSubmitText, tallySubmission } from '../utils/utils';
 import './SuggestionsPage.css'
 import { signOut } from 'aws-amplify/auth';
 import { useNavigate } from 'react-router-dom';
+import AlertDialog from '../components/AlertDialog';
 
 function SuggestionsPage() {
   const [siteTitle, setSiteTitle] = useState('');
   const [siteText, setSiteText] = useState('');
   const [topicTitle, setTopicTitle] = useState('');
   const [topicText, setTopicText] = useState('');
-  const [shouldShowAcceptanceToast,setShouldShowAcceptanceToast ] = useState(false);
-  const [toastMessage, setToastMessage] = useState('Your suggestion has been received');
+  const [shouldShowAlert, setShouldShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -73,8 +74,9 @@ function SuggestionsPage() {
     };
     console.log(`DBM: calling Submission.create() at ${Date.now() % 10000}`);
     await dbClient.models.Submission.create(structToCreate);
-    setToastMessage('Your suggestion has been received');
-    setShouldShowAcceptanceToast(true);
+    setAlertMessage('Your suggestion has been received');
+    setAlertTitle('Notification');
+    setShouldShowAlert(true);
     tallySubmission(currentUserId);
   }
 
@@ -159,10 +161,12 @@ function SuggestionsPage() {
         </Tabs.Panel>
       </Tabs.Container>
       
-      <ToastNotifier
-        message={toastMessage}
-        shouldShow={shouldShowAcceptanceToast}
-        showF={setShouldShowAcceptanceToast} />
+      <AlertDialog
+        open={shouldShowAlert}
+        title={alertTitle}
+        message={alertMessage}
+        onClose={() => setShouldShowAlert(false)}
+      />
 
     </PageWrapper>
   );
