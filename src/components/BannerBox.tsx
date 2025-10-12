@@ -35,7 +35,12 @@ function BannerBox() {
         wrap="nowrap"
         gap="1rem"
       >
-        <div className='bbLogoDiv' onClick={goHome}>TruthSquad.com</div>
+        <div className='bbLogoAndNameDiv' onClick={goHome}>
+          <div className='bbLogoDiv'>
+            <img src="/logo_transparent.svg" alt="TruthSquad Logo" className='bbLogoImage'/>
+          </div>
+          <div className='bbNameDiv'>Truth Squad</div>
+        </div>
         
         {!isLoggeddIn ?
           <div className='bbLoginDiv' onClick={() => goToLogInPage()}>Log In</div>

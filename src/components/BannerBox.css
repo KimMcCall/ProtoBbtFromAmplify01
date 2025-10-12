@@ -1,7 +1,7 @@
 /* BannerBox.css */
 
 .bbBox {
-  height: 46px;
+  height: 48px;
   width: 1206px;
   border: 2px solid blue;
   padding: 4px;
@@ -9,13 +9,33 @@
   padding-right: 20px;
 }
 
-.bbLoginDiv {
+.bbLogoAndNameDiv {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  float: left;
   cursor: pointer;
-  font-size: 120%;
 }
 
 .bbLogoDiv {
   cursor: pointer;
   font-weight: bold;
   font-size: 150%;
+}
+
+.bbLogoImage {
+  height: 32px;
+  width: 32px;
+  vertical-align: middle;
+}
+
+.bbNameDiv {
+  font-weight: bold;
+  font-size: 160%;
+}
+
+.bbLoginDiv {
+  cursor: pointer;
+  font-size: 120%;
 }
