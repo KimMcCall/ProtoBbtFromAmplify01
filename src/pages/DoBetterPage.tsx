@@ -11,11 +11,15 @@ import { selectCurrentIssue } from '../features/issues/issues';
 import { checkForPermissionToSubmitGoogleDoc, tallySubmission } from '../utils/utils';
 import { signOut } from 'aws-amplify/auth';
 import { useNavigate } from 'react-router-dom';
+import AlertDialog from '../components/AlertDialog';
 
 function DoBetterPage() {
   const [instructionsUiChoice, setInstructionsUiChoice] = useState('NoChoice');
   const [specifiedUrl, setSpecifiedUrl] = useState('');
   const [explanationText, setExplanationText] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+    const [alertTitle, setAlertTitle] = useState('');
+    const [alertMessage, setAlertMessage] = useState('');
   
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -66,12 +70,16 @@ function DoBetterPage() {
 
   async function handleSubmit(): Promise<void> {
     if (!specifiedUrl) {
-      alert('Please enter a URL before submitting');
+      setAlertTitle('Submission Incomplete');
+      setAlertMessage('Please enter a URL before submitting.');
+      setShowAlert(true);
       return;
     }
 
     if (!explanationText) {
-      alert('Please enter an explanation before submitting');
+      setAlertTitle('Submission Incomplete');
+      setAlertMessage('Please enter an explanation before submitting.');
+      setShowAlert(true);
       return;
     }
 
@@ -79,19 +87,25 @@ function DoBetterPage() {
     try {
       new URL(specifiedUrl);
     } catch {
-      alert('Please enter a valid URL');
+      setAlertTitle('Invalid URL');
+      setAlertMessage('Please enter a valid URL.');
+      setShowAlert(true);
       return;
     }
 
     // YouTube URL validation
     if (showYouTubeUi && !specifiedUrl.includes('youtube.com') && !specifiedUrl.includes('youtu.be')) {
-      alert('Please enter a valid YouTube URL');
+      setAlertTitle('Invalid YouTube URL');
+      setAlertMessage('Please enter a valid YouTube URL.');
+      setShowAlert(true);
       return;
     }
 
     // Google Doc URL validation
     if (showGoogleDocUi && !specifiedUrl.includes('docs.google.com')) {
-      alert('Please enter a valid Google Doc URL');
+      setAlertTitle('Invalid Google Doc URL');
+      setAlertMessage('Please enter a valid Google Doc URL.');
+      setShowAlert(true);
       return;
     }
 
@@ -101,9 +115,16 @@ function DoBetterPage() {
       permissionQResult = await checkForPermissionToSubmitGoogleDoc(currentUserId, specifiedUrl);
       if (!permissionQResult.granted) {
         if (permissionQResult.explanation.includes('policy conformance check failed')) {
+          setAlertTitle('Signed Out & Banned');
+          setAlertMessage('You have been banned from this site due to a violation of our policies.');
+          setShowAlert(true);
           await signOut();
           dispatch(clearCurrentUserInfo());
           navigate('/banned');
+        } else {
+          setAlertTitle('Permission Denied');
+          setAlertMessage(`You do not have permission to submit this Google Doc. Explanation: ${permissionQResult.explanation}`);
+          setShowAlert(true);
         }
         return;
       }
@@ -112,11 +133,12 @@ function DoBetterPage() {
     // PDF File URL validation
     // if (showPdfUi && !specifiedUrl.includes('.pdf')) {
     if (showPdfUi && !specifiedUrl.includes('docs.google.com/document')) {
-      alert('For now, we only accept PDF files that have been uploaded to Google Docs');
+      setAlertTitle('Invalid PDF URL');
+      setAlertMessage('Please enter a valid URL to a PDF file that has been uploaded to Google Docs.');
+      setShowAlert(true);
       return;
     }
     
-
     console.log('Submitting URL:', specifiedUrl);
     const docType = showYouTubeUi ? 'YouTube' : showGoogleDocUi ? 'GoogleDoc' : 'Pdf';
     // Submit the URL to the database
@@ -137,7 +159,10 @@ function DoBetterPage() {
       lifePhase: 'Just Received',
       isCloistered: false,
     });
-    alert('Thank you for your submission!');
+    // Notify the user of successful submission
+    setAlertTitle('Submission Successful');
+    setAlertMessage('Thank you for your submission!');
+    setShowAlert(true);
     tallySubmission(currentUserId);
     setSpecifiedUrl('');
     setExplanationText('');
@@ -222,6 +247,12 @@ function DoBetterPage() {
               </Flex>
             </div>
           </div>
+          <AlertDialog
+            open={showAlert}
+            title={alertTitle}
+            message={alertMessage}
+            onClose={() => setShowAlert(false)}
+          />
         </div>
       ) : null
     }
@@ -265,6 +296,12 @@ function DoBetterPage() {
               <Button onClick={handleReturnToIntro}>Return to Intro</Button>
             </Flex>
           </div>
+          <AlertDialog
+            open={showAlert}
+            title={alertTitle}
+            message={alertMessage}
+            onClose={() => setShowAlert(false)}
+          />
         </div>
       ) : null
     }
@@ -287,6 +324,12 @@ function DoBetterPage() {
               </Flex>
             </div>
           </div>
+          <AlertDialog
+            open={showAlert}
+            title={alertTitle}
+            message={alertMessage}
+            onClose={() => setShowAlert(false)}
+          />
         </div>
       ) : null
     }

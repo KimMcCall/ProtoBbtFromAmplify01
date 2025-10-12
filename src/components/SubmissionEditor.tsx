@@ -10,6 +10,8 @@ import { signOut } from 'aws-amplify/auth';
 import { clearCurrentUserInfo } from '../features/userInfo/userInfoSlice';
 import { useAppDispatch } from '../app/hooks';
 import { useNavigate } from 'react-router';
+import AlertDialog from './AlertDialog';
+import React from 'react';
 
 type SubmissionEditorProps = {
   submission: SubmissionType;
@@ -19,6 +21,9 @@ type SubmissionEditorProps = {
 function SubmissionEditor(props: SubmissionEditorProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
 
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -33,7 +38,9 @@ function SubmissionEditor(props: SubmissionEditorProps) {
   const handleSubmitButtonClick = async (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
     if (title.trim() === '' || content.trim() === '') {
-      alert('Neither Title nor Content can be empty.');
+      setAlertMessage('Neither Title nor Content can be empty.');
+      setAlertTitle('Submission Incommplete');
+      setShowAlert(true);
       return;
     }
 
@@ -60,7 +67,9 @@ function SubmissionEditor(props: SubmissionEditorProps) {
     submission.title = title;
     submission.content= content;
     editorShowOrHide(false);
-    alert('Submission updated successfully!');
+    setAlertTitle('Submission Updated');
+    setAlertMessage('Your submission has been updated successfully.');
+    setShowAlert(true);
     tallySubmission(submission.userId);
   }
 
@@ -70,35 +79,43 @@ function SubmissionEditor(props: SubmissionEditorProps) {
   }, [submission.title, submission.content]);
 
   return (
-    <div key={submission.id} className="editorPanel">
-      <Flex direction='column'>
-        <Flex direction='row' gap='6px'>
-          <div className='titleLabelDiv'>
-            Title:
+    <React.Fragment>
+      <div key={submission.id} className="editorPanel">
+        <Flex direction='column'>
+          <Flex direction='row' gap='6px'>
+            <div className='titleLabelDiv'>
+              Title:
+            </div>
+            <TextField label=''
+            name='title'
+            value={title}
+            onChange={(e) => {setTitle(e.target.value);}}
+          />
+          </Flex>
+          <div>
+            <TextAreaField
+              label=""
+              value={content}
+              onChange={(e) => {setContent(e.target.value)}}
+              rows={17}/>
           </div>
-          <TextField label=''
-          name='title'
-          value={title}
-          onChange={(e) => {setTitle(e.target.value);}}
-        />
+          <Flex direction='row'>
+            <Button onClick={handleCancelButtonClick}>
+              Cancel
+            </Button>
+            <Button onClick={handleSubmitButtonClick}>
+              Submit
+            </Button>
+          </Flex>
         </Flex>
-        <div>
-          <TextAreaField
-            label=""
-            value={content}
-            onChange={(e) => {setContent(e.target.value)}}
-            rows={17}/>
-        </div>
-        <Flex direction='row'>
-          <Button onClick={handleCancelButtonClick}>
-            Cancel
-          </Button>
-          <Button onClick={handleSubmitButtonClick}>
-            Submit
-          </Button>
-        </Flex>
-      </Flex>
-    </div>
+      </div>
+      <AlertDialog
+        open={showAlert}
+        title={alertTitle}
+        message={alertMessage}
+        onClose={() => setShowAlert(false)}
+      />
+    </React.Fragment>
   )
 }
 

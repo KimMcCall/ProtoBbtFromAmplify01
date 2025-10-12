@@ -71,18 +71,16 @@ export const checkForPermissionToSubmitGoogleDoc = async (currentUserId: string,
   const tallyConformance: PermissionQueryResult = await checkSubmissionTallyForPermission(currentUserId);
   if (!tallyConformance.granted) {
     console.warn(`Permission denied: ${tallyConformance.explanation}`);
-    alert(`Permission denied: ${tallyConformance.explanation}`);
     return tallyConformance;
   }
 
   const policyConformance: PermissionQueryResult = await checkGoogleDocUrlForPolicyConformance(currentUserId, url);
   if (!policyConformance.granted) {
     console.warn(`Permission denied: ${policyConformance.explanation}`);
-    alert(`Permission denied: ${policyConformance.explanation}`);
     banUserForGoogleDocPolicyViolation(currentUserId, url);
     return policyConformance;
   }
-  return { granted: true, explanation: "It's all good!" };
+  return { granted: true, explanation: "Submission passed all of our tests" };
 };
 
 const banUserForGoogleDocPolicyViolation = async (userId: string, url: string) => {
@@ -121,19 +119,17 @@ export const checkForPermissionToSubmitText = async (activity: string, currentUs
   const tallyConformance: PermissionQueryResult = await checkSubmissionTallyForPermission(currentUserId);
   if (!tallyConformance.granted) {
     console.warn(`Permission denied: ${tallyConformance.explanation}`);
-    alert(`Permission denied: ${tallyConformance.explanation}`);
     return tallyConformance;
   }
 
   const policyConformance: PermissionQueryResult = await checkStringForPolicyConformance(currentUserId, str);
   if (!policyConformance.granted) {
     console.warn(`Permission denied: ${policyConformance.explanation}`);
-    alert(`Permission denied: ${policyConformance.explanation}`);
     banUserForTextPolicyViolation(activity, currentUserId, str);
     return policyConformance;
   }
 
-  return { granted: true, explanation: "It's all good!" };
+  return { granted: true, explanation: "Submission passed all of our tests" };
 };
 
 const banUserForTextPolicyViolation = async (activity: string, userId: string, text: string) => {
@@ -380,15 +376,13 @@ const checkSubmissionTallyForPermission = async (userId: string) => {
         retVal.explanation = "User has not exceeded submission limit.";
       } else if (nRecents === submissionCountWarningThreashold) {
         const msg = `To avoid an avalanche, we only permit ${nSubmissionsAllowedPer24Hr} submissions per 24 hour period. Just letting you know that since this is submission number ${nRecents + 1} for you, your next one is likely to be rejected unless you wait a while.`;
-        alert(msg);
         retVal.granted = true;
-        retVal.explanation = "User is at submission limit.";
+        retVal.explanation = "User is at submission limit. " + msg;
       } else {
         /* nRecents > submissionCountWarningThreashold */
         const msg = `To avoid an avalanche, we only permit ${nSubmissionsAllowedPer24Hr} submissions per 24 hour period. Since you're looking to exceed this, I'm afraid we have to reject your submission for now.`;
-        alert(msg);
         retVal.granted = false;
-        retVal.explanation = "User has exceeded submission limit.";
+        retVal.explanation = "User has exceeded submission limit. " + msg;
       }
     }
   )
