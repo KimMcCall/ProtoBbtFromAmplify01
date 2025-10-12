@@ -1,0 +1,10 @@
+<svg viewBox="25 58 125 105" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Red S (medium, intersecting) -->
+
+<text x="115" y="160" font-family="Georgia, serif" font-size="110" font-weight="bold" fill="#DC143C" text-anchor="middle">S</text>
+
+  <!-- Blue T (darker, flag blue, in front) -->
+
+<text x="75" y="160" font-family="Georgia, serif" font-size="140" font-weight="bold" fill="#002868" text-anchor="middle">T</text>
+</svg>
