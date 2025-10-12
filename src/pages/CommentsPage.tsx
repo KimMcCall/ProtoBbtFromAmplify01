@@ -13,9 +13,9 @@ import { SyntheticEvent, useState } from "react";
 import { checkForPermissionToSubmitText, sortAndRepairIssues, structurePerIssue, tallySubmission } from "../utils/utils";
 import { clearCurrentUserInfo, selectCurrentUser, selectCurrentUserId } from "../features/userInfo/userInfoSlice";
 import { addCommentToIssue } from "../utils/dynamodb_operations";
-import CommentSubmissionForm from "../components/CommentSubmissionForm";
 import { useNavigate } from "react-router-dom";
 import { signOut } from "aws-amplify/auth";
+import PromptDialog from "../components/PromptDialog";
 
 interface CommentTileProps {
   block: CommentBlockType;
@@ -165,13 +165,16 @@ function CommentsPage() {
             </Button>
           </Flex>
         </div>
-        {
-          shouldShowForm &&
-          (
-            // UI to display if myConstant is true
-            <CommentSubmissionForm cancelF={handleCancelSubmissionForm} submitF={handleSubmitSubmissionForm}/>
-          )
-        }
+        <PromptDialog
+          open={shouldShowForm}
+          title="Submit Comment"
+          message="Please feel free to leave a constructive comment."
+          charLimit={1000}
+          rows={16}
+          cols={80}
+          onSubmit={handleSubmitSubmissionForm}
+          onClose={handleCancelSubmissionForm}
+        />
 
       </PageWrapper>
     );
@@ -181,13 +184,16 @@ function CommentsPage() {
         <div>
           No comments found!
         </div>
-        {
-          shouldShowForm &&
-          (
-            // UI to display if myConstant is true
-            <CommentSubmissionForm cancelF={handleCancelSubmissionForm} submitF={handleSubmitSubmissionForm}/>
-          )
-        }
+        <PromptDialog
+          open={shouldShowForm}
+          title="Submit Comment"
+          message="Please feel free to leave a constructive comment"
+          charLimit={1000}
+          rows={16}
+          cols={80}
+          onSubmit={handleSubmitSubmissionForm}
+          onClose={handleCancelSubmissionForm}
+        />
       </PageWrapper>
     )
   }
