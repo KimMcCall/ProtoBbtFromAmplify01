@@ -3,7 +3,7 @@
 import { Button, CheckboxField, Flex, TextAreaField, TextField } from '@aws-amplify/ui-react';
 import PageWrapper from '../components/PageWrapper'
 import './AdminUrlSubmissions.css'
-import { ChangeEvent, SyntheticEvent, MouseEvent, useEffect, useState } from 'react';
+import { ChangeEvent, SyntheticEvent, MouseEvent, useEffect, useState, useCallback } from 'react';
 import { dbClient } from '../main';
 import { getLatestRowWithIssueId } from '../utils/utils';
 
@@ -103,24 +103,9 @@ function AdminUrlSubmissionsPage() {
     setPreviewSubmission(true);
   }
 
-  useEffect(
-    () => {
-      const fetchData = async () => {
-        console.log(`DBM: calling UrlSubmission.list() at ${Date.now() % 10000}`);
-        await dbClient.models.UrlSubmission.list().then((response) => {
-          console.log('Fetched UrlSubmissions:', response.data);
-          setAndFilterSubmissions(response.data);
-        }).catch((error) => {
-          console.error('Error fetching UrlSubmissions:', error);
-        });
-      };
-      fetchData();
-    }
-  );
+  let justUnreviewedVar = justUnreviewed; // To hold the intended new state for filtering
 
-  const showChooseUri = !previewSubmission;
-
-  const setAndFilterSubmissions = (submissions: UrlSubmission[]) => {
+  const setAndFilterSubmissions = useCallback((submissions: UrlSubmission[]) => {
     setAllSubmissions(submissions);
     console.log(`justUnreviewed is: ${justUnreviewed}`);
     console.log(`filterText is: '${filterText}'`);
@@ -141,15 +126,30 @@ function AdminUrlSubmissionsPage() {
     }
     console.log(`Submissions count after filterText filter: ${filtered.length}`);
     setFilteredSubmissions(filtered);
-  }
+  }, [filterText, justUnreviewed, justUnreviewedVar]);
+
+  useEffect(
+    () => {
+      const fetchData = async () => {
+        console.log(`DBM: calling UrlSubmission.list() at ${Date.now() % 10000}`);
+        await dbClient.models.UrlSubmission.list().then((response) => {
+          console.log('Fetched UrlSubmissions:', response.data);
+          setAndFilterSubmissions(response.data);
+        }).catch((error) => {
+          console.error('Error fetching UrlSubmissions:', error);
+        });
+      };
+      fetchData();
+    } , [setAndFilterSubmissions]
+  );
+
+  const showChooseUri = !previewSubmission;
 
   function handleBanStateChange(event: ChangeEvent<HTMLInputElement>): void {
     event.stopPropagation();
     const shouldBanUser = event.target.checked;
     setBanUser(shouldBanUser);
   }
-
-  let justUnreviewedVar = justUnreviewed;
 
   function handleJustUnreviewedChange(event: ChangeEvent<HTMLInputElement>): void {
     event.stopPropagation();
