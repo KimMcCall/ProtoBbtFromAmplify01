@@ -80,7 +80,8 @@ export const userInfoSlice = createSlice({
       state.isAdmin = false;
       state.isSuperAdmin = false;
       state.isBanned = false;
-      state.isTrusted = false;
+      state.trustLevel = 0;
+      state.withholdWelcome = false;
       */
     },
     setCurrentUserAsAdmin: (state, action: PayloadAction<boolean>) => {

@@ -5,7 +5,7 @@ import { useAppSelector } from '../app/hooks';
 
 function ProfilePage() {
   const reduxUser =  useAppSelector(selectCurrentUser);
-  const {id, authId, canonicalEmail, initialEmail, name, isSuperAdmin, isAdmin, isBanned, isTrusted} = reduxUser;
+  const {id, authId, canonicalEmail, initialEmail, name, isSuperAdmin, isAdmin, isBanned, trustLevel, withholdWelcome} = reduxUser;
   return (
     <PageWrapper>
       <Flex direction={"column"}>
@@ -21,8 +21,9 @@ function ProfilePage() {
           name: "{String(name)}" <br />
           isSuperAdmin: {String(isSuperAdmin)}<br />
           isAdmin: {String(isAdmin)}<br />
-          isTrusted: {String(isTrusted)}<br />
+          trustLevel: {String(trustLevel)}<br />
           isBanned: {String(isBanned)}<br />
+          withholdWelcome: {String(withholdWelcome)}<br /> 
         </div>
       </Flex>
     </PageWrapper>

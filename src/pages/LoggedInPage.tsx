@@ -71,7 +71,8 @@ function LoggedInPage(user: AuthUser) {
           isSuperAdmin: status === 'superAdmin',
           isAdmin: status === 'admin' || status === 'superAdmin',
           isBanned: false,
-          isTrusted: false,
+          trustLevel: 0,
+          withholdWelcome: false,
         };
         dispatch(setCurrentUserInfo(reduxUser));
         navigate(newPath, { replace: true });
@@ -128,7 +129,8 @@ function LoggedInPage(user: AuthUser) {
             isSuperAdmin: false,
             isAdmin: false,
             isBanned: false,
-            isTrusted: false,
+            trustLevel: 0,
+            withholdWelcome: false,
           };
           dispatch(setCurrentUserInfo(newReduxUser));
         }
