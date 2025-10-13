@@ -10,16 +10,22 @@ export interface SingleUserInfoType {
   authId: string
   canonicalEmail: string
   initialEmail: string
-  name: string
+  name: string | null
   isSuperAdmin: boolean
   isAdmin: boolean
   isBanned: boolean
-  isTrusted: boolean
+  trustLevel: number
+  withholdWelcome: boolean 
 }
 
 export interface UserBooleanPropertySettinPairType  {
   userId: string
   value: boolean
+}
+
+export interface UserNumberPropertySettingPairType  {
+  userId: string
+  value: number
 }
 
 export interface UserSliceType {
@@ -38,7 +44,8 @@ const basicInitialUser: SingleUserInfoType = {
   isSuperAdmin: false,
   isAdmin: false,
   isBanned: false,
-  isTrusted: false,
+  trustLevel: 0,
+  withholdWelcome: false,
 }
 
 const basicInitialState: UserSliceType = {
@@ -93,10 +100,10 @@ export const userInfoSlice = createSlice({
       const designatedUser: SingleUserInfoType = getUserWithId(state.allUsers, userId);
       designatedUser.isBanned = value;
     },
-    setUserIsTrusted: (state, action: PayloadAction<UserBooleanPropertySettinPairType>) => {
+    setUserTrustLevel: (state, action: PayloadAction<UserNumberPropertySettingPairType>) => {
       const { userId, value } = action.payload;
       const designatedUser: SingleUserInfoType = getUserWithId(state.allUsers, userId);
-      designatedUser.isTrusted = value;
+      designatedUser.trustLevel = value;
     },
     setUserIsAdmin: (state, action: PayloadAction<UserBooleanPropertySettinPairType>) => {
       const { userId, value } = action.payload;
@@ -122,7 +129,7 @@ export const {
   setCurrentUserAsAdmin,
   setCurrentUserAsSuperAdmin,
   setUserIsBanned,
-  setUserIsTrusted,
+  setUserTrustLevel: setUserIsTrusted,
   setUserIsAdmin,
   setAllUsers,
   setDesignatedUserId,
@@ -154,7 +161,7 @@ export const selectCurrentUserIsBanned = (state: RootState) =>
   state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.isBanned
 
 export const selectCurrentUserIsTrusted = (state: RootState) =>
-  state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.isTrusted
+  state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.trustLevel >= 2  // 2=superTrusted, 3=superAdmin
 
 export const selectCurrentUserIsLoggedIn =  (state: RootState) =>
   state.persistedReducer.userInfo.currentUser && state.persistedReducer.userInfo.currentUser.canonicalEmail.length > 0

@@ -7,8 +7,8 @@ import { useAppDispatch } from "../app/hooks";
 import { setAllIssues, setAvailableIssues, setDisplayBlocks } from "../features/issues/issues";
 
 const testGet = () => {
-  console.log(`DBM: calling RegisteredUserP2.get() at ${Date.now() % 10000}`);
-  dbClient.models.RegisteredUserP2.get({id: 'a9262597-4129-4b84-84a3-a0b991eeb052'})
+  console.log(`DBM: calling RegisteredUser.get() at ${Date.now() % 10000}`);
+  dbClient.models.RegisteredUser.get({id: '08f930bf-44fe-419d-8610-c1c685a24f94'})
   .then((response) => {
     const user = response.data;
     // if no match, returns user=null and errors=undefined
@@ -18,8 +18,8 @@ const testGet = () => {
 };
 
 const testSecondaryIndex = () => {
-  console.log(`DBM: calling RegisteredUserP2.listByCanonicalEmailXP2() at ${Date.now() % 10000}`);
-  dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({
+  console.log(`DBM: calling RegisteredUser.listByCanonicalEmail() at ${Date.now() % 10000}`);
+  dbClient.models.RegisteredUser.listByCanonicalEmail({
     canonicalEmail: 'mccall.kim@gmail.com',
   })
   .then((response) => {
@@ -28,7 +28,7 @@ const testSecondaryIndex = () => {
       return;
     }
     const user = users[0];
-    console.log("Found RegisteredUserP2: ", user); // contains id and everything
+    console.log("Found RegisteredUser: ", user); // contains id and everything
     console.log('with errors: ', response?.errors)
   });
 }
@@ -39,8 +39,8 @@ function PlayPage01() {
   const dispatch = useAppDispatch();
 
   const listSuperAdmins = () => {
-    console.log(`DBM: calling RegisteredUserP2.list() at ${Date.now() % 10000}`);
-    dbClient.models.RegisteredUserP2.list()
+    console.log(`DBM: calling RegisteredUser.list() at ${Date.now() % 10000}`);
+    dbClient.models.RegisteredUser.list()
     .then((response) => {
       const allUsers = response.data;
       const superUsers = allUsers.filter((user) => user.isSuperAdmin);

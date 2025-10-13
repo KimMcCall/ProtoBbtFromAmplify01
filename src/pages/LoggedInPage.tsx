@@ -112,11 +112,11 @@ function LoggedInPage(user: AuthUser) {
         isSuperAdmin: false,
         isAdmin: false,
         isBanned: false,
-        isTrusted: false,
+        trustLevel: 0,
         withholdWelcome: false,
       };
-      console.log(`DBM: calling RegisteredUserP2.create() at ${Date.now() % 10000}`);
-      dbClient.models.RegisteredUserP2.create(stuctToCreate).then((newUser) => {
+      console.log(`DBM: calling RegisteredUser.create() at ${Date.now() % 10000}`);
+      dbClient.models.RegisteredUser.create(stuctToCreate).then((newUser) => {
         const returnedUserRecord = newUser.data;
         if (returnedUserRecord) {
           const newReduxUser = {

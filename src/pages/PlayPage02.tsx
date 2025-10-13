@@ -67,8 +67,8 @@ function PlayPage02() {
   const checkDbForCorruption = async () => {
     let retVal = 'retVal never got overidden';
     let haveResetRetVal = false;
-    console.log(`DBM: calling RegisteredUserP2.listByCanonicalEmailXP2() at ${Date.now() % 10000}`);
-    await dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({ canonicalEmail: expectedCEmail }).then(
+    console.log(`DBM: calling RegisteredUser.listByCanonicalEmail() at ${Date.now() % 10000}`);
+    await dbClient.models.RegisteredUser.listByCanonicalEmail({ canonicalEmail: expectedCEmail }).then(
       (response) => {
         const allRecords = response.data;
         const authIds: string[] = [];
@@ -107,8 +107,8 @@ function PlayPage02() {
     const match = cEmail === expectedCEmail;
     console.log(`match in simpleTest: ${match}`);
     let retVal = -1;
-    console.log(`DBM: calling RegisteredUserP2.listByCanonicalEmailXP2() at ${Date.now() % 10000}`);
-     await dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({ canonicalEmail: cEmail }).then(
+    console.log(`DBM: calling RegisteredUser.listByCanonicalEmail() at ${Date.now() % 10000}`);
+     await dbClient.models.RegisteredUser.listByCanonicalEmail({ canonicalEmail: cEmail }).then(
       //?
       (response) => {
         const listOfMatchingCanonicals = response.data;
@@ -238,12 +238,13 @@ function PlayPage02() {
 
   const handleMigrateDbClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
+    /*
     const confirmMigration = window.confirm("Are you sure you want to migrate the User DB? This should only be done once.");
     if (!confirmMigration) {
       return;
     }
     console.log(`DBM: calling RegisteredUser.list() at ${Date.now() % 10000}`);
-    const result = await dbClient.models.RegisteredUserP2.list();
+    const result = await dbClient.models.RegisteredUser.list(); // was Reg...UserP2
     const userP2s = result.data;
     console.log(`Fetched ${userP2s.length} users for migration`);
     if (userP2s.length < 1) { 
@@ -267,6 +268,7 @@ function PlayPage02() {
       }
     console.log("User DB migration completed.");
     }
+    */
   }
 
   return (

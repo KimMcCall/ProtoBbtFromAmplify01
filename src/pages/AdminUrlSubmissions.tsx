@@ -244,10 +244,10 @@ function AdminUrlSubmissionsPage() {
             lifePhase: 'Rejected',
           });
 
-          // Then, if user is being bnned, update the entry in the RegisteredUser table
+          // Then, if user is being banned, update the entry in the RegisteredUser table
           if (banUser) {
-              console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
-              const result = await dbClient.models.RegisteredUserP2.update({
+              console.log(`DBM: calling RegisteredUser.update() at ${Date.now() % 10000}`);
+              const result = await dbClient.models.RegisteredUser.update({
                 id: submission.submitterId,
                 isBanned: true,
               });

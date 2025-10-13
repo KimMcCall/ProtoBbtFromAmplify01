@@ -96,8 +96,8 @@ function AdminUsersPage() {
   designatedUser = useAppSelector(selectDesgnatedUser); // currentUser, which is SuperAdmin
   
     useEffect(() => {
-      console.log(`DBM: calling RegisteredUserP2.list() at ${Date.now() % 10000}`);
-      dbClient.models.RegisteredUserP2.list().then(
+      console.log(`DBM: calling RegisteredUser.list() at ${Date.now() % 10000}`);
+      dbClient.models.RegisteredUser.list().then(
         (result) => { 
           const allUsers = result.data;
           console.log(`# allUsers: ${allUsers.length}`)
@@ -141,8 +141,8 @@ function AdminUsersPage() {
       id: designatedUserId,
       isBanned: newState,
     };
-    console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
-    await dbClient.models.RegisteredUserP2.update(myUpdate).then(
+    console.log(`DBM: calling RegisteredUser.update() at ${Date.now() % 10000}`);
+    await dbClient.models.RegisteredUser.update(myUpdate).then(
       (response) => {
         console.log(' back from update()');
         // @ts-expect-error It will not be undefined if the .update() succeeded!
@@ -169,8 +169,8 @@ function AdminUsersPage() {
       id: designatedUserId,
       isAdmin: newState,
     };
-    console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
-    await dbClient.models.RegisteredUserP2.update(myUpdate).then(
+    console.log(`DBM: calling RegisteredUser.update() at ${Date.now() % 10000}`);
+    await dbClient.models.RegisteredUser.update(myUpdate).then(
       (response) => {
         console.log(' back from update()');
         // @ts-expect-error It will not be undefined if the .update() succeeded!
@@ -335,7 +335,7 @@ function AdminUsersPage() {
                   <UserTile key={user.id}
                     userId={user.id}
                     email={user.canonicalEmail}
-                    name={user.name}
+                    name={user.name || 'no name'}
                     checked={false}
                     isBanned={user.isBanned}
                     isAdmin={user.isAdmin || user.isSuperAdmin}

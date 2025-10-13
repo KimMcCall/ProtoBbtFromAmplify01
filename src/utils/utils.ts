@@ -86,8 +86,8 @@ export const checkForPermissionToSubmitGoogleDoc = async (currentUserId: string,
 const banUserForGoogleDocPolicyViolation = async (userId: string, url: string) => {
   console.log(`Banning user ${userId} for GoogleDoc policy violation on ${url}`);
   const banningStruct = {id: userId, isBanned: true};
-  console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
-  await dbClient.models.RegisteredUserP2.update(banningStruct);
+  console.log(`DBM: calling RegisteredUser.update() at ${Date.now() % 10000}`);
+  await dbClient.models.RegisteredUser.update(banningStruct);
   createBanningRecordForGoogleDocPolicyViolation(userId, url);
   };
 
@@ -135,8 +135,8 @@ export const checkForPermissionToSubmitText = async (activity: string, currentUs
 const banUserForTextPolicyViolation = async (activity: string, userId: string, text: string) => {
   console.log(`Banning user ${userId} for text policy violation`);
   const banningStruct = {id: userId, isBanned: true};
-  console.log(`DBM: calling RegisteredUserP2.update() at ${Date.now() % 10000}`);
-  await dbClient.models.RegisteredUserP2.update(banningStruct);
+  console.log(`DBM: calling RegisteredUser.update() at ${Date.now() % 10000}`);
+  await dbClient.models.RegisteredUser.update(banningStruct);
   createBanningRecordForTextPolicyViolation(activity, userId, text);
   };
 
@@ -341,12 +341,13 @@ export const tallySubmission = (userId: string)=> {
 const checkForTrustedPermission = async (userId: string) => {
   const retVal: PermissionQueryResult = { granted: false, explanation: 'No trusted permission' };
   const idStruct = {id: userId}
-  console.log(`DBM: calling RegisteredUserP2.get() at ${Date.now() % 10000}`);
-  await dbClient.models.RegisteredUserP2.get(idStruct).then(
+  console.log(`DBM: calling RegisteredUser.get() at ${Date.now() % 10000}`);
+  await dbClient.models.RegisteredUser.get(idStruct).then(
     (response) => {
       console.log(`in then() clause`)
       const user = response.data;
-      const isTrusted = user?.isTrusted || user?.isAdmin || user?.isSuperAdmin || false;
+      const trustLevel = user?.trustLevel || 0;
+      const isTrusted = trustLevel >= 2; // 0=normal, 1=trusted, 2=superTrusted, 3=superAdmin
       if (isTrusted) {
         retVal.granted = true;
         retVal.explanation = "User is trusted.";
@@ -405,8 +406,8 @@ export const computeUserStatus = async (submittedAuthId: string, submittedEmail:
     updatedAt: '',
   };
 
-  console.log(`DBM: calling RegisteredUserP2.listByAuthIdXP2() at ${Date.now() % 10000}`);
-  await dbClient.models.RegisteredUserP2.listByAuthIdXP2({
+  console.log(`DBM: calling RegisteredUser.listByAuthId() at ${Date.now() % 10000}`);
+  await dbClient.models.RegisteredUser.listByAuthId({
     authId: submittedAuthId,
   }).then (
     async (response) => {
@@ -483,8 +484,8 @@ const innerComputeStatus = async (email: string): Promise<UserStatus>  => {
   const cEmail = toCanonicalEmail(email);
   // if there's a record with this canonicalEmal, then we're dealing with an alias
   console.log(`2) listing records with canonicalEmail: ${cEmail}`);
-  console.log(`DBM: calling RegisteredUserP2.listByAuthIdXP2() at ${Date.now() % 10000}`);
-  await dbClient.models.RegisteredUserP2.listByCanonicalEmailXP2({ canonicalEmail: cEmail }).then(
+  console.log(`DBM: calling RegisteredUser.listByAuthId() at ${Date.now() % 10000}`);
+  await dbClient.models.RegisteredUser.listByCanonicalEmail({ canonicalEmail: cEmail }).then(
     (response) => {
       console.log('3) Back from call to listByCanonicalEmail()')
       const usersWithMatchingCanonicalEmail = response.data;
