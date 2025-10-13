@@ -8,22 +8,26 @@
 .tileDiv {
   padding: 6px;
   border-bottom: 1px solid blue;
+  cursor: pointer;
 }
 
 .tileDiv-new {
   padding: 6px;
   font-weight: bold;
   border-bottom: 1px solid blue;
+  cursor: pointer;
 }
 
 .tileDiv-underReview {
   padding: 6px;
   border-bottom: 1px solid blue;
+  cursor: pointer;
 }
 
 .tileDiv-reviewed {
   padding: 6px;
   border-bottom: 1px solid blue;
+  cursor: pointer;
 }
 
 .tileDiv-accepted {
@@ -32,12 +36,14 @@
   color: gold;
   font-weight: bold;
   border-bottom: 1px solid blue;
+  cursor: pointer;
 }
 
 .tileDiv-rejected {
   padding: 6px;
   text-decoration: line-through;
   border-bottom: 1px solid blue;
+  cursor: pointer;
 }
 
 .tileEmailDiv {
