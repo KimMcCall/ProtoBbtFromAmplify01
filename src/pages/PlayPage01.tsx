@@ -28,7 +28,7 @@ const testSecondaryIndex = () => {
       return;
     }
     const user = users[0];
-    console.log("Found RegisteredUser: ", user); // contains id and everything
+    console.log("Found RegisteredUserP2: ", user); // contains id and everything
     console.log('with errors: ', response?.errors)
   });
 }

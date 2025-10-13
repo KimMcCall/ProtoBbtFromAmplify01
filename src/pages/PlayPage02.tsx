@@ -236,11 +236,37 @@ function PlayPage02() {
   }
 
 
-  const handleMigrateDbClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+  const handleMigrateDbClick = async (event: SyntheticEvent<HTMLButtonElement>) => {
     event.stopPropagation();
-    console.log("We're short-circuiting the migration, since it's alreaddy happened!");
-    return;
-
+    const confirmMigration = window.confirm("Are you sure you want to migrate the User DB? This should only be done once.");
+    if (!confirmMigration) {
+      return;
+    }
+    console.log(`DBM: calling RegisteredUser.list() at ${Date.now() % 10000}`);
+    const result = await dbClient.models.RegisteredUserP2.list();
+    const userP2s = result.data;
+    console.log(`Fetched ${userP2s.length} users for migration`);
+    if (userP2s.length < 1) { 
+      // migrateUserDb();
+      alert("Nothing to migrate.");
+    } else {
+      for (const userP2 of userP2s) {
+        const newRecord = {
+          authId: userP2.authId,
+          name: userP2.name,
+          canonicalEmail: userP2.canonicalEmail,
+          initialEmail: userP2.initialEmail,
+          isSuperAdmin: userP2.isSuperAdmin,
+          isAdmin: userP2.isAdmin,
+          isBanned: userP2.isBanned,
+          trustLevel: userP2.isSuperAdmin ? 3 : (userP2.isAdmin ? 1 : 0),
+          withholdWelcome: userP2.withholdWelcome,
+        };
+        console.log(`DBM: calling RegisteredUser.create() at ${Date.now() % 10000}`);
+        await dbClient.models.RegisteredUser.create(newRecord);
+      }
+    console.log("User DB migration completed.");
+    }
   }
 
   return (
