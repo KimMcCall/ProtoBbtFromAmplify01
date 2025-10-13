@@ -157,10 +157,10 @@ function AdminUncloisteredPage() {
                 4. File &gt; Share &gt; Publish to web
               </div>
               <div className="instructionsStepDiv">
-                5. Click the Publish button
+                5. Click Embed tab; Click the Publish button
               </div>
               <div className="instructionsStepDiv">
-                6. Copy the link provided (between quuote marks)
+                6. Copy the link provided (between quote marks)
               </div>
               <div className="instructionsStepDiv">
                 7. Paste that link into the "Cloistered URL" field.
