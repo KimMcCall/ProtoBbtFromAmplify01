@@ -1,9 +1,7 @@
-// import { useNavigate } from 'react-router-dom';
 import { Flex } from "@aws-amplify/ui-react";
 import PageWrapper from "../components/PageWrapper";
 import { useEffect, SyntheticEvent, useState } from 'react';
 import { getAllIssueRecords } from '../utils/dynamodb_operations';
-// import { useAppDispatch } from '../app/hooks';
 import { setCurrentIssueId, IssueType, setAllIssues, IssueBlockForRenderingType, setDisplayBlocks, setAvailableIssues, selectAllIssues } from '../features/issues/issues';
 import './HomePage.css'
 import { useAppDispatch, useAppSelector } from "../app/hooks";
@@ -40,10 +38,8 @@ function ClaimCard(props: ClaimCardProps) {
 
 function HomePage() {
   const [loading, setLoading] = useState(true);
-  // const [structuredForRendering, setStructuredForRendering] = useState(arrayOfStructs);
   const dispatch = useAppDispatch();
 
-  // const userIsSuperAdmin = useAppSelector(selectCurrentUserIsSuperAdmin);
   const nowIsWithinRecencyHorizon = useAppSelector(selectListIssuesCallTimeIsRecent);
   const allIssuesInRedux = useAppSelector(selectAllIssues);
   const nIssuesInRedux = allIssuesInRedux.length;
