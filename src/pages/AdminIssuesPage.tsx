@@ -383,7 +383,7 @@ function AdminIssuesPage() {
                     <TextField
                       label=""
                       name=""
-                      width="240px"
+                      width="300px"
                       value={issueIdText}
                       readOnly
                       />
@@ -545,7 +545,7 @@ function AdminIssuesPage() {
                     <TextField
                       label=""
                       name=""
-                      width="240px"
+                      width="300px"
                       value={issueIdText}
                       readOnly
                       />
@@ -560,6 +560,7 @@ function AdminIssuesPage() {
                   <TextField
                     label=""
                     name=""
+                    width="660px"
                     value={claimText}
                     onChange={(e) => setClaimText(e.target.value)}
                     />
@@ -573,6 +574,7 @@ function AdminIssuesPage() {
                   <TextField
                     label=""
                     name=""
+                    width={100}
                     value={priorityText}
                     onChange={(e) => setPriorityText(e.target.value)}
                     />
@@ -597,6 +599,8 @@ function AdminIssuesPage() {
                     <Radio value="unavailable">&nbsp;Make Unavailable</Radio>
                   </div>
                 </RadioGroupField>
+              </Flex>
+              <Flex gap="20px" direction="row">
                 <div className="otherFieldsFormButtonsDiv">
                   <Button className="otherFieldsFormButton" onClick={handleOtherFieldsClearButtonClick}>
                     Clear
@@ -606,10 +610,6 @@ function AdminIssuesPage() {
                   </Button>
                 </div>
               </Flex>
-
-              <div>
-
-              </div>
             </Flex>
           )
         }

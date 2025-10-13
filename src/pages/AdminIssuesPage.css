@@ -5,6 +5,22 @@
   margin-bottom: 12px;
 }
 
+.issueScrollDiv {
+  height: 400px;
+  width: 720px;
+  overflow-y: scroll;
+  border: 2px black solid;
+}
+
+.issueTileRoot {
+  border-bottom: 1px black solid;
+  padding: 6px;
+  cursor: pointer;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 .otherFieldsFormRoot {
   border: 1px black solid;
   padding: 6px;
@@ -27,3 +43,9 @@
 .issueIdInput {
   width: 100%;
 }
+
+.otherFieldsFormButtonsDiv {
+  margin-top: 6px;
+  display: flex;
+  gap: 24px;
+} 
