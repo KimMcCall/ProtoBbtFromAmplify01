@@ -20,24 +20,6 @@ const schema = a.schema({
       index("canonicalEmail").queryField("listByCanonicalEmail"),
     ])
     .authorization((allow) => [allow.publicApiKey()]),
-  
-  RegisteredUserP2: a
-    .model({
-      authId: a.string().required(),
-      name: a.string().required().default(''),
-      canonicalEmail: a.string().required(),
-      initialEmail: a.string().required(),
-      isSuperAdmin: a.boolean().required().default(false),
-      isAdmin: a.boolean().required().default(false),
-      isBanned: a.boolean().required().default(false),
-      isTrusted: a.boolean().required().default(false),
-      withholdWelcome: a.boolean().required().default(false),
-    })
-    .secondaryIndexes((index) => [
-      index("authId").queryField("listByAuthIdXP2"),
-      index("canonicalEmail").queryField("listByCanonicalEmailXP2"),
-    ])
-    .authorization((allow) => [allow.publicApiKey()]),
 
   IssueP2: a
     .model({
