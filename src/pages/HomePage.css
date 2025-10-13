@@ -20,4 +20,5 @@
   font-weight: bold;
   display: flex;
   align-items: center; /* Vertically centers items along the cross-axis */
+  cursor: pointer;
 }
