@@ -1,7 +1,8 @@
 .suggestionTile {
-  height: 100px;
-  padding-left: 4px;
+  height: 100%;
+  padding: 4px 8px;
   background-color: #a3aff4;
+  border: 1px solid black;
 }
 
 .suggestionTile:hover {

@@ -1,6 +1,6 @@
 // SubmissionEditor.tsx
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, SyntheticEvent } from 'react';
 import { Flex, Button, TextField, TextAreaField } from '@aws-amplify/ui-react';
 import {SubmissionWithDateType as SubmissionType} from '../pages//AdminSubmissionsPage'
 import { dbClient } from "../main";
@@ -32,6 +32,22 @@ function SubmissionEditor(props: SubmissionEditorProps) {
 
   const handleCancelButtonClick = (event: { stopPropagation: () => void; }) => {
     event.stopPropagation();
+    editorShowOrHide(false);
+  }
+
+  const handleDeleteButtonClick = (event: SyntheticEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    const confirmDelete = window.confirm('Are you sure you want to delete this submission? This action cannot be undone.');
+    if (!confirmDelete) {
+      return;
+    }
+    console.log(`DBM: calling delete() at ${Date.now() % 10000}`);
+    dbClient.models.Submission.delete({id: submission.id});
+    setAlertTitle('Submission Deleted');
+    setAlertMessage('The submission has been deleted.');
+    setShowAlert(true);
+    tallySubmission(submission.userId);
+    // Add your delete logic here
     editorShowOrHide(false);
   }
 
@@ -87,10 +103,11 @@ function SubmissionEditor(props: SubmissionEditorProps) {
               Title:
             </div>
             <TextField label=''
-            name='title'
-            value={title}
-            onChange={(e) => {setTitle(e.target.value);}}
-          />
+              name='title'
+              value={title}
+              onChange={(e) => {setTitle(e.target.value);}}
+            />
+            <Button id='deleteButton' onClick={handleDeleteButtonClick}>Delete</Button>
           </Flex>
           <div>
             <TextAreaField

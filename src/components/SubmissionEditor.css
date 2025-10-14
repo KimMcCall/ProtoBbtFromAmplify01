@@ -6,3 +6,11 @@
   margin-top: 16px;
   font-size: 115%;
 }
+
+#deleteButton {
+  float: right;
+  margin-left: 560px;
+  background-color: #f44336; /* Red */
+  color: white;
+  padding: 0px 20px;
+}
