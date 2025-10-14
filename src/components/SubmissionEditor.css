@@ -8,8 +8,9 @@
 }
 
 #deleteButton {
-  float: right;
-  margin-left: 560px;
+  margin-left: auto;
+  margin-right: 12px;
+  margin-top: 12px;
   background-color: #f44336; /* Red */
   color: white;
   padding: 0px 20px;

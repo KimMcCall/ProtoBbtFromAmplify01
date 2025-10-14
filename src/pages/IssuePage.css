@@ -1,11 +1,17 @@
 /* IssuePage.css */
 
 .showContrastingViewButtonDiv {
-  margin-top: 20px;
+  margin-top: 12px;
 }
 
 .embedDiv {
   border: 1px black solid;
-  margin-top: 2px;
-  width: 860px;
+  margin-top: 1px;
+  width: 832px;
 } 
+
+.googleDocEmbedIFrame {
+  border: none;
+  width: 850px; /* 850px */
+  height: 660px; /* Adjust height as needed */ /* 660px */
+}

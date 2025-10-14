@@ -107,6 +107,7 @@ function IssuePage() {
           showPro && proIsGoogleDoc && 
           (
             <iframe
+              className="googleDocEmbedIFrame"
               src={proUrl}
               title="GoogleDocProIFrame"
               width= "850px"
