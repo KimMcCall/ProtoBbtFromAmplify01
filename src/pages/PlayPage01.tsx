@@ -1,10 +1,10 @@
 import { dbClient } from "../main";
-import { Button, Flex, TextAreaField } from '@aws-amplify/ui-react';
+import { Button, Flex } from '@aws-amplify/ui-react';
 import PageWrapper from "../components/PageWrapper";
-import { useState } from 'react';
 import { filterForUltimateAvailability, sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 import { useAppDispatch } from "../app/hooks";
 import { setAllIssues, setAvailableIssues, setDisplayBlocks } from "../features/issues/issues";
+import './PlayPage01.css';
 
 const testGet = () => {
   console.log(`DBM: calling RegisteredUser.get() at ${Date.now() % 10000}`);
@@ -34,76 +34,60 @@ const testSecondaryIndex = () => {
 }
 
 function PlayPage01() { 
-  const [ userList, setUserList ] = useState("");
 
   const dispatch = useAppDispatch();
-
-  const listSuperAdmins = () => {
-    console.log(`DBM: calling RegisteredUser.list() at ${Date.now() % 10000}`);
-    dbClient.models.RegisteredUser.list()
-    .then((response) => {
-      const allUsers = response.data;
-      const superUsers = allUsers.filter((user) => user.isSuperAdmin);
-      if (superUsers.length === 0) {
-        setUserList("No SuperAdmins found");
-        return;
-      }
-      let newContent = "";
-      superUsers.forEach((sa) => {
-        console.log("in listSAs; sa:", sa);
-        newContent += `Name: ***TBD***, Email: ${sa.canonicalEmail}, id: ${sa.id}\n`;
-      });
-      setUserList(newContent);
-    })
-    .catch((error) => {
-      console.error("Error listing SuperAdmins", error);
-      setUserList("Error listing SuperAdmins");
-    });
-  };
 
   const fetchAndCacheIssues = async () => {
     console.log(`DBM: calling IssueP2.list() at ${Date.now() % 10000}`);
     const response = await dbClient.models.IssueP2.list();
     const allIssues = response.data;
     console.log(`Fetched ${allIssues.length} issues`);
+    const sortedAndRepairedIssues = sortAndRepairIssues(allIssues);
+    console.log(`All ${sortedAndRepairedIssues.length} issues: `, sortedAndRepairedIssues);
+    dispatch(setAllIssues(sortedAndRepairedIssues));
+    const filteredForAvailable = filterForUltimateAvailability(sortedAndRepairedIssues);
+    dispatch(setAvailableIssues(filteredForAvailable));
+    // Structure per issue for rendering
+    const structured = structurePerIssue(filteredForAvailable);
+    dispatch(setDisplayBlocks(structured));
+  };
 
+  const buildAndInsertHtml = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>): void => {
+    event.stopPropagation();
+    const demoHtml = `
+      <div class="demo-content">
+        <h3>Sample Generated HTML</h3>
+        <p>This is a demonstration of HTML generation at ${new Date().toLocaleString()}</p>
+        <ul>
+          <li>Item 1</li>
+          <li>Item 2</li>
+        </ul>
+      </div>
+    `;
 
-          const sortedAndRepairedIssues = sortAndRepairIssues(allIssues);
-          console.log(`All ${sortedAndRepairedIssues.length} issues: `, sortedAndRepairedIssues);
-          dispatch(setAllIssues(sortedAndRepairedIssues));
-          const filteredForAvailable = filterForUltimateAvailability(sortedAndRepairedIssues);
-          dispatch(setAvailableIssues(filteredForAvailable));
-          // Structure per issue for rendering
-          const structured = structurePerIssue(filteredForAvailable);
-          dispatch(setDisplayBlocks(structured));
+    const demoArea = document.getElementById('demoArea');
+    if (demoArea) {
+      demoArea.innerHTML = demoHtml;
+    } else {
+      console.warn('Demo area not found in DOM');
+    }
   };
 
   return (
     <PageWrapper>
-      <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
-        <h1>Play Page 01</h1>
-        <div className="pp01MuDiv">
-          <div className="pp01ListDiv">
-             <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
-              <button onClick={() => listSuperAdmins()}>List SuperAdmins</button>
-              <TextAreaField
-                label=""
-                value={userList}
-                readOnly
-                placeholder="SuperAdmin details will appear here"
-                width="800px"
-                height="180px" />
-            </Flex>
-          </div>
-          <div className="pp01ShowDiv">
-             <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
-              <Button onClick={fetchAndCacheIssues}>SA: Fetch Issues</Button>
-              <Button onClick={testGet}>Test get()</Button>
-              <Button onClick={testSecondaryIndex}>Test Secondary Index()</Button>
-            </Flex>
-          </div>
-        </div>
-      </Flex>
+      <div className="pp01Root">
+        <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
+          <Flex direction="row" justifyContent="flex-start" alignItems="center" wrap="nowrap" gap="6px">
+            <Button onClick={fetchAndCacheIssues}>SA: Fetch Issues</Button>
+            <Button onClick={testGet}>Test get()</Button>
+            <Button onClick={testSecondaryIndex}>Test Secondary Index()</Button>
+          </Flex>
+          <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
+            <Button onClick={buildAndInsertHtml}>Build & Show HTML</Button>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <div id='demoArea'></div>
+          </Flex>
+        </Flex>
+      </div>
     </PageWrapper>
   );
 }

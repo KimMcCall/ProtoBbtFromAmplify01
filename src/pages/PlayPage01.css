@@ -1,28 +1,22 @@
 /* PlayPage01.css */
 
-.pp01MuDiv {
-  border: 1px solid black;
-  padding: "10px";
-  margin: "10px";
-  width: "1000px";
-  height: "420px";
-  background-color: "#fff0f0";
+.pp01Root {
+  padding: 10px;
 }
 
-.pp01ListDiv {
-  border: "1px solid black";
-  padding: "10px";
-  margin: "10px";
-  width: "980px";
-  height: "140px";
-  background-color: "#fff0f0";
+.demo-content {
+  border: 2px solid black;
+  border-radius: 8px;
+  padding: 10px;
+  margin-top: 4px;
+  width: 360px;
+  background-color: #e0e0;
 }
 
-.pp01ShowDiv {
-  border: "1px solid black";
-  padding: "10px";
-  margin: "10px";
-  width: "580px";
-  height: "64px";
-  background-color: "#fff0f0";
+.demo-content h3 {
+  margin-top: 0;
+}
+
+.demo-content p {
+  margin-bottom: 0;
 }
