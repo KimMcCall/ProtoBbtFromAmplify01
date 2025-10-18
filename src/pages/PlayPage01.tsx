@@ -73,6 +73,25 @@ function PlayPage01() {
     }
   };
 
+  async function testSendEmail() {
+    try {
+      const emailArgs = {
+        sender: "info@truthSquad.com",
+        recipients: ["mccall.kim@gmail.com"],
+        subject: "[tts] Test Email #5",
+        text: "This is yet another test email from truthSquad.",
+        html: "<strong>This is yet another test email from truthSquad.</strong>"
+      };
+      const result = await dbClient.queries.sendEmail(emailArgs);
+      console.log("sendEmail result:", result);
+      const resultData = result.data;
+      console.log(`Email result: ${resultData}`);
+    } catch (error) {
+      console.error("Function error:", error);
+      alert(`Function execution failed: ${error}`);
+    }
+  }
+
   return (
     <PageWrapper>
       <div className="pp01Root">
@@ -85,6 +104,7 @@ function PlayPage01() {
           <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
             <Button onClick={buildAndInsertHtml}>Build & Show HTML</Button>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <div id='demoArea'></div>
+            <Button onClick={testSendEmail}>Test Email</Button>
           </Flex>
         </Flex>
       </div>
