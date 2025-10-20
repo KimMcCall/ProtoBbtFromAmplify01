@@ -1,10 +1,11 @@
 import { dbClient } from "../main";
-import { Button, Flex } from '@aws-amplify/ui-react';
+import { Button, Flex, TextField } from '@aws-amplify/ui-react';
 import PageWrapper from "../components/PageWrapper";
 import { filterForUltimateAvailability, sortAndRepairIssues, structurePerIssue } from "../utils/utils";
 import { useAppDispatch } from "../app/hooks";
 import { setAllIssues, setAvailableIssues, setDisplayBlocks } from "../features/issues/issues";
 import './PlayPage01.css';
+import { useState } from "react";
 
 const testGet = () => {
   console.log(`DBM: calling RegisteredUser.get() at ${Date.now() % 10000}`);
@@ -33,7 +34,9 @@ const testSecondaryIndex = () => {
   });
 }
 
-function PlayPage01() { 
+function PlayPage01() {
+  const [emailSubject, setEmailSubject] =  useState('');
+  const [emailBody, setEmailBody] =  useState('');
 
   const dispatch = useAppDispatch();
 
@@ -74,13 +77,15 @@ function PlayPage01() {
   };
 
   async function testSendEmail() {
+    const bodyText = emailBody || "This is a test email from truthSquad.";
+    console.log(`Calling sendEmail with subject: '${emailSubject}' and body: '${bodyText}'`);
     try {
       const emailArgs = {
         sender: "info@truthSquad.com",
         recipients: ["mccall.kim@gmail.com"],
-        subject: "[tts] Test Email #5",
-        text: "This is yet another test email from truthSquad.",
-        html: "<strong>This is yet another test email from truthSquad.</strong>"
+        subject: emailSubject || "Test Email from truthSquad",
+        text: bodyText,
+        html: `<strong>${bodyText}</strong>`
       };
       const result = await dbClient.queries.sendEmail(emailArgs);
       console.log("sendEmail result:", result);
@@ -101,10 +106,28 @@ function PlayPage01() {
             <Button onClick={testGet}>Test get()</Button>
             <Button onClick={testSecondaryIndex}>Test Secondary Index()</Button>
           </Flex>
+          <Flex className="testEmailRow" direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
+            <TextField
+              className="emailTextField"
+              label=""
+              placeholder="Enter email subject line"
+              width={240}
+              value={emailSubject}
+              onChange={(e) => setEmailSubject(e.target.value)}
+            />
+            <TextField
+              className="emailTextField"
+              label=""
+              placeholder="Enter email body"
+              width={400}
+              value={emailBody}
+              onChange={(e) => setEmailBody(e.target.value)}
+            />
+            <Button className="emailButton" onClick={testSendEmail}>Test Email</Button>
+          </Flex>
           <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
             <Button onClick={buildAndInsertHtml}>Build & Show HTML</Button>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <div id='demoArea'></div>
-            <Button onClick={testSendEmail}>Test Email</Button>
           </Flex>
         </Flex>
       </div>

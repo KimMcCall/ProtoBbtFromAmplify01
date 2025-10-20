@@ -4,6 +4,23 @@
   padding: 10px;
 }
 
+.testEmailRow {
+  margin-top: 12px;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid black;
+  padding-left: 8px;
+  padding-right: 6px;
+}
+
+.emailTextField {
+  margin-bottom: 6px;
+}
+
+.emailButton {
+  margin-top: 6px;
+}
+
 .demo-content {
   border: 2px solid black;
   border-radius: 8px;
