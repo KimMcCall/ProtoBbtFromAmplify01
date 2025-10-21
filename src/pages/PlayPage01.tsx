@@ -37,6 +37,8 @@ const testSecondaryIndex = () => {
 function PlayPage01() {
   const [emailSubject, setEmailSubject] =  useState('');
   const [emailBody, setEmailBody] =  useState('');
+  const [textToBeModerated, setTextToBeModerated] = useState('');
+  const [docUrlToBeModerated, setDocUrlToBeModerated] = useState('');
 
   const dispatch = useAppDispatch();
 
@@ -124,6 +126,30 @@ function PlayPage01() {
               onChange={(e) => setEmailBody(e.target.value)}
             />
             <Button className="emailButton" onClick={testSendEmail}>Test Email</Button>
+          </Flex>
+          <Flex direction="column" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
+            <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
+              <TextField
+                className="moderateTextField"
+                label=""
+                placeholder="text to be evaluated"
+                width={400}
+                value={textToBeModerated}
+                onChange={(e) => setTextToBeModerated(e.target.value)}
+              />
+              <Button className="moderateButton" onClick={testSendEmail}>Test Email</Button>
+            </Flex>
+            <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
+              <TextField
+                className="moderateTextField"
+                label=""
+                placeholder="Enter email body"
+                width={400}
+                value={docUrlToBeModerated}
+                onChange={(e) => setDocUrlToBeModerated(e.target.value)}
+              />
+              <Button className="moderateButton" onClick={testSendEmail}>Test Email</Button>
+            </Flex>
           </Flex>
           <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
             <Button onClick={buildAndInsertHtml}>Build & Show HTML</Button>

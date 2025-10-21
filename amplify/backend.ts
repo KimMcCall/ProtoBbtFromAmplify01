@@ -4,6 +4,7 @@ import { data } from './data/resource';
 import { sayHello } from './functions/say-hello/resource';
 import { getSecret } from './functions/get-secret/resource';
 import { sendEmail } from './functions/send-email/resource';
+import { testPolicyStringOrDoc } from './functions/test-policy-string-or-doc/resource';
 
 defineBackend({
   auth,
@@ -11,4 +12,5 @@ defineBackend({
   sayHello,
   getSecret,
   sendEmail,
+  testPolicyStringOrDoc,
 });

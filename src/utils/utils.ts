@@ -36,6 +36,7 @@ type UserStatusAndUser = {
 
 type PermissionQueryResult = {
   granted: boolean
+  banned: boolean
   explanation: string
 }
 
@@ -74,7 +75,7 @@ export const checkForPermissionToSubmitGoogleDoc = async (currentUserId: string,
     return tallyConformance;
   }
 
-  const policyConformance: PermissionQueryResult = await checkGoogleDocUrlForPolicyConformance(currentUserId, url);
+  const policyConformance: PermissionQueryResult = await checkGoogleDocUrlForPolicyConformance(url);
   if (!policyConformance.granted) {
     console.warn(`Permission denied: ${policyConformance.explanation}`);
     banUserForGoogleDocPolicyViolation(currentUserId, url);
@@ -122,8 +123,8 @@ export const checkForPermissionToSubmitText = async (activity: string, currentUs
     return tallyConformance;
   }
 
-  const policyConformance: PermissionQueryResult = await checkStringForPolicyConformance(currentUserId, str);
-  if (!policyConformance.granted) {
+  const policyConformance: PermissionQueryResult = await checkStringForPolicyConformance(str);
+  if (policyConformance.banned) {
     console.warn(`Permission denied: ${policyConformance.explanation}`);
     banUserForTextPolicyViolation(activity, currentUserId, str);
     return policyConformance;
@@ -158,30 +159,31 @@ const createBanningRecordForTextPolicyViolation = (activity: string, userId: str
   });
 };
 
-const checkGoogleDocUrlForPolicyConformance = async (currentUserId: string, url: string): Promise<PermissionQueryResult> => {
-  // Simulate a policy conformance check
+const checkGoogleDocUrlForPolicyConformance = async (url: string): Promise<PermissionQueryResult> => {
   console.log(`Checking policy conformance for document ${url}`);
-  // Should make a call to Google API to check for abusiveness, etc
-  // For now, we'll just approve all URLs
-  console.log(`comparing currentUserId (${currentUserId}) to hardcoded banned value: 138ebabb-a7ac-4982-8fe2-405d31ea7188`);
-  if (currentUserId === '138ebabb-a7ac-4982-8fe2-405d31ea7188') {
-    return { granted: false, explanation: "GoogleDoc policy conformance check failed." };
+  const perspectiveResult = await dbClient.queries.testPolicyStringOrDoc({ text: '', docUrl: url });
+  console.log(`Perspective API result: `, perspectiveResult);
+  const parsedResult = JSON.parse(perspectiveResult.data || '');
+  if (parsedResult.flagged) {
+    console.warn(`Document flagged for policy violation: ${parsedResult.flaggedCategories.join(', ')}`);
+    return { granted: false, banned: false, explanation: "Document policy conformance check failed." }; 
   } else {
-    return { granted: true, explanation: "Policy conformance check passed." };
+    return { granted: true, banned: false, explanation: "Policy conformance check passed." };
   }
 };
 
-const checkStringForPolicyConformance = async (currentUserId: string, str: string): Promise<PermissionQueryResult> => {
+const checkStringForPolicyConformance = async (str: string): Promise<PermissionQueryResult> => {
   // Simulate a policy conformance check
   const strToLog = str.length < 40 ? str : str.substring(0, 40) + '...';
   console.log(`Policy conformance check for string: ${strToLog}`);
-  // Should make a call to Google API to check for abusiveness, etc
-  // For now, we'll just approve all URLs
-  console.log(`comparing currentUserId (${currentUserId}) to hardcoded banned value: 138ebabb-a7ac-4982-8fe2-405d31ea7188`);
-  if (currentUserId === '138ebabb-a7ac-4982-8fe2-405d31ea7188') {
-    return { granted: false, explanation: "Text policy conformance check failed." };
+  const perspectiveResult = await dbClient.queries.testPolicyStringOrDoc({ text: str, docUrl: '' });
+  console.log(`Perspective API result: `, perspectiveResult);
+  const parsedResult = JSON.parse(perspectiveResult.data || '');
+  if (parsedResult.flagged) {
+    console.warn(`Text flagged for policy violation: ${parsedResult.flaggedCategories.join(', ')}`);
+    return { granted: false, banned: false, explanation: "Text policy conformance check failed." };
   } else {
-    return { granted: true, explanation: "Policy conformance check passed." };
+    return { granted: true, banned: false, explanation: "Policy conformance check passed." };
   }
 };
 
@@ -339,7 +341,7 @@ export const tallySubmission = (userId: string)=> {
 }
 
 const checkForTrustedPermission = async (userId: string) => {
-  const retVal: PermissionQueryResult = { granted: false, explanation: 'No trusted permission' };
+  const retVal: PermissionQueryResult = { granted: false, banned: false, explanation: 'No trusted permission' };
   const idStruct = {id: userId}
   console.log(`DBM: calling RegisteredUser.get() at ${Date.now() % 10000}`);
   await dbClient.models.RegisteredUser.get(idStruct).then(
@@ -360,7 +362,7 @@ const checkForTrustedPermission = async (userId: string) => {
 }
 
 const checkSubmissionTallyForPermission = async (userId: string) => {
-  const retVal: PermissionQueryResult = { granted: false, explanation: 'No trusted permission' };
+  const retVal: PermissionQueryResult = { granted: false, banned: false, explanation: 'No trusted permission' };
   const myArgStruct = { userId: userId};
   console.log(`DBM: calling SubmissionTally.byUserId() at ${Date.now() % 10000}`);
   await dbClient.models.SubmissionTally.byUserId(myArgStruct).then(
