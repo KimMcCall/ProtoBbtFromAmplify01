@@ -99,6 +99,34 @@ function PlayPage01() {
     }
   }
 
+  async function testModerateGoogleDoc() {
+    const docUrl = docUrlToBeModerated || "https://docs.google.com/document/d/1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q8R9S0T1U2V3W4X5Y6Z7A8B9C0D1E2F3G4H5I6J7K8L9M0N1O2P3Q4R5S6T7U8V9W0X1Y2Z3A4B5C6D7E8F9G0H1I2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6X7Y8Z9A0B1C2D3E4F5";
+    console.log(`Calling testPolicyStringOrDoc with doc URL: '${docUrl}'`);
+    try {
+      const result = await dbClient.queries.testPolicyStringOrDoc({ docUrl });
+      console.log("testPolicyStringOrDoc result:", result);
+      const resultData = result.data;
+      console.log(`Moderation result: ${resultData}`);
+    } catch (error) {
+      console.error("Function error:", error);
+      alert(`Function execution failed: ${error}`);
+    }
+  }
+
+  async function testModerateString() {
+    const text = textToBeModerated || "This is a test string.";
+    console.log(`Calling testPolicyStringOrDoc with text: '${text}'`);
+    try {
+      const result = await dbClient.queries.testPolicyStringOrDoc({ text });
+      console.log("testPolicyStringOrDoc result:", result);
+      const resultData = result.data;
+      console.log(`Moderation result: ${resultData}`);
+    } catch (error) {
+      console.error("Function error:", error);
+      alert(`Function execution failed: ${error}`);
+    }
+  }
+
   return (
     <PageWrapper>
       <div className="pp01Root">
@@ -137,18 +165,18 @@ function PlayPage01() {
                 value={textToBeModerated}
                 onChange={(e) => setTextToBeModerated(e.target.value)}
               />
-              <Button className="moderateButton" onClick={testSendEmail}>Test Email</Button>
+              <Button className="moderateButton" onClick={testModerateString}>Test Email</Button>
             </Flex>
             <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
               <TextField
                 className="moderateTextField"
                 label=""
-                placeholder="Enter email body"
+                placeholder="Enter Google Doc URL"
                 width={400}
                 value={docUrlToBeModerated}
                 onChange={(e) => setDocUrlToBeModerated(e.target.value)}
               />
-              <Button className="moderateButton" onClick={testSendEmail}>Test Email</Button>
+              <Button className="moderateButton" onClick={testModerateGoogleDoc}>Test Email</Button>
             </Flex>
           </Flex>
           <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
