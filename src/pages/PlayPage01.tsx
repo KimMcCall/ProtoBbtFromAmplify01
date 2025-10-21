@@ -165,7 +165,7 @@ function PlayPage01() {
                 value={textToBeModerated}
                 onChange={(e) => setTextToBeModerated(e.target.value)}
               />
-              <Button className="moderateButton" onClick={testModerateString}>Test Email</Button>
+              <Button className="moderateButton" onClick={testModerateString}>Moderate String</Button>
             </Flex>
             <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
               <TextField
@@ -176,7 +176,7 @@ function PlayPage01() {
                 value={docUrlToBeModerated}
                 onChange={(e) => setDocUrlToBeModerated(e.target.value)}
               />
-              <Button className="moderateButton" onClick={testModerateGoogleDoc}>Test Email</Button>
+              <Button className="moderateButton" onClick={testModerateGoogleDoc}>Moderate Doc</Button>
             </Flex>
           </Flex>
           <Flex direction="row" justifyContent="flex-start" alignItems="flex-start" wrap="nowrap" gap="6px">
