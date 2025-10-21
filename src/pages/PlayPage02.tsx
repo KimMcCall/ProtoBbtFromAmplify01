@@ -224,6 +224,7 @@ function PlayPage02() {
   async function testGetSecret() {
     try {
       const nameOfSecret = "SENDGRID_API_KEY";
+      console.log(`DBM: Calling getSecret with name: '${nameOfSecret}'`);
       const result = await dbClient.queries.getSecret({ name: nameOfSecret });
       console.log("getSecret() result:", result);
       const secretValue = result.data;
