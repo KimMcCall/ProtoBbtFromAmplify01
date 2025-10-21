@@ -106,7 +106,11 @@ function PlayPage01() {
       const result = await dbClient.queries.testPolicyStringOrDoc({ docUrl });
       console.log("testPolicyStringOrDoc result:", result);
       const resultData = result.data;
-      console.log(`Moderation result: ${resultData}`);
+      console.log('Moderation resultData:', resultData);
+      const parsed1 = JSON.parse(resultData || '');
+      console.log('Parsed moderation result:', parsed1);
+      const parsed2 = JSON.parse(parsed1 as string);
+      console.log('Parsed moderation result level 2:', parsed2);
     } catch (error) {
       console.error("Function error:", error);
       alert(`Function execution failed: ${error}`);
@@ -120,7 +124,11 @@ function PlayPage01() {
       const result = await dbClient.queries.testPolicyStringOrDoc({ text });
       console.log("testPolicyStringOrDoc result:", result);
       const resultData = result.data;
-      console.log(`Moderation result: ${resultData}`);
+      console.log('Moderation resultData:', resultData);
+      const parsed1 = JSON.parse(resultData || '');
+      console.log('Parsed moderation result:', parsed1);
+      const parsed2 = JSON.parse(parsed1 as string);
+      console.log('Parsed moderation result level 2:', parsed2);
     } catch (error) {
       console.error("Function error:", error);
       alert(`Function execution failed: ${error}`);
